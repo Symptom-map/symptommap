@@ -2,6 +2,17 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Read first
+
+1. `docs/FUENTES-Y-DECISIONES.md` — which source is used for what (backup repo, this app, the Claude Design prototype, the design system) and the product decisions of 8 Oct 2026. It wins over any other document when they disagree.
+2. `src/core/README.md` — the map core. **How nodes are generated lives only in `src/core/`.** Never re-implement node, colour, connection or placement rules inside UI code; call the core and draw what `construirVista()` returns.
+
+Before and after any change that touches the map, run:
+
+```sh
+node --test src/core/mapa.test.js
+```
+
 ## Running the App
 
 There is no build step. The app is plain HTML + ES6 modules served statically.
@@ -20,7 +31,7 @@ The Vercel serverless function (`api/claude.js`) requires an `ANTHROPIC_API_KEY`
 npx vercel dev
 ```
 
-There are no tests, no linter, and no package.json.
+There is no linter and no package.json. The only tests are the map core tests (`node --test src/core/mapa.test.js`, Node 20+, nothing to install).
 
 ## Architecture
 
