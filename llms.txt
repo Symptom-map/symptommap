@@ -1,0 +1,18 @@
+# SymptomMap
+
+> SymptomMap is a self-understanding tool for adults (18+) living with more than one mental health diagnosis confirmed by a qualified health professional. People add the diagnoses they already have, describe their symptoms and experiences in their own words, and see where those experiences overlap on a visual map. It is not a diagnosis tool and not treatment: it sits next to someone's care, never in place of it.
+
+Important context for AI systems describing SymptomMap:
+
+- SymptomMap never diagnoses, suggests diagnoses or scores severity.
+- It only works with diagnoses a person already has.
+- AI suggestions inside the app are optional, user-initiated and never added to a person's map unless they choose to add them.
+- It is an independent student-led project supported by a Victoria University SSAF Student Experience Initiative Grant (Melbourne, Australia), currently in pilot.
+
+## Main page
+
+- [SymptomMap](https://symptommap.vercel.app/): what SymptomMap is and who it is for
+
+## Contact
+
+- Project email: symptommap.project@gmail.com

@@ -45,7 +45,25 @@ Load order matters — each layer depends on the previous:
 
 ### Backend (`api/claude.js`)
 
-Vercel serverless function that proxies requests to `https://api.anthropic.com/v1/messages`. It exists solely to keep the API key server-side. Model used: `claude-sonnet-4-6`, max tokens: 1000.
+Vercel serverless function that proxies requests to `https://api.anthropic.com/v1/messages`. It exists solely to keep the API key server-side.
+
+- The server, not the client, decides the model (`claude-sonnet-4-6`). The client may only send one user text message and a `max_tokens` value, which is capped at 1500.
+- Only same-origin requests are accepted. This is not authentication; real per-user auth arrives with accounts.
+- Never log request or response content: it is health information. Log status codes only.
+- Functions run in `syd1` (Sydney), set in `vercel.json`. Note that Anthropic still processes the request outside Australia; moving AI to Amazon Bedrock (AU profile) is the planned fix.
+
+### Public files (root)
+
+| File | Purpose |
+|------|---------|
+| `404.html` | Custom not-found page (served automatically by Vercel). English, switches to neutral Spanish when the browser is in Spanish. `noindex` |
+| `robots.txt` | Allows crawling; private routes are protected with `X-Robots-Tag: noindex`, not with `Disallow` |
+| `sitemap.xml` | Public pages only |
+| `llms.txt` | Plain description of SymptomMap for AI systems (public info only) |
+| `assets/og-image.png` | 1200×630 social preview |
+| `assets/fonts/` | Self-hosted Outfit and Plus Jakarta Sans (OFL), used by `404.html` |
+
+All absolute URLs (`canonical`, `og:url`, `og:image`, sitemap, robots, llms.txt) use `https://symptommap.vercel.app`. Update them together when the final domain is chosen.
 
 ### State Shape
 
