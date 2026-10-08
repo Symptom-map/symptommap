@@ -7,11 +7,21 @@ Existe para que nunca se mezclen las distintas versiones del proyecto.
 
 ## 1. Qué es cada cosa y para qué se usa
 
+**Regla fácil:** todo lo que diga `symptommaproject` es el **respaldo**; todo lo que diga `symptommap` (sin "project") es el **activo**.
+
+| | Activo | Respaldo |
+|---|---|---|
+| Repo en GitHub | `Symptom-map/symptommap` | `Symptom-map/symptommap-dev` |
+| Proyecto en Vercel | `symptommap` | `symptommaproject` |
+| Sitio | symptommap.vercel.app | symptommaproject.vercel.app |
+
+(El repo activo se llamaba `symptommaproject` hasta el 8 oct 2026; se renombró para que esa palabra solo signifique "respaldo".)
+
 | Fuente | Dónde está | Para qué se usa | Para qué NO |
 |---|---|---|---|
 | **Respaldo** | Repo `symptommap-dev` → symptommaproject.vercel.app | Nada. Solo existe por si todo falla | **No se abre, no se copia, no se toca** |
-| **App actual** | Repo `symptommaproject` → symptommap.vercel.app | Tres piezas que ya funcionan: la lista de 28 diagnósticos bilingüe (`data.js`), los prompts de AI (`ai.js`, adaptándolos a las reglas nuevas) y el proxy (`api/claude.js`) | Nada visual. Nada de cómo se colocan o dibujan los nodos (`graph.js` es el motor viejo) |
-| **Núcleo del mapa** | `src/core/` en el repo `symptommaproject` | **Cómo se generan los nodos.** Única fuente para eso | — |
+| **App actual** | Repo `symptommap` → symptommap.vercel.app | Tres piezas que ya funcionan: la lista de 28 diagnósticos bilingüe (`data.js`), los prompts de AI (`ai.js`, adaptándolos a las reglas nuevas) y el proxy (`api/claude.js`) | Nada visual. Nada de cómo se colocan o dibujan los nodos (`graph.js` es el motor viejo) |
+| **Núcleo del mapa** | `src/core/` en el repo `symptommap` | **Cómo se generan los nodos.** Única fuente para eso | — |
 | **Prototipo** | Zip de Claude Design (`SymptomMap - Production Prototype.dc.html`) | Qué ve y qué hace la persona en cada pantalla, textos y flujo | Su código interno: listas de ejemplo, el código `482913`, la lógica de colores o de colocación. Fue hecho para diseñar y probar flujos, no para implementar |
 | **Design system** | `_ds/` en el zip | Cómo se ve: colores, tipografía, componentes | — |
 | **Documentos** | Handoff, Functional Inventory, Data Map (en el zip) | Reglas de producto y datos | — |

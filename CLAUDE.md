@@ -2,6 +2,12 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Which repo is this
+
+This is the **active** repo, `Symptom-map/symptommap` → symptommap.vercel.app (Vercel project `symptommap`).
+Anything named `symptommaproject` is the **backup** (Vercel project and site symptommaproject.vercel.app, built from repo `Symptom-map/symptommap-dev`). **Never touch the backup.**
+This repo was called `symptommaproject` until 8 Oct 2026.
+
 ## Read first
 
 1. `docs/FUENTES-Y-DECISIONES.md` — which source is used for what (backup repo, this app, the Claude Design prototype, the design system) and the product decisions of 8 Oct 2026. It wins over any other document when they disagree.
