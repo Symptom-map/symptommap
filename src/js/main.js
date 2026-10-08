@@ -612,6 +612,7 @@ let lang = state.lang || 'es';
 function t(key) { return STRINGS[lang]?.[key] || STRINGS.en[key] || key; }
 
 function applyLang() {
+  document.documentElement.lang = lang;
   const es = lang === 'es';
 
   // Onboarding

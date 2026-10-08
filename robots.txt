@@ -1,0 +1,8 @@
+# SymptomMap — https://symptommap.vercel.app
+# Las rutas privadas no se bloquean aquí: se protegen con
+# "X-Robots-Tag: noindex" (vercel.json), para que los buscadores
+# puedan leer esa instrucción.
+User-agent: *
+Allow: /
+
+Sitemap: https://symptommap.vercel.app/sitemap.xml

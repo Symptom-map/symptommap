@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────
 // ai.js — todas las llamadas a Claude viven aquí
-// Para cambiar un prompt, editá la función correspondiente.
+// Para cambiar un prompt, edita la función correspondiente.
 // ─────────────────────────────────────────────────────────────
 
 const API_URL = '/api/claude'

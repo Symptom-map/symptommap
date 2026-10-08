@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Page not found · SymptomMap</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#FAF7F0">
+<style>
+  @font-face { font-family: "Outfit"; font-weight: 700; font-display: swap;
+    src: url("/assets/fonts/outfit-latin-700-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Plus Jakarta Sans"; font-weight: 400; font-display: swap;
+    src: url("/assets/fonts/plus-jakarta-sans-latin-400-normal.woff2") format("woff2"); }
+  @font-face { font-family: "Plus Jakarta Sans"; font-weight: 600; font-display: swap;
+    src: url("/assets/fonts/plus-jakarta-sans-latin-600-normal.woff2") format("woff2"); }
+
+  :root {
+    --cream: #FAF7F0; --ink: #1A1A1A; --body: #57534E;
+    --cyan-400: #48CAE4; --cyan-500: #00B4D8;
+    --gradient: linear-gradient(96deg, #48CAE4, #9D50BB);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    min-height: 100vh; background: var(--cream); color: var(--ink);
+    font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+    display: flex; flex-direction: column;
+  }
+  header { padding: 24px 32px; }
+  .logo {
+    display: inline-flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink);
+    font-family: "Outfit", system-ui, sans-serif; font-weight: 700; font-size: 22px; letter-spacing: -.025em;
+  }
+  .logo .map { background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  main {
+    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+    text-align: center; padding: 48px 24px 96px;
+  }
+  main img { width: 120px; height: 120px; }
+  h1 {
+    font-family: "Outfit", system-ui, sans-serif; font-weight: 700;
+    font-size: 40px; line-height: 46px; letter-spacing: -.02em; margin: 32px 0 0;
+  }
+  p { font-size: 16.5px; line-height: 27px; color: var(--body); max-width: 440px; margin: 16px 0 0; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-height: 46px; padding: 0 24px; margin-top: 32px; border-radius: 16px;
+    background: var(--cyan-400); color: var(--ink); /* charcoal on cyan: never white */
+    font-weight: 600; font-size: 15px; text-decoration: none;
+    transition: background-color .16s ease, box-shadow .16s ease;
+  }
+  .btn:hover { background: var(--cyan-500); box-shadow: 0 6px 16px -8px rgba(26,26,26,.35); }
+  .btn:focus-visible { outline: none; background: var(--cyan-500); box-shadow: inset 0 0 0 1.5px rgba(26,26,26,.55); }
+  @media (max-width: 480px) { h1 { font-size: 30px; line-height: 36px; } }
+</style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="/" aria-label="SymptomMap home">
+      <svg viewBox="0 0 200 200" width="34" height="34" aria-hidden="true">
+        <g stroke-opacity=".55" stroke-width="2.4" fill="none">
+          <path d="M52 104 L88 66" stroke="#4ba3f7"/><path d="M88 66 L120 96" stroke="#9190f8"/>
+          <path d="M52 104 L84 118" stroke="#c080df"/><path d="M84 118 L64 142" stroke="#ed737b"/>
+          <path d="M64 142 L120 96" stroke="#faca4b"/><path d="M120 96 L152 74" stroke="#5ebd69"/>
+          <path d="M120 96 L155 118" stroke="#13bfa5"/>
+        </g>
+        <circle cx="52" cy="104" r="21" fill="#4ba3f7"/><circle cx="88" cy="66" r="13" fill="#df75b2"/>
+        <circle cx="120" cy="96" r="17" fill="#9190f8"/><circle cx="84" cy="118" r="9" fill="#c080df"/>
+        <circle cx="64" cy="142" r="11" fill="#ed737b"/><circle cx="152" cy="74" r="8" fill="#5ebd69"/>
+        <circle cx="155" cy="118" r="7" fill="#f68d4d"/><circle cx="132" cy="146" r="5" fill="#c7e03e"/>
+      </svg>
+      <span>Symptom<span class="map">Map</span></span>
+    </a>
+  </header>
+
+  <main>
+    <img src="/assets/line-head.png" alt="">
+    <h1 id="t">We couldn’t find this page</h1>
+    <p id="d">The link may be old or have a typo. Nothing on your map has changed.</p>
+    <a class="btn" id="b" href="/">Back to home</a>
+  </main>
+
+  <script>
+    // Si el navegador está en español, mostrar el texto en español neutro.
+    if ((navigator.language || '').toLowerCase().startsWith('es')) {
+      document.documentElement.lang = 'es';
+      document.title = 'Página no encontrada · SymptomMap';
+      document.getElementById('t').textContent = 'No encontramos esta página';
+      document.getElementById('d').textContent = 'Es posible que el enlace sea antiguo o tenga un error. Tu mapa no cambió.';
+      document.getElementById('b').textContent = 'Volver al inicio';
+    }
+  </script>
+</body>
+</html>

@@ -3,7 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SymptomMap</title>
+<title>SymptomMap — See how your diagnoses connect</title>
+<meta name="description" content="Map the mental health diagnoses you already have and see where your experiences overlap. A self-understanding tool for adults, not a diagnosis tool.">
+<link rel="canonical" href="https://symptommap.vercel.app/">
+<meta name="theme-color" content="#FAF7F0">
+
+<!-- Open Graph / redes sociales -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="SymptomMap">
+<meta property="og:url" content="https://symptommap.vercel.app/">
+<meta property="og:title" content="SymptomMap — See how your diagnoses connect">
+<meta property="og:description" content="A self-understanding tool for adults living with more than one diagnosed mental health condition. Not a diagnosis tool.">
+<meta property="og:image" content="https://symptommap.vercel.app/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="SymptomMap: three diagnoses on a map, with the symptoms they share shown as segmented nodes.">
+<meta property="og:locale" content="en_AU">
+<meta property="og:locale:alternate" content="es_419">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="SymptomMap — See how your diagnoses connect">
+<meta name="twitter:description" content="A self-understanding tool for adults living with more than one diagnosed mental health condition. Not a diagnosis tool.">
+<meta name="twitter:image" content="https://symptommap.vercel.app/assets/og-image.png">
   <link rel="stylesheet" href="src/styles/tokens.css">
   <link rel="stylesheet" href="src/styles/layout.css">
   <link rel="stylesheet" href="src/styles/components.css">
@@ -122,14 +142,14 @@
 <button id="legend-toggle" onclick="toggleLegend()" id="leg-btn">? legend</button>
 
 <!-- TOPBAR -->
-<div class="topbar">
+<header class="topbar">
   <div class="logo">Symptom<span class="logo-dot">Map</span></div>
   <span id="map-name" style="font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--muted)"></span>
   <div class="topbar-sep"></div>
   <button class="btn-icon" title="Exportar imagen" onclick="exportMap()">↗</button>
-</div>
+</header>
 
-<div class="app">
+<main class="app">
 
   <!-- LEFT PANEL -->
   <div class="left-panel" id="left-panel">
@@ -282,7 +302,7 @@
     </div>
   </div>
 
-</div>
+</main>
 
 <!-- SUGGESTED REVIEW PANEL -->
 <div id="review-panel">
