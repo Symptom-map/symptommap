@@ -1,6 +1,6 @@
 # SymptomMap — Fuentes de verdad y decisiones
 
-Leer antes de trabajar en SymptomMap, en cualquier herramienta (Claude, Claude Code, Claude Design).
+Leer antes de trabajar en SymptomMap, en cualquier herramienta (Claude, Claude Code, Codex, Claude Design). Las reglas para agentes de código están en `AGENTS.md`.
 Existe para que nunca se mezclen las distintas versiones del proyecto.
 
 Última actualización: 8 de octubre de 2026.
@@ -24,7 +24,7 @@ Existe para que nunca se mezclen las distintas versiones del proyecto.
 | **Núcleo del mapa** | `src/core/` en el repo `symptommap` | **Cómo se generan los nodos.** Única fuente para eso | — |
 | **Prototipo** | Zip de Claude Design (`SymptomMap - Production Prototype.dc.html`) | Qué ve y qué hace la persona en cada pantalla, textos y flujo | Su código interno: listas de ejemplo, el código `482913`, la lógica de colores o de colocación. Fue hecho para diseñar y probar flujos, no para implementar |
 | **Design system** | `_ds/` en el zip | Cómo se ve: colores, tipografía, componentes | — |
-| **Documentos** | Handoff, Functional Inventory, Data Map (en el zip) | Reglas de producto y datos | — |
+| **Documentos** | `docs/producto/`: HANDOFF, FUNCTIONAL-INVENTORY, DATA-MAP (copiados del proyecto de Claude Design el 8 oct 2026) | Reglas de producto y datos | Las decisiones de la sección 2 los reemplazan donde se contradicen |
 
 **Regla de desempate:** este documento > handoff + inventario + Data Map > prototipo > app actual.
 
