@@ -187,16 +187,20 @@ export function quitarDiagnostico(mapaOriginal, diagnosticoId) {
 
 /** La persona arrastra un diagnóstico. Solo cambia su lugar, nunca sus relaciones. */
 export function moverDiagnostico(mapaOriginal, diagnosticoId, { x, y }) {
-  const mapa = copiar(mapaOriginal)
-  buscarDiagnostico(mapa, diagnosticoId)
-  // La primera vez que la persona ordena su mapa, todos los diagnósticos
-  // quedan fijos donde estaban, para que nada salte de lugar después.
-  if (!mapa.diagnosticos.some(d => d.posicion)) {
-    for (const p of posicionesDiagnosticos(mapa)) {
-      mapa.diagnosticos.find(d => d.id === p.id).posicion = p.posicion
-    }
-  }
-  mapa.diagnosticos.find(d => d.id === diagnosticoId).posicion = { x: Math.round(x), y: Math.round(y) }
+  const mapa = fijarPosiciones(copiar(mapaOriginal))
+  buscarDiagnostico(mapa, diagnosticoId).posicion = { x: Math.round(x), y: Math.round(y) }
+  return mapa
+}
+
+/**
+ * Antes de mover cualquier nodo, todos los nodos quedan fijos donde se ven
+ * ahora. Así, al arrastrar uno, ningún otro cambia de lugar (como en el
+ * prototipo). Los nodos que se agreguen después se colocan solos.
+ */
+function fijarPosiciones(mapa) {
+  const posDiag = posicionesDiagnosticos(mapa)
+  for (const p of posDiag) mapa.diagnosticos.find(d => d.id === p.id).posicion = p.posicion
+  for (const p of posicionesSintomas(mapa, posDiag)) mapa.sintomas.find(s => s.id === p.id).posicion = p.posicion
   return mapa
 }
 
@@ -286,7 +290,7 @@ export function borrarSintoma(mapaOriginal, sintomaId) {
 
 /** La persona arrastra un síntoma. Solo cambia su lugar, nunca sus relaciones. */
 export function moverSintoma(mapaOriginal, sintomaId, { x, y }) {
-  const mapa = copiar(mapaOriginal)
+  const mapa = fijarPosiciones(copiar(mapaOriginal))
   buscarSintoma(mapa, sintomaId).posicion = { x: Math.round(x), y: Math.round(y) }
   return mapa
 }
