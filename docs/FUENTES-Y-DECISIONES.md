@@ -44,6 +44,7 @@ Estas decisiones resuelven contradicciones entre los documentos del zip. Prevale
 | Datos mínimos | Solo "18+ verificado" (no la fecha de nacimiento); solo que pasó el gate de elegibilidad; borrar un diagnóstico borra su perfil; los exports no se guardan; el zoom no se guarda; la AI nunca escribe directo en la base de datos | Data Map §9–§10 (candidatos abiertos) |
 | Handoff | **No se reemplaza todavía.** Conviven la versión del proyecto (17 sep) y la del zip, que es más nueva | — |
 | Interfaz nueva (v2) | **React + Vite**, en la carpeta `v2/` del mismo repo, usando los componentes del design system tal como vienen. Se publica en `/app/`; la app actual sigue en `/` hasta que la v2 esté lista | La regla "no React" y "no reescritura amplia" del handoff (§16) |
+| Aspecto del síntoma compartido | Se usa el estilo del **respaldo** (symptommaproject.vercel.app): anillo **fino** dividido en arcos iguales con pequeños espacios entre colores, centro blanco amplio y un halo suave. **No** el anillo grueso del componente `SymptomNode` del design system. Se ajusta en la v2 al implementar el mapa (estilo propio en `v2/`, sin editar el design system) | El grosor del anillo de `SymptomNode` en el design system |
 | Agentes de código | Claude Code y Codex comparten **un solo archivo de reglas**, `AGENTS.md` (`CLAUDE.md` lo importa). Nunca editan los mismos archivos al mismo tiempo: uno implementa y el otro revisa | — |
 
 ## 3. Pendientes de decidir
