@@ -1,0 +1,17 @@
+/* One 4-point scale. Card padding 24-40. Panel gutters 24. Section rhythm 96-104.
+   When in doubt, go up a step: breathing room is the point. */
+:root {
+  --sm-space-1: 4px;
+  --sm-space-2: 8px;
+  --sm-space-3: 12px;
+  --sm-space-4: 16px;
+  --sm-space-6: 24px;
+  --sm-space-8: 32px;
+  --sm-space-12: 48px;
+  --sm-space-16: 64px;
+  --sm-space-24: 96px;
+  --sm-section-rhythm: 104px;
+  --sm-card-padding: 28px;
+  --sm-panel-gutter: 24px;
+  --sm-content-max: 1280px;
+}

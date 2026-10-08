@@ -1,0 +1,23 @@
+/* Radius grows with the size of the container. Line weight carries hierarchy. */
+:root {
+  --sm-radius-input: 12px;      /* inputs, small controls */
+  --sm-radius-chip: 14px;       /* diagnosis chips, small buttons */
+  --sm-radius-button: 16px;     /* buttons — rounder reads warmer, still not a pill */
+  --sm-radius-card: 18px;       /* cards, suggestion cards */
+  --sm-radius-panel: 22px;      /* panels, modals, sheets */
+  --sm-radius-pill: 999px;      /* pills, tags, counters */
+  --sm-radius-node: 50%;        /* nodes only — perfect circles, always */
+
+  --sm-line-1: 1px;             /* dividers, hairlines */
+  --sm-line-connection: 1.25px; /* map connections */
+  --sm-line-ring: 1.5px;        /* node rings, inputs, icon-adjacent borders */
+  --sm-line-focus: 2px;         /* focus ring */
+
+  --sm-icon-stroke: 1.6; /* @kind other */ /* interface icons, 24px grid, round caps & joins */
+  --sm-icon-stroke-illustrative: 2; /* @kind other */
+  --sm-icon-size: 24px;
+
+  --sm-control-height: 44px;    /* default control + minimum hit target */
+  --sm-control-height-sm: 36px;
+  --sm-control-height-inline: 42px; /* CTA inside a card */
+}

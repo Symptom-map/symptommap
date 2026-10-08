@@ -1,0 +1,19 @@
+/* Outfit for the brand and headings; Plus Jakarta Sans for everything else.
+   Sentence case by default — uppercase with wide tracking is not a system convention.
+   Emphasis is weight, never colour. */
+:root {
+  --sm-hero-size: 64px;   --sm-hero-line: 1.04 /* @kind other */;  --sm-hero-weight: 600 /* @kind other */;  --sm-hero-track: -.03em /* @kind other */;
+  --sm-display-size: 56px; --sm-display-line: 1.05 /* @kind other */; --sm-display-weight: 600 /* @kind other */; --sm-display-track: -.03em /* @kind other */;
+  --sm-h1-size: 40px;     --sm-h1-line: 1.15 /* @kind other */;    --sm-h1-weight: 600 /* @kind other */;    --sm-h1-track: -.02em /* @kind other */;
+  --sm-h2-size: 28px;     --sm-h2-line: 1.25 /* @kind other */;    --sm-h2-weight: 500 /* @kind other */;    --sm-h2-track: -.015em /* @kind other */;
+  --sm-h3-size: 19px;     --sm-h3-line: 1.4 /* @kind other */;     --sm-h3-weight: 600 /* @kind other */;    --sm-h3-track: -.005em /* @kind other */;
+
+  --sm-body-size: 16.5px;  --sm-body-line: 1.62 /* @kind other */;
+  --sm-body-sm-size: 15.5px; --sm-body-sm-line: 1.55 /* @kind other */;
+  --sm-support-size: 14.5px; --sm-support-line: 1.55 /* @kind other */;
+
+  --sm-label-size: 14.5px; --sm-label-weight: 500 /* @kind other */;   /* input labels, chips, choices */
+  --sm-button-size: 15px;  --sm-button-weight: 600 /* @kind other */;
+  --sm-meta-size: 13px;                              /* counts, tags, metadata, captions */
+  --sm-caption-size: 13.5px;
+}

@@ -1,0 +1,99 @@
+/* Diagnosis colour — a separate, closed system. Assigned PER MAP, never per diagnosis.
+   Ten positions on a fixed ring; every position ships three tokens:
+     base  — node ring, dot, chip border, edge stroke
+     tint  — node fill, chip background, halo
+     ink   — the label (every ink passes AA on cream, >= 5.3:1)
+   Plus two interaction tints for chips and rows (hover / selected) and a halo colour.
+   Diagnosis colour is for nodes, chips, edges and source tags. NEVER a button, a link,
+   a form control or feedback. Light and soft, and only ever round or a 1.5px chip border. */
+:root {
+  /* 1 · Blue — hue 250 */
+  --sm-dx-1-base: #4ba3f7;
+  --sm-dx-1-ink: #005fad;
+  --sm-dx-1-tint: #e9f3ff;
+  --sm-dx-1-tint-hover: #dceaff;
+  --sm-dx-1-tint-selected: #cfe4ff;
+  --sm-dx-1-halo: #4ba3f72e;
+  --sm-dx-1-name: "Blue"; /* @kind other */
+  /* 2 · Violet — hue 282 */
+  --sm-dx-2-base: #9190f8;
+  --sm-dx-2-ink: #534dae;
+  --sm-dx-2-tint: #f0f1ff;
+  --sm-dx-2-tint-hover: color-mix(in srgb, #9190f8 16%, #f0f1ff);
+  --sm-dx-2-tint-selected: color-mix(in srgb, #9190f8 28%, #f0f1ff);
+  --sm-dx-2-halo: #9190f82e;
+  --sm-dx-2-name: "Violet"; /* @kind other */
+  /* 3 · Orchid — hue 314 */
+  --sm-dx-3-base: #c080df;
+  --sm-dx-3-ink: #7b3d97;
+  --sm-dx-3-tint: #f7effc;
+  --sm-dx-3-tint-hover: #f0e2f8;
+  --sm-dx-3-tint-selected: #eddcf8;
+  --sm-dx-3-halo: #c080df2e;
+  --sm-dx-3-name: "Orchid"; /* @kind other */
+  /* 4 · Rose — hue 346 */
+  --sm-dx-4-base: #df75b2;
+  --sm-dx-4-ink: #95316f;
+  --sm-dx-4-tint: #fdedf5;
+  --sm-dx-4-tint-hover: color-mix(in srgb, #df75b2 16%, #fdedf5);
+  --sm-dx-4-tint-selected: color-mix(in srgb, #df75b2 28%, #fdedf5);
+  --sm-dx-4-halo: #df75b22e;
+  --sm-dx-4-name: "Rose"; /* @kind other */
+  /* 5 · Coral — hue 18 */
+  --sm-dx-5-base: #ed737b;
+  --sm-dx-5-ink: #a12e3c;
+  --sm-dx-5-tint: #ffeded;
+  --sm-dx-5-tint-hover: #ffe2e4;
+  --sm-dx-5-tint-selected: #ffd5d8;
+  --sm-dx-5-halo: #ed737b2e;
+  --sm-dx-5-name: "Coral"; /* @kind other */
+  /* 6 · Orange — hue 50 */
+  --sm-dx-6-base: #f68d4d;
+  --sm-dx-6-ink: #9c3b00;
+  --sm-dx-6-tint: #fff1e9;
+  --sm-dx-6-tint-hover: color-mix(in srgb, #f68d4d 16%, #fff1e9);
+  --sm-dx-6-tint-selected: color-mix(in srgb, #f68d4d 28%, #fff1e9);
+  --sm-dx-6-halo: #f68d4d2e;
+  --sm-dx-6-name: "Orange"; /* @kind other */
+  /* 7 · Gold — hue 88 */
+  --sm-dx-7-base: #faca4b;
+  --sm-dx-7-ink: #8a4f00;
+  --sm-dx-7-tint: #fef7e6;
+  --sm-dx-7-tint-hover: #fdf1d4;
+  --sm-dx-7-tint-selected: #fbe9bc;
+  --sm-dx-7-halo: #faca4b2e;
+  --sm-dx-7-name: "Gold"; /* @kind other */
+  /* 8 · Lime — hue 118 */
+  --sm-dx-8-base: #c7e03e;
+  --sm-dx-8-ink: #5e6500;
+  --sm-dx-8-tint: #f6fbe5;
+  --sm-dx-8-tint-hover: color-mix(in srgb, #c7e03e 16%, #f6fbe5);
+  --sm-dx-8-tint-selected: color-mix(in srgb, #c7e03e 28%, #f6fbe5);
+  --sm-dx-8-halo: #c7e03e2e;
+  --sm-dx-8-name: "Lime"; /* @kind other */
+  /* 9 · Green — hue 146 */
+  --sm-dx-9-base: #5ebd69;
+  --sm-dx-9-ink: #00721f;
+  --sm-dx-9-tint: #ebf7eb;
+  --sm-dx-9-tint-hover: #e0f2e2;
+  --sm-dx-9-tint-selected: #d3ecd7;
+  --sm-dx-9-halo: #5ebd692e;
+  --sm-dx-9-name: "Green"; /* @kind other */
+  /* 10 · Teal — hue 178 */
+  --sm-dx-10-base: #13bfa5;
+  --sm-dx-10-ink: #00745e;
+  --sm-dx-10-tint: #e8f7f3;
+  --sm-dx-10-tint-hover: color-mix(in srgb, #13bfa5 16%, #e8f7f3);
+  --sm-dx-10-tint-selected: color-mix(in srgb, #13bfa5 28%, #e8f7f3);
+  --sm-dx-10-halo: #13bfa52e;
+  --sm-dx-10-name: "Teal"; /* @kind other */
+
+  /* Halo geometry — base at ~18% alpha, no blur, so it stays crisp when zoomed */
+  --sm-halo-diagnosis: 10px; /* @kind spacing */  /* spread on a diagnosis node (12px when emphasised) */
+  --sm-halo-symptom: 4px; /* @kind spacing */  /* spread on a symptom node (5px when emphasised) */
+
+  /* Map chrome */
+  --sm-edge-neutral: rgba(38, 32, 28, .14);  /* the diagnosis-to-diagnosis chain */
+  --sm-edge-width: 1.25px; /* @kind spacing */
+  --sm-edge-opacity: .55; /* @kind other */                    /* coloured symptom edges */
+}

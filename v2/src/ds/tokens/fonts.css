@@ -1,0 +1,14 @@
+/* Two families, and only two.
+   Outfit           — brand, headings, major section titles.
+   Plus Jakarta Sans — body, UI labels, buttons, inputs, sidebar items, captions, metadata, tags.
+   Monospace is NOT part of the product's visual voice. --sm-font-mono exists only for technical
+   documentation (token tables, code samples) and must not appear in the interface. */
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap");
+
+:root {
+  --sm-font-display: "Outfit", system-ui, sans-serif;
+  --sm-font-ui: "Plus Jakarta Sans", system-ui, sans-serif;
+  --sm-font-body: "Plus Jakarta Sans", system-ui, sans-serif;
+  /* documentation only — never in product UI */
+  --sm-font-mono: ui-monospace, SFMono-Regular, monospace;
+}

@@ -1,0 +1,43 @@
+/* Page defaults. Cream is the page, white is the surface, charcoal is ink. */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--sm-surface-canvas);
+  color: var(--sm-text-heading);
+  font-family: var(--sm-font-body);
+  -webkit-font-smoothing: antialiased;
+}
+* { box-sizing: border-box; }
+
+a { color: var(--sm-text-link); text-decoration: none; border-bottom: 1px solid rgba(157, 80, 187, .35); }
+a:hover { color: var(--sm-purple-hover); border-bottom-color: var(--sm-purple-hover); }
+
+::selection { background: rgba(72, 202, 228, .30); }
+
+/* Focus belongs to the component — see .sm-btn:focus-visible etc. This is the fallback for
+   anything without its own treatment: cyan edge plus a restrained charcoal inset stroke. */
+:focus-visible { outline: 2px solid var(--sm-focus-border); outline-offset: 0; }
+
+/* ── Text styles ── */
+.sm-hero { font-family: var(--sm-font-display); font-weight: var(--sm-hero-weight); font-size: var(--sm-hero-size); line-height: var(--sm-hero-line); letter-spacing: var(--sm-hero-track); color: var(--sm-ink); margin: 0; text-wrap: pretty; }
+.sm-display { font-family: var(--sm-font-display); font-weight: var(--sm-display-weight); font-size: var(--sm-display-size); line-height: var(--sm-display-line); letter-spacing: var(--sm-display-track); color: var(--sm-ink); margin: 0; text-wrap: pretty; }
+.sm-h1 { font-family: var(--sm-font-display); font-weight: var(--sm-h1-weight); font-size: var(--sm-h1-size); line-height: var(--sm-h1-line); letter-spacing: var(--sm-h1-track); color: var(--sm-ink); margin: 0; }
+.sm-h2 { font-family: var(--sm-font-display); font-weight: var(--sm-h2-weight); font-size: var(--sm-h2-size); line-height: var(--sm-h2-line); letter-spacing: var(--sm-h2-track); color: var(--sm-ink); margin: 0; text-wrap: pretty; }
+.sm-h3 { font-family: var(--sm-font-ui); font-weight: var(--sm-h3-weight); font-size: var(--sm-h3-size); line-height: var(--sm-h3-line); letter-spacing: var(--sm-h3-track); color: var(--sm-ink); margin: 0; }
+.sm-body { font-family: var(--sm-font-body); font-size: var(--sm-body-size); line-height: var(--sm-body-line); color: var(--sm-ink-body); margin: 0; text-wrap: pretty; }
+.sm-body-sm { font-family: var(--sm-font-body); font-size: var(--sm-body-sm-size); line-height: var(--sm-body-sm-line); color: var(--sm-ink-body); margin: 0; text-wrap: pretty; }
+.sm-support { font-family: var(--sm-font-body); font-size: var(--sm-support-size); line-height: var(--sm-support-line); color: var(--sm-ink-body); margin: 0; }
+.sm-quote { font-family: var(--sm-font-body); font-style: italic; font-size: 15.5px; line-height: 1.6; color: var(--sm-ink-body); margin: 0; }
+.sm-label { font-family: var(--sm-font-ui); font-weight: var(--sm-label-weight); font-size: var(--sm-label-size); color: var(--sm-ink); }
+.sm-button-label { font-family: var(--sm-font-ui); font-weight: var(--sm-button-weight); font-size: var(--sm-button-size); color: var(--sm-ink); }
+/* Field label and section eyebrow: sentence case, natural tracking, no uppercase. */
+.sm-field-label { font-family: var(--sm-font-ui); font-weight: 500; font-size: var(--sm-caption-size); color: var(--sm-ink-meta); }
+.sm-eyebrow { font-family: var(--sm-font-ui); font-weight: 600; font-size: var(--sm-caption-size); letter-spacing: .01em; color: var(--sm-ink-meta); }
+.sm-meta { font-family: var(--sm-font-ui); font-weight: 500; font-size: var(--sm-meta-size); color: var(--sm-ink-meta); }
+.sm-emphasis { font-family: var(--sm-font-ui); font-weight: 600; color: var(--sm-ink); }
+.sm-wordmark { font-family: var(--sm-font-display); font-weight: 700; letter-spacing: -.025em; background: var(--sm-wordmark-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+/* Back-compat aliases for the earlier import — same look as .sm-meta / .sm-eyebrow now. */
+.sm-caption { font-family: var(--sm-font-ui); font-weight: 600; font-size: var(--sm-caption-size); color: var(--sm-ink-meta); }
+.sm-form-label { font-family: var(--sm-font-ui); font-weight: 500; font-size: var(--sm-caption-size); color: var(--sm-ink-meta); }
+.sm-mono { font-family: var(--sm-font-ui); font-weight: 500; font-size: var(--sm-meta-size); color: var(--sm-ink-meta); }
