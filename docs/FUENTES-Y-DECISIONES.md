@@ -24,7 +24,7 @@ Existe para que nunca se mezclen las distintas versiones del proyecto.
 | **Núcleo del mapa** | `src/core/` en el repo `symptommap` | **Cómo se generan los nodos.** Única fuente para eso | — |
 | **Prototipo** | Zip de Claude Design (`SymptomMap - Production Prototype.dc.html`) | Qué ve y qué hace la persona en cada pantalla, textos y flujo | Su código interno: listas de ejemplo, el código `482913`, la lógica de colores o de colocación. Fue hecho para diseñar y probar flujos, no para implementar |
 | **Design system** | `_ds/` en el zip | Cómo se ve: colores, tipografía, componentes | — |
-| **Documentos** | `docs/producto/`: HANDOFF, FUNCTIONAL-INVENTORY, DATA-MAP (copiados del proyecto de Claude Design el 8 oct 2026) | Reglas de producto y datos | Las decisiones de la sección 2 los reemplazan donde se contradicen |
+| **Documentos** | `docs/producto/` en el repo: HANDOFF, FUNCTIONAL-INVENTORY, DATA-MAP (copiados del proyecto de Claude Design el 8 oct 2026) | Reglas de producto y datos | Las decisiones de la sección 2 los reemplazan donde se contradicen |
 
 **Regla de desempate:** este documento > handoff + inventario + Data Map > prototipo > app actual.
 
@@ -43,6 +43,7 @@ Estas decisiones resuelven contradicciones entre los documentos del zip. Prevale
 | Almacenamiento | **En la nube** (no localStorage: los mapas se pierden al borrar caché) | localStorage de la app actual |
 | Datos mínimos | Solo "18+ verificado" (no la fecha de nacimiento); solo que pasó el gate de elegibilidad; borrar un diagnóstico borra su perfil; los exports no se guardan; el zoom no se guarda; la AI nunca escribe directo en la base de datos | Data Map §9–§10 (candidatos abiertos) |
 | Handoff | **No se reemplaza todavía.** Conviven la versión del proyecto (17 sep) y la del zip, que es más nueva | — |
+| Agentes de código | Claude Code y Codex comparten **un solo archivo de reglas**, `AGENTS.md` (`CLAUDE.md` lo importa). Nunca editan los mismos archivos al mismo tiempo: uno implementa y el otro revisa | — |
 
 ## 3. Pendientes de decidir
 
