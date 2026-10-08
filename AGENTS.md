@@ -78,21 +78,45 @@ The repository is the shared memory: these instructions, `docs/`, Git history an
 
 ## Running the app
 
-There is no build step. The app is plain HTML + ES6 modules served statically:
+The repo has two apps, published together by Vercel as one site:
+
+| Path | What | Where the code is |
+|---|---|---|
+| `/` | Current app (in production) | Root: `index.html`, `src/js/`, `src/styles/` (plain HTML + ES modules, no build) |
+| `/app/` | **v2** (React + Vite), being built | `v2/` |
 
 ```sh
-npx serve .
-# or
-python -m http.server 8080
+# Current app
+python -m http.server 8080            # from the repo root
+
+# v2
+cd v2 && npm install && npm run dev   # http://localhost:5173/app/
+
+# Full site exactly as Vercel builds it (current app + v2 → dist/)
+npm run build:sitio --prefix v2
 ```
 
-`api/claude.js` needs `ANTHROPIC_API_KEY`. For local dev use `npx vercel dev`.
+Vercel runs `npm ci --prefix v2` and `npm run build:sitio --prefix v2` and publishes `dist/` (see `vercel.json`). `v2/scripts/construir-sitio.mjs` copies only a whitelist of public files from the root, so `docs/`, `AGENTS.md` and `node_modules` are never published. **If the current app needs a new public file, add it to that whitelist.** `api/claude.js` needs `ANTHROPIC_API_KEY`; for local dev use `npx vercel dev`.
 
-No linter, no package.json. The only tests are the map core tests (Node 20+, nothing to install).
+Tests: map core tests (`node --test src/core/mapa.test.js`, Node 20+, nothing to install).
 
 ## Architecture (current app)
 
-**Stack:** Vanilla JS (ES6 modules), HTML5 Canvas, CSS custom properties, Vercel serverless (Node.js), Claude API. The production architecture (v2, and whether to use React for the design-system components) is a **pending decision** — see `docs/FUENTES-Y-DECISIONES.md`. Until then: no broad rewrites.
+**Decided 8 Oct 2026:** the new interface (v2) is built with **React + Vite** in `v2/`, in this same repo, using the design-system components as they come from Claude Design. The current app stays in production at `/` until v2 is ready to replace it. Do not rewrite the current app; new work goes into `v2/`.
+
+### v2 (`v2/`)
+
+| File | Responsibility |
+|------|---------------|
+| `src/main.jsx` | Entry: exposes `window.React`, loads the design system bundle, mounts the app |
+| `src/ds/` | Design system copied from Claude Design (tokens, styles, `_ds_bundle.js`). **Do not edit**; replace it when the design system changes. `ds()` returns its components |
+| `src/mapa/MapaVista.jsx` | Draws a map: calls `construirVista()` and renders `DiagnosisNode`, `SymptomNode`, `Connection`. Drag and zoom |
+| `src/App.jsx` | Current screen: the approved example map (nothing is saved yet) |
+| `scripts/construir-sitio.mjs` | Builds the full site into `dist/` |
+
+The core is imported from `../src/core` through the `@nucleo` alias; v2 never copies or re-implements it. The design-system bundle logs a harmless error for its own demo UI kit (`ui_kits/app/App.jsx`); ignore it.
+
+**Stack of the current app:** Vanilla JS (ES6 modules), HTML5 Canvas, CSS custom properties, Vercel serverless (Node.js), Claude API.
 
 ### Map core (`src/core/`)
 
@@ -104,7 +128,7 @@ No linter, no package.json. The only tests are the map core tests (Node 20+, not
 | `color.js` | Exact copy of the design system colour algorithm — do not edit here |
 | `mapa.test.js` | Tests, including the approved scenario |
 
-The core is not yet wired into the current UI.
+The core is wired into v2 (`v2/src/mapa/MapaVista.jsx`), not into the current app.
 
 ### Frontend modules (`src/js/`, current app)
 

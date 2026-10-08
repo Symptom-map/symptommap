@@ -1,0 +1,85 @@
+/* Five groups, each with one job:
+     Base / neutrals · Cyan scale (all interaction) · Purple brand accent
+     Semantic states · Diagnosis colours (separate system — see diagnosis.css)
+   The cyan scale is the single source of truth for action colour and its interaction states.
+   There is no second collection of blues. No deep blue, no navy. */
+:root {
+  /* ── Base / neutrals ── */
+  --sm-cream: #faf7f0;            /* app background, map canvas */
+  --sm-white: #ffffff;            /* cards, panels, sheets */
+  --sm-ink: #1a1a1a;              /* headings, body, labels, icons, and every button label */
+  --sm-ink-body: #57534e;         /* body copy, descriptions */
+  --sm-ink-meta: #6b6560;         /* secondary labels, metadata, captions */
+  --sm-grey: #a6a6a6;             /* disabled text and fills */
+  --sm-neutral-100: #f2efe9;      /* disabled primary fill, count pills */
+  --sm-neutral-200: #f7f5f0;      /* disabled secondary fill */
+  --sm-field-disabled: #f4f1ea;   /* disabled input fill */
+  --sm-chip-inert: #e6e2da;       /* dot of a diagnosis not on the map */
+
+  /* Warm charcoal alphas — every line, wash and shadow */
+  --sm-line-hairline: rgba(38, 32, 28, .08);
+  --sm-line-divider: rgba(38, 32, 28, .10);
+  --sm-border-soft: rgba(38, 32, 28, .14);
+  --sm-border: rgba(38, 32, 28, .18);
+  --sm-border-strong: rgba(38, 32, 28, .22);
+  --sm-wash-hover: rgba(38, 32, 28, .05);
+  --sm-wash-active: rgba(38, 32, 28, .09);
+
+  /* ── Cyan scale — all interaction ── */
+  --sm-cyan-050: #eaf8fb;         /* lightest wash: secondary hover, selected row */
+  --sm-cyan-100: #caf0f8;         /* calm surfaces, onboarding bands, tonal rest */
+  --sm-cyan-200: #ade8f4;         /* panel backgrounds, tonal hover */
+  --sm-cyan-300: #90e0ef;         /* soft fills, sliders */
+  --sm-cyan-400: #48cae4;         /* PRIMARY action: button fills, active accents */
+  --sm-cyan-500: #00b4d8;         /* primary hover / pressed, focus, icon strokes on tint */
+
+  /* Action tokens — cyan scale only */
+  --sm-primary: var(--sm-cyan-400);
+  --sm-primary-hover: var(--sm-cyan-500);
+  --sm-primary-active: var(--sm-cyan-500);
+  --sm-on-primary: var(--sm-ink);          /* charcoal label on cyan — 8.6:1 on #48CAE4 */
+  --sm-primary-tint: var(--sm-cyan-100);   /* quiet cyan surface */
+  --sm-primary-tint-hover: var(--sm-cyan-200);
+  --sm-surface-hover: var(--sm-cyan-050);  /* secondary / input hover fill */
+  --sm-border-hover: rgba(0, 180, 216, .40);
+
+  /* Focus — belongs to the component: cyan 500 plus a restrained charcoal inset stroke.
+     No floating halo, no purple ring. */
+  --sm-focus-border: var(--sm-cyan-500);
+  --sm-focus-inset: inset 0 0 0 1.5px rgba(26, 26, 26, .55); /* @kind shadow */
+
+  /* ── Purple brand accent ── selective: wordmark, links, small highlights ── */
+  --sm-purple: #9d50bb;
+  --sm-purple-hover: #7d3b97;
+  --sm-purple-wash: rgba(157, 80, 187, .08);
+  --sm-purple-wash-active: rgba(157, 80, 187, .14);
+
+  /* ── Semantic states ── */
+  --sm-success: #16a34a;
+  --sm-success-ink: #0f7a3a;
+  --sm-success-tint: #eaf6ee;
+  --sm-error: #dc2626;
+  --sm-error-ink: #b91c1c;
+  --sm-error-tint: #fdeced;
+  --sm-warning: #d97706;
+  --sm-warning-ink: #8a4f00;
+
+  /* AI — reserved for suggested nodes and the suggestion panel */
+  --sm-ai: #2dcbec;
+  --sm-ai-ink: #006c88;
+  --sm-ai-tint: #eafaff;
+  --sm-ai-border: rgba(45, 203, 236, .45);
+
+  /* The one gradient in the product: the wordmark, cyan to purple. */
+  --sm-wordmark-gradient: linear-gradient(96deg, #48cae4, #9d50bb); /* @kind color */
+
+  /* Semantic aliases */
+  --sm-surface-canvas: var(--sm-cream);
+  --sm-surface-card: var(--sm-white);
+  --sm-surface-calm: var(--sm-cyan-100);
+  --sm-text-heading: var(--sm-ink);
+  --sm-text-body: var(--sm-ink-body);
+  --sm-text-meta: var(--sm-ink-meta);
+  --sm-text-link: var(--sm-purple);
+  --sm-text-disabled: var(--sm-grey);
+}

@@ -369,3 +369,25 @@ test('color: la persona puede cambiarlo después de crear el diagnóstico, y el 
   assert.ok(v.aristas.filter(a => a.diagnosticoId === adhd).every(a => a.slot === 10))
   assert.ok(v.diagnosticos.filter(d => d.id !== adhd).every(d => d.slot !== 10), 'nadie más cambia de color')
 })
+
+test('colocación: al arrastrar un nodo, ningún otro nodo cambia de lugar', () => {
+  const { mapa, adhd } = escenarioAprobado()
+  const antes = construirVista(mapa)
+  const idSintoma = mapa.sintomas[5].id
+  for (const movido of [moverDiagnostico(mapa, adhd, { x: 200, y: 330 }), moverSintoma(mapa, idSintoma, { x: 700, y: 480 })]) {
+    const despues = construirVista(movido)
+    const cambiaron = [...despues.diagnosticos, ...despues.sintomas].filter(n => {
+      const a = [...antes.diagnosticos, ...antes.sintomas].find(m => m.id === n.id)
+      return a.x !== n.x || a.y !== n.y
+    })
+    assert.equal(cambiaron.length, 1, 'solo cambia el nodo arrastrado: ' + cambiaron.map(n => n.etiqueta || n.texto).join(', '))
+  }
+})
+
+test('colocación: después de ordenar el mapa, un síntoma nuevo se coloca solo y no se encima', () => {
+  const { mapa, adhd, bpd } = escenarioAprobado()
+  const ordenado = moverDiagnostico(mapa, adhd, { x: 200, y: 330 })
+  const nuevo = agregarSintoma(ordenado, { texto: 'Algo nuevo', diagnosticoIds: [adhd, bpd] }).mapa
+  assert.equal(nuevo.sintomas.at(-1).posicion, null, 'el nuevo no queda fijo hasta que la persona lo mueva')
+  assert.deepEqual(etiquetasQueSeCruzan(construirVista(nuevo)), [])
+})
