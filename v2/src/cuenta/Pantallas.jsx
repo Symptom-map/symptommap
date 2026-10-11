@@ -130,7 +130,7 @@ export function PantallaRegistro({ inicial, onContinuar, onIrAEntrar }) {
         <Pasos actual={1} />
         <h1 className="sm-h1 cuenta__titulo cuenta__titulo--paso">Create your SymptomMap account</h1>
         <p className="sm-body cuenta__intro">A few details to create and protect your account.</p>
-        <TextField id="su-name" label="Name" placeholder="e.g. Ana" autoComplete="given-name" value={f.nombre} onChange={poner('nombre')} />
+        <TextField id="su-name" label="Name" placeholder="e.g. Ana" autoComplete="given-name" maxLength={80} value={f.nombre} onChange={poner('nombre')} />
         <div className="cuenta__espacio" />
         <TextField id="su-email" label="Email address" type="email" placeholder="e.g. ana@example.com" autoComplete="email"
           value={f.correo} onChange={poner('correo')} onBlur={() => setTocado(t => ({ ...t, correo: true }))}
