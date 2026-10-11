@@ -98,7 +98,7 @@ npm run build:sitio --prefix v2
 
 Vercel runs `npm ci --prefix v2` and `npm run build:sitio --prefix v2` and publishes `dist/` (see `vercel.json`). `v2/scripts/construir-sitio.mjs` copies only a whitelist of public files from the root, so `docs/`, `AGENTS.md` and `node_modules` are never published. **If the current app needs a new public file, add it to that whitelist.** `api/claude.js` needs `ANTHROPIC_API_KEY`; for local dev use `npx vercel dev`.
 
-Tests: map core tests (`node --test src/core/mapa.test.js`, Node 20+, nothing to install).
+Tests: `npm test --prefix v2` (map core + account validation; Node 20+). Database: `supabase/README.md` (migrations, account creation trigger, dashboard settings).
 
 ## Architecture (current app)
 
@@ -111,7 +111,9 @@ Tests: map core tests (`node --test src/core/mapa.test.js`, Node 20+, nothing to
 | `src/main.jsx` | Entry: exposes `window.React`, loads the design system bundle, mounts the app |
 | `src/ds/` | Design system copied from Claude Design (tokens, styles, `_ds_bundle.js`). **Do not edit**; replace it when the design system changes. `ds()` returns its components |
 | `src/mapa/MapaVista.jsx` | Draws a map: calls `construirVista()` and renders `DiagnosisNode`, `SymptomNode`, `Connection`. Drag and zoom |
-| `src/App.jsx` | Current screen: the approved example map (nothing is saved yet) |
+| `src/App.jsx` | Flow: log in / sign up (prototype screens) → the person's map, saved automatically |
+| `src/cuenta/` | Account screens from the prototype (`Pantallas.jsx`) and their pure validation rules (`validar.js`, tested) |
+| `src/nube/` | Supabase: `cliente.js` (public URL + publishable key), `cuenta.js` (sign up, 6-digit code, log in/out, consent), `mapa.js` (load/save with `revision`). The map is never stored in the browser |
 | `scripts/construir-sitio.mjs` | Builds the full site into `dist/` |
 
 The core is imported from `../src/core` through the `@nucleo` alias; v2 never copies or re-implements it. The design-system bundle logs a harmless error for its own demo UI kit (`ui_kits/app/App.jsx`); ignore it.

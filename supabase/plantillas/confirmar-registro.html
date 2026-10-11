@@ -1,0 +1,10 @@
+<!-- Plantilla "Confirm signup" de Supabase Auth.
+     Pegar en: panel de Supabase → Authentication → Emails → Confirm signup.
+     Asunto sugerido: Your SymptomMap code
+     Sin datos de salud ni nombre: solo el código. -->
+<div style="font-family:Arial,Helvetica,sans-serif;max-width:480px;margin:0 auto;padding:32px 24px;color:#1A1A1A;background:#FAF7F0">
+  <p style="font-size:20px;font-weight:bold;margin:0 0 16px">Your SymptomMap code</p>
+  <p style="font-size:15px;line-height:1.5;margin:0 0 24px">Enter this code to confirm your email and finish creating your account.</p>
+  <p style="font-size:32px;font-weight:bold;letter-spacing:8px;margin:0 0 24px;padding:16px;background:#FFFFFF;border-radius:12px;text-align:center">{{ .Token }}</p>
+  <p style="font-size:13px;line-height:1.5;color:#57534E;margin:0">If you didn’t try to create a SymptomMap account, you can ignore this email.</p>
+</div>

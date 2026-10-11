@@ -47,7 +47,16 @@ Estas decisiones resuelven contradicciones entre los documentos del zip. Prevale
 | Aspecto del síntoma compartido | Se usa el estilo del **respaldo** (symptommaproject.vercel.app): anillo **fino** dividido en arcos iguales con pequeños espacios entre colores, centro blanco amplio y un halo suave. **No** el anillo grueso del componente `SymptomNode` del design system. Se ajusta en la v2 al implementar el mapa (estilo propio en `v2/`, sin editar el design system) | El grosor del anillo de `SymptomNode` en el design system |
 | Agentes de código | Claude Code y Codex comparten **un solo archivo de reglas**, `AGENTS.md` (`CLAUDE.md` lo importa). Nunca editan los mismos archivos al mismo tiempo: uno implementa y el otro revisa | — |
 
-## 3. Pendientes de decidir
+## 3. Decisiones del 11 de octubre de 2026
 
-- Proveedor de autenticación y la relación entre MFA opcional y sesiones futuras.
-- Dominio final (afecta canonical, sitemap y OG).
+| Tema | Decisión |
+|---|---|
+| Inicio de sesión | **Supabase Auth** (no Cognito): mismo proyecto en Sydney, las reglas de seguridad de la base de datos lo usan directamente y borrar la cuenta borra todo en cascada. Si más adelante todo pasa a AWS, se migra (las personas tendrían que crear una contraseña nueva) |
+| Verificación en dos pasos | **Opcional.** Se ofrece en "Protect your account" (con "Skip for now") y en Settings |
+| Confirmar el correo al crear la cuenta | Se usa la pantalla **"Check your email"** del prototipo (código de 6 dígitos) como paso 3 de 3. En el prototipo esa pantalla solo aparecía al activar la verificación en dos pasos; sin confirmar el correo, cualquiera podría crear una cuenta con el correo de otra persona. **Pendiente que Ana lo confirme** |
+
+## 4. Pendientes de decidir
+
+- **Tipo de verificación en dos pasos.** El prototipo muestra un código por correo. Supabase Auth ofrece como segundo paso una app de autenticación (Google Authenticator, 1Password, etc.) o SMS, no un código por correo. Hay que elegir antes de construir "Protect your account".
+- Recuperar la contraseña ("Forgot your password?"): el enlace está en el prototipo, la pantalla no.
+- Dominio final (afecta canonical, sitemap, OG y la dirección desde la que salen los correos).
