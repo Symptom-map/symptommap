@@ -58,5 +58,18 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "symptommap.vercel.app"
+        }
+      ],
+      "destination": "https://www.symptommap.com.au/:path*",
+      "permanent": true
+    }
   ]
 }
