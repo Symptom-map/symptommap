@@ -33,8 +33,19 @@ function esMismoOrigen(req) {
   }
 }
 
+// Mientras el sitio está en construcción, la AI no responde en producción
+// (nadie de afuera puede gastar créditos). Las vistas previas sí funcionan.
+// Se abre con la misma variable que el sitio: SITIO_ABIERTO = si.
+function sitioCerrado() {
+  return process.env.VERCEL_ENV === 'production' && process.env.SITIO_ABIERTO !== 'si'
+}
+
 export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store')
+
+  if (sitioCerrado()) {
+    return error(res, 503, 'Servicio no disponible todavía')
+  }
 
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')

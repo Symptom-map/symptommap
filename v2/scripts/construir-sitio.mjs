@@ -4,6 +4,13 @@
 //   dist/        ← app actual (archivos estáticos de la raíz, sin cambios)
 //   dist/app/    ← v2 (React + Vite)
 //
+// SITIO EN CONSTRUCCIÓN: en producción (www.symptommap.com.au) el sitio está
+// cerrado. Solo se publica proximamente.html, como / y como 404, así cualquier
+// dirección muestra el logo y "Coming soon". Las vistas previas de Vercel
+// (protegidas, solo el equipo) siguen armando el sitio completo para probar.
+// Para abrir el sitio: en Vercel → Settings → Environment Variables, agregar
+// SITIO_ABIERTO = si (solo Production) y volver a publicar.
+//
 // Solo se copian los archivos públicos de la lista. Documentos internos
 // (docs/, AGENTS.md…), node_modules y el código fuente de la v2 no se publican.
 // La función api/claude.js la publica Vercel aparte, desde la raíz del repo.
@@ -21,6 +28,17 @@ const PUBLICOS = ['index.html', '404.html', 'robots.txt', 'sitemap.xml', 'llms.t
 
 rmSync(destino, { recursive: true, force: true })
 mkdirSync(destino, { recursive: true })
+
+const enConstruccion = process.env.VERCEL_ENV === 'production' && process.env.SITIO_ABIERTO !== 'si'
+if (enConstruccion || process.env.SITIO_SIMULAR_CERRADO === 'si') {
+  for (const ruta of ['robots.txt', 'sitemap.xml', 'assets']) {
+    cpSync(path.join(raiz, ruta), path.join(destino, ruta), { recursive: true })
+  }
+  cpSync(path.join(raiz, 'proximamente.html'), path.join(destino, 'index.html'))
+  cpSync(path.join(raiz, 'proximamente.html'), path.join(destino, '404.html'))
+  console.log('Sitio EN CONSTRUCCIÓN: solo la página "Coming soon" (ver comentario arriba)')
+  process.exit(0)
+}
 
 for (const ruta of PUBLICOS) {
   const origen = path.join(raiz, ruta)

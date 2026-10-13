@@ -96,6 +96,8 @@ cd v2 && npm install && npm run dev   # http://localhost:5173/app/
 npm run build:sitio --prefix v2
 ```
 
+**The public site is closed ("Coming soon") since 13 Oct 2026.** In Vercel production (www.symptommap.com.au) the build publishes only `proximamente.html`, as `/` and as the 404, and `api/claude.js` answers 503. Vercel preview deployments (protected, team only) still build the full site: that is where the app is tested. To open the site: Vercel → Settings → Environment Variables → `SITIO_ABIERTO = si` (Production) and redeploy. To check the closed build locally: `SITIO_SIMULAR_CERRADO=si npm run build:sitio --prefix v2`.
+
 Vercel runs `npm ci --prefix v2` and `npm run build:sitio --prefix v2` and publishes `dist/` (see `vercel.json`). `v2/scripts/construir-sitio.mjs` copies only a whitelist of public files from the root, so `docs/`, `AGENTS.md` and `node_modules` are never published. **If the current app needs a new public file, add it to that whitelist.** `api/claude.js` needs `ANTHROPIC_API_KEY`; for local dev use `npx vercel dev`.
 
 Tests: map core tests (`node --test src/core/mapa.test.js`, Node 20+, nothing to install).
