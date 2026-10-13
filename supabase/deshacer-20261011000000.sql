@@ -13,3 +13,7 @@ create policy "mapas: crear el propio" on public.mapas
 
 -- La versión anterior de cuentas_marcar_tiempo() está en
 -- migrations/20261009000000_esquema_inicial.sql.
+
+-- Y para la migración 20261013000000_limpiar_metadata_siempre.sql:
+drop trigger if exists limpiar_metadata_de_registro on auth.users;
+drop function if exists public.limpiar_metadata_de_registro();
