@@ -1,6 +1,13 @@
 // ─────────────────────────────────────────────────────────────
 // api/claude.js — proxy mínimo hacia Claude
 //
+// Arquitectura (13 oct 2026, docs/FUENTES-Y-DECISIONES.md §3b):
+// - Solo responde a personas con sesión de Supabase (Authorization: Bearer).
+// - Si hay claves de AWS en Vercel, usa Claude por Amazon Bedrock con el
+//   perfil de Australia (_ai/bedrock.js). Mientras no las haya, usa la API
+//   directa de Anthropic (EE. UU.). Ese camino se borra cuando Bedrock esté
+//   funcionando, antes de que entren personas reales.
+//
 // Existe solo para que la API key nunca llegue al navegador.
 // El servidor decide el modelo y el límite de tokens: el cliente
 // solo puede enviar un mensaje de texto. Así nadie puede usar
@@ -11,7 +18,10 @@
 // la respuesta (contienen información de salud).
 // ─────────────────────────────────────────────────────────────
 
-const MODEL = 'claude-sonnet-4-6'
+import { bedrockConfigurado, pedirABedrock } from './_ai/bedrock.js'
+import { tokenDe, sesionValida } from './_ai/sesion.js'
+
+const MODEL = 'claude-sonnet-4-6' // solo para el camino temporal (API de Anthropic)
 const MAX_TOKENS_TOPE = 1500      // el mayor valor que usa la app hoy
 const MAX_CARACTERES = 20000      // tamaño máximo del mensaje
 
@@ -56,8 +66,13 @@ export default async function handler(req, res) {
     return error(res, 403, 'Origen no permitido')
   }
 
+  if (!(await sesionValida(tokenDe(req)))) {
+    return error(res, 401, 'Inicia sesión para usar las sugerencias')
+  }
+
+  const usarBedrock = bedrockConfigurado()
   const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
+  if (!usarBedrock && !apiKey) {
     return error(res, 500, 'El servicio de AI no está configurado')
   }
 
@@ -77,6 +92,21 @@ export default async function handler(req, res) {
   const pedido = Number.isInteger(body.max_tokens) ? body.max_tokens : 1000
   const maxTokens = Math.min(Math.max(pedido, 1), MAX_TOKENS_TOPE)
 
+  if (usarBedrock) {
+    try {
+      const r = await pedirABedrock({ texto: unico.content, maxTokens })
+      if (!r.ok) {
+        console.error('Bedrock respondió', r.status) // solo el código, nunca el contenido
+        return error(res, r.status === 429 ? 429 : 502, 'La sugerencia no está disponible ahora. Intenta de nuevo en un momento.')
+      }
+      return res.status(200).json({ content: r.content })
+    } catch {
+      console.error('No se pudo contactar a Bedrock')
+      return error(res, 502, 'La sugerencia no está disponible ahora. Intenta de nuevo en un momento.')
+    }
+  }
+
+  // Camino temporal: API directa de Anthropic (procesa fuera de Australia).
   try {
     const respuesta = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',

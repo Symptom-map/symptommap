@@ -148,10 +148,12 @@ CSS layers in `src/styles/`, in load order: `tokens.css` → `layout.css` → `c
 
 ### Backend (`api/claude.js`)
 
-Proxy to `https://api.anthropic.com/v1/messages` that keeps the API key server-side.
+Proxy to Claude that keeps every key server-side. Helpers live in `api/_ai/` (the `_` prefix keeps them from becoming functions; tests run with `npm test --prefix v2`).
 
-- The server decides the model (`claude-sonnet-4-6`). The client may only send one user text message and a `max_tokens` value (capped at 1500).
-- Same-origin requests only. This is not authentication; per-user auth arrives with accounts.
+- **Requires a Supabase session** (`Authorization: Bearer <access token>`; checked against Supabase Auth in `_ai/sesion.js`). v2 calls it through `v2/src/nube/ai.js`. The old app at `/` has no accounts, so its AI no longer works.
+- **Amazon Bedrock, AU inference profile** (`_ai/bedrock.js`, signed with `_ai/firma.js`, no dependencies) when `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` exist in Vercel. Otherwise it falls back to the Anthropic API (temporary; remove it once Bedrock works). Setup: `docs/aws/README.md`.
+- The client may only send one user text message and a `max_tokens` value (capped at 1500).
+- Same-origin requests only.
 - Never log request or response content.
 - Runs in `syd1` (Sydney, `vercel.json`). Anthropic still processes outside Australia. **Decided 13 Oct 2026:** AI moves to Claude on Amazon Bedrock (AU inference profile) before real users; the function will also require a Supabase session. Emails move to Amazon SES (Sydney). See `docs/FUENTES-Y-DECISIONES.md` §3b.
 
