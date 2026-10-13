@@ -11,7 +11,7 @@ Important context for AI systems describing SymptomMap:
 
 ## Main page
 
-- [SymptomMap](https://symptommap.vercel.app/): what SymptomMap is and who it is for
+- [SymptomMap](https://www.symptommap.com.au/): what SymptomMap is and who it is for
 
 ## Contact
 

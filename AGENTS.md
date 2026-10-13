@@ -6,7 +6,7 @@ Talk to Ana in **neutral Latin American Spanish** ("tú", never "vos" or Argenti
 
 ## Which repo is this
 
-This is the **active** repo, `Symptom-map/symptommap` → symptommap.vercel.app (Vercel project `symptommap`).
+This is the **active** repo, `Symptom-map/symptommap` → https://www.symptommap.com.au (Vercel project `symptommap`; `symptommap.com.au` and `symptommap.vercel.app` redirect there).
 Anything named `symptommaproject` is the **backup** (Vercel project and site symptommaproject.vercel.app, built from repo `Symptom-map/symptommap-dev`). **Never touch the backup.**
 This repo was called `symptommaproject` until 8 Oct 2026.
 
@@ -162,7 +162,7 @@ Proxy to `https://api.anthropic.com/v1/messages` that keeps the API key server-s
 | `assets/og-image.png` | 1200×630 social preview |
 | `assets/fonts/` | Self-hosted Outfit and Plus Jakarta Sans (OFL) |
 
-All absolute URLs use `https://symptommap.vercel.app`. Update them together when the final domain is chosen.
+All absolute URLs use `https://www.symptommap.com.au` (domain bought at VentraIP on 12 Oct 2026; DNS hosted at VentraIP). If it ever changes, update `index.html`, `sitemap.xml`, `robots.txt`, `llms.txt`, the redirect in `vercel.json` and the Supabase Site URL together.
 
 ### Domain language
 

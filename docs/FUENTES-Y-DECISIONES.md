@@ -13,7 +13,7 @@ Existe para que nunca se mezclen las distintas versiones del proyecto.
 |---|---|---|
 | Repo en GitHub | `Symptom-map/symptommap` | `Symptom-map/symptommap-dev` |
 | Proyecto en Vercel | `symptommap` | `symptommaproject` |
-| Sitio | symptommap.vercel.app | symptommaproject.vercel.app |
+| Sitio | **www.symptommap.com.au** (antes symptommap.vercel.app, que ahora redirige) | symptommaproject.vercel.app |
 
 (El repo activo se llamaba `symptommaproject` hasta el 8 oct 2026; se renombró para que esa palabra solo signifique "respaldo".)
 
