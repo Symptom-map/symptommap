@@ -36,7 +36,7 @@ En el panel de Supabase → *Authentication*:
 
 | Dónde | Qué | Por qué |
 |---|---|---|
-| *URL Configuration* → Site URL | `https://symptommap.vercel.app/app/` (cambiar cuando haya dominio) | Dirección que usan los correos |
+| *URL Configuration* → Site URL | `https://www.symptommap.com.au/app/` | Dirección que usan los correos |
 | *Emails* → *Confirm signup* | Pegar `plantillas/confirmar-registro.html` (usa `{{ .Token }}`) | La app pide un **código**, no un enlace |
 | *Sign In / Providers* → Email | "Confirm email" activado · largo del código (Email OTP Length) = **6** · contraseña mínima **8** | Coincide con las pantallas del prototipo |
 | *Attack Protection* | Activar la protección de contraseñas filtradas | Rechaza contraseñas que aparecen en filtraciones conocidas |
