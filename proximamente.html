@@ -71,30 +71,19 @@
   @media (max-width: 480px) { h1 { font-size: 30px; line-height: 36px; } }
 </style>
 <style>
+  .logo-grande { width: min(340px, 78vw); height: auto; }
+  main { padding-top: 72px; }
+  main h1 { margin-top: 40px; }
   footer { padding: 24px 32px 32px; text-align: center; font-size: 13.5px; line-height: 22px; color: var(--body); }
 </style>
 </head>
 <body>
-  <header>
-    <a class="logo" href="/" aria-label="SymptomMap home">
-      <svg viewBox="0 0 200 200" width="34" height="34" aria-hidden="true">
-        <g stroke-opacity=".55" stroke-width="2.4" fill="none">
-          <path d="M52 104 L88 66" stroke="#4ba3f7"/><path d="M88 66 L120 96" stroke="#9190f8"/>
-          <path d="M52 104 L84 118" stroke="#c080df"/><path d="M84 118 L64 142" stroke="#ed737b"/>
-          <path d="M64 142 L120 96" stroke="#faca4b"/><path d="M120 96 L152 74" stroke="#5ebd69"/>
-          <path d="M120 96 L155 118" stroke="#13bfa5"/>
-        </g>
-        <circle cx="52" cy="104" r="21" fill="#4ba3f7"/><circle cx="88" cy="66" r="13" fill="#df75b2"/>
-        <circle cx="120" cy="96" r="17" fill="#9190f8"/><circle cx="84" cy="118" r="9" fill="#c080df"/>
-        <circle cx="64" cy="142" r="11" fill="#ed737b"/><circle cx="152" cy="74" r="8" fill="#5ebd69"/>
-        <circle cx="155" cy="118" r="7" fill="#f68d4d"/><circle cx="132" cy="146" r="5" fill="#c7e03e"/>
-      </svg>
-      <span>Symptom<span class="map">Map</span></span>
-    </a>
-  </header>
 
   <main>
-    <img src="/assets/line-head.png" alt="">
+    <picture>
+      <source srcset="/assets/logo-symptommap.webp" type="image/webp">
+      <img class="logo-grande" src="/assets/logo-symptommap.png" width="720" height="561" alt="SymptomMap">
+    </picture>
     <h1 id="t">Coming soon</h1>
     <p id="d">SymptomMap is a visual self-understanding tool for adults living with more than one diagnosed mental health condition. We’re building it now.</p>
   </main>
