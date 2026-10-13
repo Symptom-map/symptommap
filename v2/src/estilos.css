@@ -3,9 +3,11 @@
 
 html, body { margin: 0; height: 100%; }
 body { background: var(--sm-surface-canvas); }
-#raiz, .app { height: 100%; }
+#raiz { height: 100%; }
 
-.app { display: flex; flex-direction: column; }
+/* min-height (no height): las pantallas de cuenta pueden ser más altas que la ventana. */
+.app { display: flex; flex-direction: column; min-height: 100%; }
+.app:has(.app__principal) { height: 100%; }
 .app__principal { position: relative; flex: 1; min-height: 0; }
 .app__aviso {
   position: absolute; right: 24px; bottom: 20px; margin: 0;
@@ -27,3 +29,93 @@ body { background: var(--sm-surface-canvas); }
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }
+
+/* ── Pantallas de cuenta (medidas del prototipo aprobado) ──────────────
+   Login, Sign up, gates, Eligibility, Verify email y Consent. */
+.cuenta {
+  min-height: 100%; box-sizing: border-box;
+  flex: 1; display: flex; align-items: safe center; justify-content: center;
+  padding: 48px 16px; background: var(--sm-cream);
+}
+.cuenta__panel { width: 100%; box-sizing: border-box; padding: 48px 56px; }
+@media (max-width: 600px) { .cuenta__panel { padding: 32px 22px; } }
+
+.cuenta__titulo { font-size: 36px; margin: 0 0 12px; }
+.cuenta__titulo--paso { font-size: 33px; }
+.cuenta__titulo--consentimiento { font-size: 33px; margin-bottom: 18px; }
+.cuenta__titulo-verificar { margin: 0 0 10px; }
+.cuenta__intro { margin: 0 0 32px; }
+.cuenta__parrafo { margin: 0 0 14px; }
+.cuenta__ceja { margin: 0 0 14px; }
+.cuenta__espacio { height: 20px; }
+.cuenta__accion { margin-top: 28px; }
+.cuenta__accion--amplia { margin-top: 36px; }
+.cuenta__accion--codigo { margin-top: 24px; }
+.cuenta__mensaje { margin-top: 16px; }
+.cuenta__pie { margin: 22px 0 0; text-align: center; }
+.cuenta__pie--meta { color: var(--sm-ink-meta); }
+.cuenta__enviado { margin: 0 0 2px; }
+.cuenta__correo { margin: 0 0 34px; }
+
+.cuenta__pasos { display: flex; align-items: center; gap: 10px; margin: 0 0 18px; }
+.cuenta__barras { display: inline-flex; gap: 4px; }
+.cuenta__barras span { width: 20px; height: 3px; border-radius: 2px; background: var(--sm-neutral-100); }
+.cuenta__barras span.is-on { background: var(--sm-cyan-400); }
+
+/* Fecha de nacimiento: día · mes · año (.pt-dob) */
+.cuenta__nacimiento { border: 0; padding: 0; margin: 20px 0 20px; min-width: 0; }
+.cuenta__nacimiento legend { display: block; padding: 0; margin: 0 0 8px; width: 100%; }
+.cuenta__fecha { display: grid; grid-template-columns: 1fr 1.7fr 1.2fr; gap: 10px; align-items: start; }
+.cuenta__fecha .sm-field__hint--error { display: none; }
+.cuenta__fecha .is-vacio select { color: var(--sm-ink-meta); }
+.cuenta__error-fecha { margin: 8px 0 0; display: flex; align-items: center; gap: 6px; color: var(--sm-error-ink); }
+.cuenta__nota { margin: 10px 0 0; color: var(--sm-ink-meta); }
+
+/* Contraseña con botón de ojo (.pt-pw / .pt-pweye). El ojo propio del
+   design system no hace nada, por eso se oculta y se usa este. */
+.campo-contrasena { position: relative; }
+.campo-contrasena .sm-input-affix__icon { display: none; }
+.campo-contrasena .sm-input { padding-right: 42px; }
+.campo-contrasena__ojo {
+  position: absolute; right: 9px; top: 33px; width: 32px; height: 32px;
+  display: flex; align-items: center; justify-content: center;
+  border: none; border-radius: 50%; background: transparent; cursor: pointer;
+  transition: background .16s ease;
+}
+.campo-contrasena__ojo:hover { background: var(--sm-wash-hover); }
+.campo-contrasena__ojo:focus-visible { outline: none; box-shadow: var(--sm-focus-inset); }
+
+.cuenta__reglas { list-style: none; padding: 0; margin: 12px 0 0; display: flex; flex-direction: column; gap: 7px; }
+.cuenta__reglas li { display: flex; align-items: center; gap: 9px; color: var(--sm-ink-meta); }
+.cuenta__reglas li span { width: 6px; height: 6px; border-radius: 50%; border: 1.5px solid currentColor; flex: none; }
+.cuenta__reglas li.is-ok { color: var(--sm-success-ink); }
+.cuenta__reglas li.is-ok span { background: currentColor; }
+
+/* Opciones de elegibilidad (.pt-elig) */
+.cuenta__opciones { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.cuenta__opciones legend { padding: 0; margin: 0 0 30px; width: 100%; }
+.cuenta__opcion {
+  display: flex; align-items: center; gap: 15px; width: 100%; box-sizing: border-box;
+  padding: 17px 20px; border-radius: 14px; background: var(--sm-white);
+  border: 1px solid var(--sm-line-hairline); cursor: pointer;
+  transition: background .16s ease, border-color .16s ease;
+}
+.cuenta__opcion:hover { background: var(--sm-cyan-050); border-color: var(--sm-border-hover); }
+.cuenta__opcion.is-checked { background: var(--sm-cyan-050); border-color: var(--sm-cyan-050); }
+.cuenta__opcion .sm-choice__box { flex: none; }
+.cuenta__opcion:has(input:focus-visible) { box-shadow: var(--sm-focus-inset); }
+
+/* Gates 18+ y sin diagnóstico */
+.gate { text-align: center; padding: 12px 4px 0; }
+.gate__icono {
+  position: relative; width: 76px; height: 76px; margin: 0 auto 32px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 50%; background: var(--sm-cyan-050);
+}
+.gate__titulo { margin: 0 auto 20px; max-width: 26ch; }
+.gate__texto { margin: 0 auto 40px; max-width: 44ch; }
+.gate__linea { height: 1px; background: var(--sm-line-divider); margin: 44px 0 26px; }
+.gate__apoyo { margin: 0; color: var(--sm-ink-meta); }
+
+/* Mapa con sesión */
+.app__problema { position: absolute; left: 50%; top: 16px; transform: translateX(-50%); max-width: calc(100% - 32px); }

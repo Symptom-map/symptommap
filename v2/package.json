@@ -8,9 +8,10 @@
     "build": "vite build",
     "build:sitio": "node scripts/construir-sitio.mjs",
     "preview": "vite preview",
-    "test": "node --test ../src/core/mapa.test.js"
+    "test": "node --test ../src/core/mapa.test.js src/cuenta/validar.test.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.117.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
