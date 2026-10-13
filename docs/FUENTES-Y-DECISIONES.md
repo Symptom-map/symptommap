@@ -53,7 +53,7 @@ Estas decisiones resuelven contradicciones entre los documentos del zip. Prevale
 |---|---|
 | Inicio de sesión | **Supabase Auth** (no Cognito): mismo proyecto en Sydney, las reglas de seguridad de la base de datos lo usan directamente y borrar la cuenta borra todo en cascada. Si más adelante todo pasa a AWS, se migra (las personas tendrían que crear una contraseña nueva) |
 | Verificación en dos pasos | **Opcional.** Se ofrece en "Protect your account" (con "Skip for now") y en Settings |
-| Confirmar el correo al crear la cuenta | Se usa la pantalla **"Check your email"** del prototipo (código de 6 dígitos) como paso 3 de 3. En el prototipo esa pantalla solo aparecía al activar la verificación en dos pasos; sin confirmar el correo, cualquiera podría crear una cuenta con el correo de otra persona. **Pendiente que Ana lo confirme** |
+| Confirmar el correo al crear la cuenta | Se usa la pantalla **"Check your email"** del prototipo (código de 6 dígitos) como paso 3 de 3. En el prototipo esa pantalla solo aparecía al activar la verificación en dos pasos; sin confirmar el correo, cualquiera podría crear una cuenta con el correo de otra persona. **Confirmado por Ana (13 oct).** La verificación en dos pasos, cuando se construya, usará su propia pantalla ("Protect your account") y una app de autenticación, no el correo |
 
 ## 4. Pendientes de decidir
 
