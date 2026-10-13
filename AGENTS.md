@@ -153,7 +153,7 @@ Proxy to `https://api.anthropic.com/v1/messages` that keeps the API key server-s
 - The server decides the model (`claude-sonnet-4-6`). The client may only send one user text message and a `max_tokens` value (capped at 1500).
 - Same-origin requests only. This is not authentication; per-user auth arrives with accounts.
 - Never log request or response content.
-- Runs in `syd1` (Sydney, `vercel.json`). Anthropic still processes outside Australia; moving AI to Amazon Bedrock (AU profile) is the planned fix.
+- Runs in `syd1` (Sydney, `vercel.json`). Anthropic still processes outside Australia. **Decided 13 Oct 2026:** AI moves to Claude on Amazon Bedrock (AU inference profile) before real users; the function will also require a Supabase session. Emails move to Amazon SES (Sydney). See `docs/FUENTES-Y-DECISIONES.md` §3b.
 
 ### Public files (root)
 

@@ -55,8 +55,28 @@ Estas decisiones resuelven contradicciones entre los documentos del zip. Prevale
 | Verificación en dos pasos | **Opcional.** Se ofrece en "Protect your account" (con "Skip for now") y en Settings |
 | Confirmar el correo al crear la cuenta | Se usa la pantalla **"Check your email"** del prototipo (código de 6 dígitos) como paso 3 de 3. En el prototipo esa pantalla solo aparecía al activar la verificación en dos pasos; sin confirmar el correo, cualquiera podría crear una cuenta con el correo de otra persona. **Confirmado por Ana (13 oct).** La verificación en dos pasos, cuando se construya, usará su propia pantalla ("Protect your account") y una app de autenticación, no el correo |
 
+## 3b. Arquitectura de producción (decidida el 13 de octubre de 2026)
+
+| Pieza | Decisión | Por qué |
+|---|---|---|
+| Interfaz | React + Vite (`v2/`) | Decidido el 8 oct |
+| Sitio y funciones de servidor | **Vercel (Pro)**, funciones en `syd1` (Sydney) | Ya funciona; mudarlo a AWS tomaría semanas sin mejorar la privacidad. Vercel no guarda datos de salud: la función de AI no registra contenido |
+| Base de datos y mapas | **Supabase, Sydney** | Funcionando desde el 9 oct |
+| Cuentas | **Supabase Auth**, verificación en dos pasos opcional | Decidido el 11 oct |
+| AI | **Claude a través de Amazon Bedrock, perfil de inferencia Australia** (Sydney + Melbourne), llamado desde la función de Vercel | Los datos de salud se procesan solo en Australia. Hoy la AI va directo a Anthropic (EE. UU.); se cambia antes de que entren personas reales |
+| Correos | **Amazon SES, Sydney**, con remitente del dominio (`symptommap.com.au`) | Los correos de las personas no salen de Australia; reemplaza el correo de prueba de Supabase |
+
+Reglas que vienen con esta arquitectura:
+- La AI solo responde a personas con sesión iniciada (la función verifica el token de Supabase).
+- Las claves de AWS tienen el permiso mínimo: invocar ese modelo y enviar correos, nada más. Viven solo en Vercel (variables de entorno), nunca en el navegador ni en el repo.
+- Alerta de gasto en AWS y límite de gasto en la cuenta de Anthropic mientras se use.
+
+Descartado por ahora: todo en AWS (Amplify/CloudFront + Lambda) y Cognito. Se puede revisar después del piloto.
+
 ## 4. Pendientes de decidir
 
 - **Tipo de verificación en dos pasos.** El prototipo muestra un código por correo. Supabase Auth ofrece como segundo paso una app de autenticación (Google Authenticator, 1Password, etc.) o SMS, no un código por correo. Hay que elegir antes de construir "Protect your account".
 - Recuperar la contraseña ("Forgot your password?"): el enlace está en el prototipo, la pantalla no.
-- Dominio final (afecta canonical, sitemap, OG y la dirección desde la que salen los correos).
+- ~~Dominio final~~ → **www.symptommap.com.au** (12 oct 2026).
+- Lista de diagnósticos para la v2: se parte de los 29 de la app actual (`src/js/data.js`). Falta que la revise la psicóloga (nombres, cuáles van, si se permite "otro") antes del piloto.
+- Sugerencias de síntomas: hoy la AI las genera con su conocimiento general a partir de los diagnósticos y el perfil. Falta decidir si la psicóloga revisa ejemplos antes del piloto y si se agrega una lista inicial curada por diagnóstico.
