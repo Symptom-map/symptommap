@@ -30,7 +30,11 @@ function traducir(error) {
   if (codigo === 'invalid_credentials') return new ErrorCuenta('credenciales')
   if (codigo === 'email_not_confirmed') return new ErrorCuenta('correo_sin_confirmar')
   if (codigo === 'otp_expired' || codigo === 'otp_disabled') return new ErrorCuenta('codigo_invalido')
-  if (codigo === 'weak_password') return new ErrorCuenta('contrasena_debil')
+  if (codigo === 'weak_password') {
+    // 'pwned': aparece en filtraciones conocidas (protección de contraseñas filtradas de Supabase).
+    const razones = error?.weak_password?.reasons || error?.reasons || []
+    return new ErrorCuenta(razones.includes('pwned') ? 'contrasena_filtrada' : 'contrasena_debil')
+  }
   if (codigo === 'over_email_send_rate_limit' || codigo === 'over_request_rate_limit') return new ErrorCuenta('demasiados_intentos')
   if (error?.status === 0 || error?.name === 'AuthRetryableFetchError') return new ErrorCuenta('sin_conexion')
   return new ErrorCuenta('desconocido')

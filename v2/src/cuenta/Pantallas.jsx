@@ -22,6 +22,7 @@ export const MENSAJES = {
   demasiados_intentos: 'Too many attempts. Wait a minute and try again.',
   sin_conexion: 'We couldn’t connect. Check your internet and try again.',
   contrasena_debil: 'Choose a stronger password.',
+  contrasena_filtrada: 'This password has appeared in a data breach, so it isn’t safe to use. Choose a different one.',
   desconocido: 'Something went wrong. Try again.',
 }
 
@@ -106,7 +107,9 @@ export function PantallaEntrar({ ocupado, error, onEntrar, onIrARegistro }) {
 }
 
 // ── Sign up · Step 1 of 3 ─────────────────────────────────────
-export function PantallaRegistro({ inicial, onContinuar, onIrAEntrar }) {
+// `error`: si Supabase rechazó la contraseña al crear la cuenta, la persona vuelve
+// aquí (con la contraseña vacía) y el mensaje aparece junto al campo.
+export function PantallaRegistro({ inicial, error, onContinuar, onIrAEntrar }) {
   const { TextField, Select, Icon, Button } = ds()
   const [f, setF] = useState(inicial || { nombre: '', correo: '', dia: '', mes: '', anio: '', contrasena: '', repetir: '' })
   const [tocado, setTocado] = useState({})
@@ -150,7 +153,8 @@ export function PantallaRegistro({ inicial, onContinuar, onIrAEntrar }) {
           ) : null}
           <p className="sm-support cuenta__nota">SymptomMap is currently designed for adults aged 18 and over.</p>
         </fieldset>
-        <CampoContrasena id="su-pw" label="Password" placeholder="At least 8 characters" value={f.contrasena} onChange={poner('contrasena')} />
+        <CampoContrasena id="su-pw" label="Password" placeholder="At least 8 characters" value={f.contrasena} onChange={poner('contrasena')}
+          error={error && f.contrasena === '' ? MENSAJES[error] || MENSAJES.contrasena_debil : ''} />
         <ul className="cuenta__reglas">
           {reglas.map(r => (
             <li key={r.etiqueta} className={'sm-support' + (r.ok ? ' is-ok' : '')}><span aria-hidden="true" />{r.etiqueta}</li>

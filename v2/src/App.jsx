@@ -37,6 +37,7 @@ export default function App() {
   const [ocupado, setOcupado] = useState(false)
   const [error, setError] = useState('')
   const [aviso, setAviso] = useState('')
+  const [errorRegistro, setErrorRegistro] = useState('') // contraseña rechazada al crear la cuenta
 
   const irA = useCallback(destino => {
     setError('')
@@ -97,6 +98,7 @@ export default function App() {
   })
 
   function alTerminarPaso1(datos, edad) {
+    setErrorRegistro('')
     setRegistro(datos)
     irA(edad < 18 ? 'menorDeEdad' : 'elegibilidad')
   }
@@ -104,7 +106,18 @@ export default function App() {
   const alElegir = eleccion => {
     if (eleccion === SIN_DIAGNOSTICO) { setRegistro(null); irA('sinDiagnostico'); return }
     hacer(async () => {
-      await crearCuenta({ nombre: registro.nombre, correo: registro.correo, contrasena: registro.contrasena })
+      try {
+        await crearCuenta({ nombre: registro.nombre, correo: registro.correo, contrasena: registro.contrasena })
+      } catch (e) {
+        // La contraseña se corrige en el paso 1, no aquí: se vuelve con ella vacía.
+        if (e.codigo === 'contrasena_debil' || e.codigo === 'contrasena_filtrada') {
+          setRegistro({ ...registro, contrasena: '', repetir: '' })
+          irA('registro')
+          setErrorRegistro(e.codigo)
+          return
+        }
+        throw e
+      }
       setCorreoPendiente(registro.correo)
       setRegistro(null) // la contraseña no se queda en memoria
       irA('verificar')
@@ -139,7 +152,7 @@ export default function App() {
     <div className="app">
       {pantalla === 'cargando' && <div className="cuenta" aria-busy="true" />}
       {pantalla === 'entrar' && <PantallaEntrar {...comunes} onEntrar={alEntrar} onIrARegistro={() => irA('registro')} />}
-      {pantalla === 'registro' && <PantallaRegistro inicial={registro} onContinuar={alTerminarPaso1} onIrAEntrar={() => irA('entrar')} />}
+      {pantalla === 'registro' && <PantallaRegistro inicial={registro} error={errorRegistro} onContinuar={alTerminarPaso1} onIrAEntrar={() => irA('entrar')} />}
       {pantalla === 'menorDeEdad' && <PantallaMenorDeEdad />}
       {pantalla === 'elegibilidad' && <PantallaElegibilidad {...comunes} onContinuar={alElegir} />}
       {pantalla === 'sinDiagnostico' && <PantallaSinDiagnostico />}
