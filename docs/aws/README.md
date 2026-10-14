@@ -44,7 +44,7 @@ Luego: Security credentials → **Create access key** → "Application running o
 | `AWS_REGION` | `ap-southeast-2` | Production y Preview |
 | `BEDROCK_MODELO` | solo si se usa otro perfil `au.` | Production y Preview |
 
-Con esas variables, `api/claude.js` usa Bedrock automáticamente. Después de comprobarlo, se borra `ANTHROPIC_API_KEY` de Vercel y el camino temporal del código.
+Con esas variables, `api/claude.js` usa Bedrock. Es el único proveedor: la clave personal de Anthropic (`ANTHROPIC_API_KEY`) se retiró el 14 oct 2026 y no se vuelve a usar.
 
 ## 4. SES (correos desde el dominio) — tarea siguiente
 Verificar `symptommap.com.au` en SES (registros DKIM en el DNS de VentraIP), pedir salida del modo de prueba ("production access") y conectar Supabase Auth con las credenciales SMTP de SES.

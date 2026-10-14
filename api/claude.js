@@ -3,10 +3,9 @@
 //
 // Arquitectura (13 oct 2026, docs/FUENTES-Y-DECISIONES.md §3b):
 // - Solo responde a personas con sesión de Supabase (Authorization: Bearer).
-// - Si hay claves de AWS en Vercel, usa Claude por Amazon Bedrock con el
-//   perfil de Australia (_ai/bedrock.js). Mientras no las haya, usa la API
-//   directa de Anthropic (EE. UU.). Ese camino se borra cuando Bedrock esté
-//   funcionando, antes de que entren personas reales.
+// - Usa SOLO Claude por Amazon Bedrock con el perfil de Australia
+//   (_ai/bedrock.js). Ya no hay camino directo a la API de Anthropic: la
+//   clave personal que se usaba en desarrollo se retira (14 oct 2026).
 //
 // Existe solo para que la API key nunca llegue al navegador.
 // El servidor decide el modelo y el límite de tokens: el cliente
@@ -21,7 +20,6 @@
 import { bedrockConfigurado, pedirABedrock } from './_ai/bedrock.js'
 import { tokenDe, sesionValida } from './_ai/sesion.js'
 
-const MODEL = 'claude-sonnet-4-6' // solo para el camino temporal (API de Anthropic)
 const MAX_TOKENS_TOPE = 1500      // el mayor valor que usa la app hoy
 const MAX_CARACTERES = 20000      // tamaño máximo del mensaje
 
@@ -70,10 +68,8 @@ export default async function handler(req, res) {
     return error(res, 401, 'Inicia sesión para usar las sugerencias')
   }
 
-  const usarBedrock = bedrockConfigurado()
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!usarBedrock && !apiKey) {
-    return error(res, 500, 'El servicio de AI no está configurado')
+  if (!bedrockConfigurado()) {
+    return error(res, 503, 'El servicio de AI no está configurado')
   }
 
   // Validar la forma exacta que envía la app:
@@ -92,49 +88,15 @@ export default async function handler(req, res) {
   const pedido = Number.isInteger(body.max_tokens) ? body.max_tokens : 1000
   const maxTokens = Math.min(Math.max(pedido, 1), MAX_TOKENS_TOPE)
 
-  if (usarBedrock) {
-    try {
-      const r = await pedirABedrock({ texto: unico.content, maxTokens })
-      if (!r.ok) {
-        console.error('Bedrock respondió', r.status) // solo el código, nunca el contenido
-        return error(res, r.status === 429 ? 429 : 502, 'La sugerencia no está disponible ahora. Intenta de nuevo en un momento.')
-      }
-      return res.status(200).json({ content: r.content })
-    } catch {
-      console.error('No se pudo contactar a Bedrock')
-      return error(res, 502, 'La sugerencia no está disponible ahora. Intenta de nuevo en un momento.')
-    }
-  }
-
-  // Camino temporal: API directa de Anthropic (procesa fuera de Australia).
   try {
-    const respuesta = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        max_tokens: maxTokens,
-        messages: [{ role: 'user', content: unico.content }],
-      }),
-    })
-
-    const datos = await respuesta.json().catch(() => null)
-
-    if (!respuesta.ok || !datos) {
-      // Registrar solo el código, nunca el contenido.
-      console.error('Claude API respondió', respuesta.status)
-      const status = respuesta.status === 429 ? 429 : 502
-      return error(res, status, 'La sugerencia no está disponible ahora. Intenta de nuevo en un momento.')
+    const r = await pedirABedrock({ texto: unico.content, maxTokens })
+    if (!r.ok) {
+      console.error('Bedrock respondió', r.status) // solo el código, nunca el contenido
+      return error(res, r.status === 429 ? 429 : 502, 'La sugerencia no está disponible ahora. Intenta de nuevo en un momento.')
     }
-
-    // Devolver solo lo que la app usa.
-    return res.status(200).json({ content: datos.content || [] })
+    return res.status(200).json({ content: r.content })
   } catch {
-    console.error('No se pudo contactar a Claude API')
+    console.error('No se pudo contactar a Bedrock')
     return error(res, 502, 'La sugerencia no está disponible ahora. Intenta de nuevo en un momento.')
   }
 }

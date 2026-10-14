@@ -70,3 +70,10 @@ test('en producción con el sitio cerrado responde 503', async () => {
   assert.equal(r.codigo, 503)
   assert.equal(llamadas.length, 0)
 })
+
+test('sin claves de AWS responde 503 y nunca usa la API de Anthropic', async () => {
+  simularFetch(); delete process.env.AWS_ACCESS_KEY_ID; process.env.ANTHROPIC_API_KEY = 'no-se-usa'
+  const r = respuesta(); await handler(peticion(), r)
+  assert.equal(r.codigo, 503)
+  assert.ok(!llamadas.some(l => l.url.includes('anthropic.com')))
+})
