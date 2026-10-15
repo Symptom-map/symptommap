@@ -192,6 +192,10 @@ function MiMapa({ userId, nombre, onSalir }) {
     guardando.current = true
     const aGuardar = pendiente.current
     pendiente.current = null
+    // Tras un error solo se vuelve a intentar si la persona cambió algo mientras
+    // se guardaba. Nunca se reintenta solo en bucle (sin conexión, mapa demasiado
+    // grande…): lo pendiente se guarda con el próximo cambio o al salir de la pestaña.
+    let reintentar = true
     try {
       revision.current = await guardarMapa(userId, aGuardar, revision.current)
       setProblema('')
@@ -201,12 +205,13 @@ function MiMapa({ userId, nombre, onSalir }) {
         await recargar()
         setProblema('conflicto')
       } else {
-        pendiente.current = pendiente.current || aGuardar // se reintenta en el próximo cambio
+        reintentar = pendiente.current !== null
+        pendiente.current = pendiente.current || aGuardar
         setProblema(e.codigo || 'sin_conexion')
       }
     } finally {
       guardando.current = false
-      if (pendiente.current) temporizador.current = setTimeout(guardarAhora, ESPERA_GUARDADO_MS)
+      if (pendiente.current && reintentar) temporizador.current = setTimeout(guardarAhora, ESPERA_GUARDADO_MS)
     }
   }, [userId, recargar])
 
