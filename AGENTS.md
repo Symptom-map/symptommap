@@ -98,7 +98,7 @@ npm run build:sitio --prefix v2
 
 **The public site is closed ("Coming soon") since 13 Oct 2026.** In Vercel production (www.symptommap.com.au) the build publishes only `proximamente.html`, as `/` and as the 404, and `api/claude.js` answers 503. Vercel preview deployments (protected, team only) still build the full site: that is where the app is tested. To open the site: Vercel → Settings → Environment Variables → `SITIO_ABIERTO = si` (Production) and redeploy. To check the closed build locally: `SITIO_SIMULAR_CERRADO=si npm run build:sitio --prefix v2`.
 
-Vercel runs `npm ci --prefix v2` and `npm run build:sitio --prefix v2` and publishes `dist/` (see `vercel.json`). `v2/scripts/construir-sitio.mjs` copies only a whitelist of public files from the root, so `docs/`, `AGENTS.md` and `node_modules` are never published. **If the current app needs a new public file, add it to that whitelist.** `api/claude.js` needs `ANTHROPIC_API_KEY`; for local dev use `npx vercel dev`.
+Vercel runs `npm ci --prefix v2` and `npm run build:sitio --prefix v2` and publishes `dist/` (see `vercel.json`). `v2/scripts/construir-sitio.mjs` copies only a whitelist of public files from the root, so `docs/`, `AGENTS.md` and `node_modules` are never published. **If the current app needs a new public file, add it to that whitelist.** `api/claude.js` needs the AWS variables in `docs/aws/README.md`; for local dev use `npx vercel dev`.
 
 Tests: `npm test --prefix v2` (map core + account validation; Node 20+). Database: `supabase/README.md` (migrations, account creation trigger, dashboard settings).
 
@@ -148,12 +148,14 @@ CSS layers in `src/styles/`, in load order: `tokens.css` → `layout.css` → `c
 
 ### Backend (`api/claude.js`)
 
-Proxy to `https://api.anthropic.com/v1/messages` that keeps the API key server-side.
+Proxy to Claude that keeps every key server-side. Helpers live in `api/_ai/` (the `_` prefix keeps them from becoming functions; tests run with `npm test --prefix v2`).
 
-- The server decides the model (`claude-sonnet-4-6`). The client may only send one user text message and a `max_tokens` value (capped at 1500).
-- Same-origin requests only. This is not authentication; per-user auth arrives with accounts.
+- **Requires a Supabase session** (`Authorization: Bearer <access token>`; checked against Supabase Auth in `_ai/sesion.js`). v2 calls it through `v2/src/nube/ai.js`. The old app at `/` has no accounts, so its AI no longer works.
+- **Only Amazon Bedrock, AU inference profile** (`_ai/bedrock.js`, signed with `_ai/firma.js`, no dependencies), using `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` from Vercel. Without them it answers 503. There is no direct Anthropic API path any more (Ana's personal key was retired on 14 Oct 2026; never add one back). Setup: `docs/aws/README.md`.
+- The client may only send one user text message and a `max_tokens` value (capped at 1500).
+- Same-origin requests only.
 - Never log request or response content.
-- Runs in `syd1` (Sydney, `vercel.json`). Anthropic still processes outside Australia. **Decided 13 Oct 2026:** AI moves to Claude on Amazon Bedrock (AU inference profile) before real users; the function will also require a Supabase session. Emails move to Amazon SES (Sydney). See `docs/FUENTES-Y-DECISIONES.md` §3b.
+- Runs in `syd1` (Sydney, `vercel.json`); the AI itself runs in Sydney/Melbourne through Bedrock. Emails move to Amazon SES (Sydney). See `docs/FUENTES-Y-DECISIONES.md` §3b.
 
 ### Public files (root)
 
