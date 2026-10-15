@@ -9,12 +9,13 @@
 // Variables de entorno (solo en Vercel, nunca en el código ni el navegador):
 //   AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY  — usuario IAM con permiso mínimo
 //   AWS_REGION      — por defecto ap-southeast-2 (Sydney)
-//   BEDROCK_MODELO  — perfil de inferencia; por defecto Claude Sonnet 4.5 AU
+//   BEDROCK_MODELO  — perfil de inferencia; por defecto Claude Sonnet 4.6 AU,
+//                     el mismo modelo que usaba la app con la API directa
 // ─────────────────────────────────────────────────────────────
 
 import { firmar } from './firma.js'
 
-export const MODELO_POR_DEFECTO = 'au.anthropic.claude-sonnet-4-5-20250929-v1:0'
+export const MODELO_POR_DEFECTO = 'au.anthropic.claude-sonnet-4-6'
 
 export function bedrockConfigurado(env = process.env) {
   return Boolean(env.AWS_ACCESS_KEY_ID && env.AWS_SECRET_ACCESS_KEY)

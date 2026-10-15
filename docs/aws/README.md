@@ -11,7 +11,7 @@ Decisión del 13 oct 2026: ver `docs/FUENTES-Y-DECISIONES.md` §3b. Todo en la r
 
 ## 2. Bedrock (Claude en Australia)
 1. Bedrock → **Model catalog** → un modelo **Anthropic Claude Sonnet** → completar el formulario de *use case* (una vez por cuenta).
-2. Bedrock → **Cross-region inference** → filtrar por `au.` → anotar el **ID del perfil** del modelo a usar (por defecto el código usa `au.anthropic.claude-sonnet-4-5-20250929-v1:0`).
+2. Bedrock → **Cross-region inference** → filtrar por `au.` → anotar el **ID del perfil** del modelo a usar (por defecto el código usa `au.anthropic.claude-sonnet-4-6`, Claude Sonnet 4.6: el mismo modelo que usaba la app antes. Si el ID que aparece es distinto, ponerlo en `BEDROCK_MODELO`).
 3. Probarlo una vez en **Playground** con ese perfil (así queda habilitado).
 
 ## 3. Usuario para Vercel (permiso mínimo)

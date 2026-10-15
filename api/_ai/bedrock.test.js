@@ -7,7 +7,7 @@ const env = { AWS_ACCESS_KEY_ID: 'AKIDEXAMPLE', AWS_SECRET_ACCESS_KEY: 'secreto'
 test('por defecto usa el perfil de Australia desde Sydney', () => {
   const p = peticionBedrock({ texto: 'hola', maxTokens: 100, env, fecha: new Date('2026-10-13T12:00:00Z') })
   assert.ok(MODELO_POR_DEFECTO.startsWith('au.'))
-  assert.equal(p.url, 'https://bedrock-runtime.ap-southeast-2.amazonaws.com/model/au.anthropic.claude-sonnet-4-5-20250929-v1%3A0/invoke')
+  assert.equal(p.url, 'https://bedrock-runtime.ap-southeast-2.amazonaws.com/model/au.anthropic.claude-sonnet-4-6/invoke')
   assert.match(p.encabezados.authorization, /Credential=AKIDEXAMPLE\/20261013\/ap-southeast-2\/bedrock\/aws4_request/)
   assert.deepEqual(JSON.parse(p.cuerpo), { anthropic_version: 'bedrock-2023-05-31', max_tokens: 100, messages: [{ role: 'user', content: 'hola' }] })
 })
