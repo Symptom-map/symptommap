@@ -15,14 +15,14 @@ Decisión del 13 oct 2026: ver `docs/FUENTES-Y-DECISIONES.md` §3b. Todo en la r
 3. Probarlo una vez en **Playground** con ese perfil (así queda habilitado).
 
 ## 3. Usuario para Vercel (permiso mínimo)
-IAM → Users → Create user `symptommap-vercel` (sin acceso a la consola) → Add permissions → **Create inline policy** (JSON):
+IAM → Users → Create user `symptommap-vercel` (sin acceso a la consola) → Add permissions → **Create inline policy** (JSON), nombre de la política `ClaudeAustraliaOnly`. Todo lo que se nombra dentro de AWS va en inglés:
 
 ```json
 {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "SoloClaudeEnAustralia",
+      "Sid": "ClaudeAustraliaOnly",
       "Effect": "Allow",
       "Action": "bedrock:InvokeModel",
       "Resource": [
