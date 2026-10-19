@@ -30,9 +30,9 @@ export async function sesionValida(token) {
 }
 
 /**
- * Cuenta un pedido a la AI de esta persona y dice si todavía puede pedir
- * (límite por hora, por día y total: supabase/migrations/20261019000000_limite_uso_ai.sql).
- * Si no se puede comprobar, responde false: ante la duda, no se gasta.
+ * Counts one AI request for this person and says whether they may still ask
+ * (per-hour, per-day and total limits: supabase/migrations/20261019000000_limite_uso_ai.sql).
+ * If it cannot be checked, returns false: when in doubt, don't spend.
  */
 export async function cuotaDisponible(token) {
   if (!token) return false

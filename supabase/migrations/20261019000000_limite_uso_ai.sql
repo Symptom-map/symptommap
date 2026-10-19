@@ -1,21 +1,21 @@
 -- ─────────────────────────────────────────────────────────────
--- Límite de uso de la AI (freno de costo)
+-- AI usage limit (cost brake)
 --
--- La AI (Claude en Bedrock) cobra por uso. Para que un error en el código o
--- una persona que pide sugerencias sin parar no genere una factura grande,
--- api/claude.js llama a consumir_cuota_ai() ANTES de cada pedido a Bedrock.
--- Si devuelve false, la AI responde 429 y no se llama a Bedrock.
+-- The AI (Claude on Bedrock) is billed per use. So that a bug or a person
+-- asking for suggestions non-stop cannot run up a large bill,
+-- api/claude.js calls consumir_cuota_ai() BEFORE every Bedrock request.
+-- If it returns false, the AI answers 429 and Bedrock is not called.
 --
--- Límites (cámbialos aquí con una migración nueva):
---   - por persona: 15 pedidos por hora y 40 en 24 horas;
---   - en total, entre todas las personas: 500 pedidos en 24 horas
---     (≈ US$10–12 en el peor caso, con respuestas de 1500 tokens).
+-- Limits (change them here with a new migration):
+--   - per person: 15 requests per hour and 40 per 24 hours;
+--   - in total, across everyone: 500 requests per 24 hours
+--     (≈ US$10–12 in the worst case, with 1500-token answers).
 --
--- Qué se guarda: solo CUÁNTOS pedidos hizo cada persona en cada hora.
--- Nunca el texto enviado ni la respuesta (DATA-MAP §5: "solo metadatos sin
--- contenido"). Las filas de más de 2 días se borran en la misma función:
--- no hay tareas programadas (nada se ejecuta solo).
--- Borrar la cuenta borra sus filas (on delete cascade).
+-- What is stored: only HOW MANY requests each person made in each hour.
+-- Never the text sent or the answer (DATA-MAP §5: "content-free metadata
+-- only"). Rows older than 2 days are deleted inside the same function:
+-- there are no scheduled jobs (nothing runs on its own).
+-- Deleting the account deletes its rows (on delete cascade).
 -- ─────────────────────────────────────────────────────────────
 
 create table public.uso_ai (
@@ -26,11 +26,11 @@ create table public.uso_ai (
 );
 
 comment on table public.uso_ai is
-  'Cuántos pedidos a la AI hizo cada persona por hora (sin contenido). Solo para limitar el costo; se borra a los 2 días.';
+  'How many AI requests each person made per hour (no content). Only used to limit cost; deleted after 2 days.';
 
 create index uso_ai_hora on public.uso_ai (hora);
 
--- Nadie la lee ni la cambia directamente: solo a través de la función.
+-- Nobody reads or changes it directly: only through the function.
 alter table public.uso_ai enable row level security;
 revoke all on public.uso_ai from anon, authenticated;
 
@@ -51,7 +51,7 @@ begin
     return false;
   end if;
 
-  -- Un pedido a la vez, para que dos pedidos simultáneos no pasen el límite.
+  -- One request at a time, so two simultaneous requests cannot pass the limit.
   perform pg_advisory_xact_lock(hashtext('consumir_cuota_ai'));
 
   delete from public.uso_ai where hora < now() - interval '2 days';
@@ -72,7 +72,7 @@ end;
 $$;
 
 comment on function public.consumir_cuota_ai() is
-  'Cuenta un pedido a la AI de la persona con sesión. Devuelve false si se pasó del límite (por hora, por día o total).';
+  'Counts one AI request for the signed-in person. Returns false if over the limit (per hour, per day or in total).';
 
 revoke all on function public.consumir_cuota_ai() from public, anon;
 grant execute on function public.consumir_cuota_ai() to authenticated;
