@@ -21,7 +21,19 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [ ] End-to-end test on a preview: a real suggestion, then check the real cost per suggestion.
 
 ## Email
-- [ ] Amazon SES (Sydney): verify `symptommap.com.au` (DKIM records in VentraIP DNS) and request production access.
+- [x] Amazon SES (Sydney): identity `symptommap.com.au` created with Easy DKIM (RSA 2048); 3 DKIM CNAMEs and `_dmarc` TXT (`v=DMARC1; p=none;`) added in VentraIP (19 Oct 2026).
+- [ ] SES shows the domain as **Verified** (can take up to 72 h).
+- [ ] Then request production access (SES → Get set up → Request production access). The button stays disabled until the domain is verified. Form: Transactional · https://www.symptommap.com.au · English · use case text below.
+
+<details><summary>Use case text for the production access request</summary>
+
+> SymptomMap is a web app for adults to visually understand their own confirmed mental-health diagnoses. It is preparing a small university-funded pilot (Victoria University SSAF grant, about 20–30 participants, late November 2026); the public site currently shows a "Coming soon" page while the app is tested privately.
+>
+> We will only send transactional authentication emails through Supabase Auth (custom SMTP): a 6-digit code to confirm the email address at sign-up, and password reset emails. Emails are only sent to people who create an account themselves and request the code. There is no marketing, no newsletters and no purchased lists.
+>
+> Expected volume: under 500 emails per month. Bounces and complaints: we keep the SES account-level suppression list enabled, monitor the reputation metrics in the SES console, and remove any address that bounces or complains. The domain symptommap.com.au uses Easy DKIM and a DMARC record.
+
+</details>
 - [ ] Supabase Auth custom SMTP through SES; logo in the email template.
 
 ## Product
