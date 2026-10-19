@@ -18,7 +18,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import { bedrockConfigurado, pedirABedrock } from './_ai/bedrock.js'
-import { tokenDe, sesionValida } from './_ai/sesion.js'
+import { tokenDe, sesionValida, cuotaDisponible } from './_ai/sesion.js'
 
 const MAX_TOKENS_TOPE = 1500      // el mayor valor que usa la app hoy
 const MAX_CARACTERES = 20000      // tamaño máximo del mensaje
@@ -52,24 +52,25 @@ export default async function handler(req, res) {
   res.setHeader('Cache-Control', 'no-store')
 
   if (sitioCerrado()) {
-    return error(res, 503, 'Servicio no disponible todavía')
+    return error(res, 503, 'Service not available yet')
   }
 
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
-    return error(res, 405, 'Método no permitido')
+    return error(res, 405, 'Method not allowed')
   }
 
   if (!esMismoOrigen(req)) {
-    return error(res, 403, 'Origen no permitido')
+    return error(res, 403, 'Origin not allowed')
   }
 
-  if (!(await sesionValida(tokenDe(req)))) {
-    return error(res, 401, 'Inicia sesión para usar las sugerencias')
+  const token = tokenDe(req)
+  if (!(await sesionValida(token))) {
+    return error(res, 401, 'Log in to use suggestions')
   }
 
   if (!bedrockConfigurado()) {
-    return error(res, 503, 'El servicio de AI no está configurado')
+    return error(res, 503, 'The AI service is not configured')
   }
 
   // Validar la forma exacta que envía la app:
@@ -79,24 +80,31 @@ export default async function handler(req, res) {
   const unico = mensajes && mensajes.length === 1 ? mensajes[0] : null
 
   if (!unico || unico.role !== 'user' || typeof unico.content !== 'string') {
-    return error(res, 400, 'Petición inválida')
+    return error(res, 400, 'Invalid request')
   }
   if (unico.content.length === 0 || unico.content.length > MAX_CARACTERES) {
-    return error(res, 413, 'El mensaje es demasiado largo')
+    return error(res, 413, 'The message is too long')
   }
 
   const pedido = Number.isInteger(body.max_tokens) ? body.max_tokens : 1000
   const maxTokens = Math.min(Math.max(pedido, 1), MAX_TOKENS_TOPE)
 
+  // Cost brake: count the request and stop if this person (or everyone
+  // together) reached the limit. It sits right before Bedrock so only
+  // valid requests are counted.
+  if (!(await cuotaDisponible(token))) {
+    return error(res, 429, 'You have reached the suggestion limit for now. Please try again later.')
+  }
+
   try {
     const r = await pedirABedrock({ texto: unico.content, maxTokens })
     if (!r.ok) {
       console.error('Bedrock respondió', r.status) // solo el código, nunca el contenido
-      return error(res, r.status === 429 ? 429 : 502, 'La sugerencia no está disponible ahora. Intenta de nuevo en un momento.')
+      return error(res, r.status === 429 ? 429 : 502, 'Suggestions are not available right now. Please try again in a moment.')
     }
     return res.status(200).json({ content: r.content })
   } catch {
     console.error('No se pudo contactar a Bedrock')
-    return error(res, 502, 'La sugerencia no está disponible ahora. Intenta de nuevo en un momento.')
+    return error(res, 502, 'Suggestions are not available right now. Please try again in a moment.')
   }
 }

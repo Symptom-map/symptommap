@@ -152,6 +152,7 @@ Proxy to Claude that keeps every key server-side. Helpers live in `api/_ai/` (th
 
 - **Requires a Supabase session** (`Authorization: Bearer <access token>`; checked against Supabase Auth in `_ai/sesion.js`). v2 calls it through `v2/src/nube/ai.js`. The old app at `/` has no accounts, so its AI no longer works.
 - **Only Amazon Bedrock, AU inference profile** (`_ai/bedrock.js`, signed with `_ai/firma.js`, no dependencies), using `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` from Vercel. Without them it answers 503. There is no direct Anthropic API path any more (Ana's personal key was retired on 14 Oct 2026; never add one back). Setup: `docs/aws/README.md`.
+- **Usage limit (cost brake):** before every Bedrock call, `api/claude.js` calls `consumir_cuota_ai()` in Supabase with the person's token (15/hour and 40/24 h per person, 500/24 h in total). If it can't be checked, the AI does not run. Never remove or bypass it; change the limits with a new migration.
 - The client may only send one user text message and a `max_tokens` value (capped at 1500).
 - Same-origin requests only.
 - Never log request or response content.

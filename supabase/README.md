@@ -10,6 +10,7 @@ Las migraciones de `migrations/` son el historial exacto de lo que se aplicó a 
 |---|---|---|
 | `cuentas` | Nombre, cuándo se verificó 18+, cuándo se aprobó la elegibilidad, versión y fecha del consentimiento | **Sin** fecha de nacimiento ni respuesta de elegibilidad (datos mínimos) |
 | `mapas` | Un documento JSON por persona, con la forma exacta del núcleo (`src/core/mapa.js`) | `revision` sube en cada cambio (para detectar ediciones desde dos pestañas). Máximo ~500 KB |
+| `uso_ai` | **Cuántos** pedidos a la AI hizo cada persona por hora (nunca el texto) | Freno de costo: 15 por hora y 40 en 24 h por persona, 500 en 24 h en total. Solo se usa con `consumir_cuota_ai()` desde `api/claude.js`; las filas se borran a los 2 días |
 
 ## Seguridad
 
