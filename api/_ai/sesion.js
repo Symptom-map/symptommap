@@ -28,3 +28,23 @@ export async function sesionValida(token) {
     return false
   }
 }
+
+/**
+ * Cuenta un pedido a la AI de esta persona y dice si todavía puede pedir
+ * (límite por hora, por día y total: supabase/migrations/20261019000000_limite_uso_ai.sql).
+ * Si no se puede comprobar, responde false: ante la duda, no se gasta.
+ */
+export async function cuotaDisponible(token) {
+  if (!token) return false
+  try {
+    const r = await fetch(`${URL_SUPABASE}/rest/v1/rpc/consumir_cuota_ai`, {
+      method: 'POST',
+      headers: { apikey: CLAVE_PUBLICA, authorization: `Bearer ${token}`, 'content-type': 'application/json' },
+      body: '{}',
+    })
+    if (!r.ok) return false
+    return (await r.json()) === true
+  } catch {
+    return false
+  }
+}

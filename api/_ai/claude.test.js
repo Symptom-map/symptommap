@@ -4,11 +4,12 @@ import assert from 'node:assert/strict'
 import handler from '../claude.js'
 
 let llamadas
-function simularFetch({ sesionOk = true, bedrockStatus = 200 } = {}) {
+function simularFetch({ sesionOk = true, bedrockStatus = 200, cuota = true, cuotaStatus = 200 } = {}) {
   llamadas = []
   globalThis.fetch = async (url, opciones = {}) => {
     llamadas.push({ url: String(url), opciones })
     if (String(url).includes('/auth/v1/user')) return new Response('{}', { status: sesionOk ? 200 : 401 })
+    if (String(url).includes('/rest/v1/rpc/consumir_cuota_ai')) return new Response(JSON.stringify(cuota), { status: cuotaStatus })
     if (String(url).includes('bedrock-runtime')) return new Response(JSON.stringify({ content: [{ type: 'text', text: 'ok' }] }), { status: bedrockStatus })
     return new Response('{}', { status: 500 })
   }
@@ -76,4 +77,35 @@ test('sin claves de AWS responde 503 y nunca usa la API de Anthropic', async () 
   const r = respuesta(); await handler(peticion(), r)
   assert.equal(r.codigo, 503)
   assert.ok(!llamadas.some(l => l.url.includes('anthropic.com')))
+})
+
+test('cuenta el pedido con el token de la persona antes de llamar a Bedrock', async () => {
+  simularFetch()
+  const r = respuesta(); await handler(peticion(), r)
+  assert.equal(r.codigo, 200)
+  const i = llamadas.findIndex(l => l.url.includes('consumir_cuota_ai'))
+  const b = llamadas.findIndex(l => l.url.includes('bedrock-runtime'))
+  assert.ok(i >= 0 && i < b)
+  assert.equal(llamadas[i].opciones.headers.authorization, 'Bearer tkn')
+})
+
+test('si se llegó al límite responde 429 y no llama a Bedrock', async () => {
+  simularFetch({ cuota: false })
+  const r = respuesta(); await handler(peticion(), r)
+  assert.equal(r.codigo, 429)
+  assert.ok(!llamadas.some(l => l.url.includes('bedrock')))
+})
+
+test('si no se puede comprobar el límite, no gasta (429 y sin Bedrock)', async () => {
+  simularFetch({ cuotaStatus: 404 })
+  const r = respuesta(); await handler(peticion(), r)
+  assert.equal(r.codigo, 429)
+  assert.ok(!llamadas.some(l => l.url.includes('bedrock')))
+})
+
+test('una petición inválida no gasta cuota', async () => {
+  simularFetch()
+  const r = respuesta(); await handler(peticion({ cuerpo: { messages: [] } }), r)
+  assert.equal(r.codigo, 400)
+  assert.ok(!llamadas.some(l => l.url.includes('consumir_cuota_ai')))
 })

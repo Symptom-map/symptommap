@@ -18,7 +18,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import { bedrockConfigurado, pedirABedrock } from './_ai/bedrock.js'
-import { tokenDe, sesionValida } from './_ai/sesion.js'
+import { tokenDe, sesionValida, cuotaDisponible } from './_ai/sesion.js'
 
 const MAX_TOKENS_TOPE = 1500      // el mayor valor que usa la app hoy
 const MAX_CARACTERES = 20000      // tamaño máximo del mensaje
@@ -64,7 +64,8 @@ export default async function handler(req, res) {
     return error(res, 403, 'Origen no permitido')
   }
 
-  if (!(await sesionValida(tokenDe(req)))) {
+  const token = tokenDe(req)
+  if (!(await sesionValida(token))) {
     return error(res, 401, 'Inicia sesión para usar las sugerencias')
   }
 
@@ -87,6 +88,13 @@ export default async function handler(req, res) {
 
   const pedido = Number.isInteger(body.max_tokens) ? body.max_tokens : 1000
   const maxTokens = Math.min(Math.max(pedido, 1), MAX_TOKENS_TOPE)
+
+  // Freno de costo: se cuenta el pedido y se corta si la persona (o todas
+  // juntas) llegaron al límite. Va justo antes de Bedrock para que solo
+  // cuenten los pedidos válidos.
+  if (!(await cuotaDisponible(token))) {
+    return error(res, 429, 'Llegaste al límite de sugerencias por ahora. Intenta de nuevo más tarde.')
+  }
 
   try {
     const r = await pedirABedrock({ texto: unico.content, maxTokens })
