@@ -2,7 +2,9 @@
 
 Shared instructions for every coding agent in this repository (Claude Code reads them through `CLAUDE.md`; Codex reads this file directly). Keep all shared rules **here only**, so the agents never drift apart.
 
-Talk to Ana in **neutral Latin American Spanish** ("tú", never "vos" or Argentine voseo). Code, comments and commit messages may be in Spanish or English; use the Spanish domain terms below.
+Talk to Ana in **neutral Latin American Spanish** ("tú", never "vos" or Argentine voseo).
+
+**Everything written in the repository is in English** (decided 19 Oct 2026): documentation, code comments, commit messages, PR titles and descriptions, SQL comments and messages returned by the API. Never mix languages inside the repo. The only exception is the Spanish domain terms used as code identifiers (see *Domain language* below), which stay as they are. Names created inside AWS, Vercel and Supabase are also in English. Older Spanish documents are being translated; when you touch one, translate the part you change.
 
 ## Which repo is this
 
