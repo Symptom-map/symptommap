@@ -8,6 +8,7 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import './ds/styles.css'
 import './estilos.css'
+import './pulido.css' // visual polish approved by Ana (20 Oct 2026); delete to go back
 
 window.React = React
 

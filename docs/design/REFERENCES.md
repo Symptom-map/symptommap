@@ -43,3 +43,14 @@ References, not designs to copy. The first ones are the closest to what she want
 Common thread: generous whitespace, rounded/pill buttons, soft shadows, custom line icons, smooth dropdowns and modals, a clean fluid layout. Most examples are landing pages: they shape the public site first, and in the app they guide spacing, buttons, shadows, icons and motion.
 
 Note: an agent cannot load these sites visually from this environment (only their text), so screenshots of the specific parts help a lot.
+
+## Decisions on the polish proposal (20 Oct 2026)
+| Proposal | Ana's decision | Where |
+|---|---|---|
+| 1. Pill buttons with a soft lift and press | **Yes** (changes the design-system rule "rounder, but not a pill") | `v2/src/pulido.css` |
+| 2. Window: rounder corners, wide soft shadow, blurred backdrop, gentle entrance; floating suggestions | **Yes** | `v2/src/pulido.css` |
+| 3. Floating sidebar, dotted map background | **No** | — |
+| 3. Pill diagnosis chips in the sidebar | Not yet — "it could work but I don't see it yet" | — |
+| 4. Icons as overlapping spheres (like the logo) | Likes the direction; **needs another round** | Claude Design, later |
+
+The map is now centred in the canvas, as in the approved prototype (that was a fidelity fix, not part of the polish vote).

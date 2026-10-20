@@ -174,7 +174,7 @@ export default function AgregarDiagnostico({ mapa, error, onAgregar, onCerrar })
                   title={nombreColor(n)}
                   className="agregar__color"
                   data-on={slot === n ? '1' : '0'}
-                  style={{ background: `var(--sm-dx-${n}-tint)` }}
+                  style={{ background: `var(--sm-dx-${n}-tint)`, '--dx-base-elegido': `var(--sm-dx-${n}-base)` }}
                   onClick={() => setSlot(n)}
                 >
                   {slot === n && <Icon name="check" size={15} color="var(--sm-ink)" />}

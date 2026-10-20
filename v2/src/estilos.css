@@ -20,7 +20,7 @@ body { background: var(--sm-surface-canvas); }
   touch-action: none; cursor: grab;
 }
 .mapa:active { cursor: grabbing; }
-.mapa__mundo { position: absolute; left: 40px; top: 24px; transform-origin: 0 0; }
+.mapa__mundo { position: absolute; left: 0; top: 0; transform-origin: 0 0; }
 .mapa__nodo { position: absolute; cursor: grab; user-select: none; }
 .mapa__nodo--sintoma { width: 120px; transform: translateX(-50%); }
 .mapa__controles { position: absolute; left: 24px; bottom: 20px; }

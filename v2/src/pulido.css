@@ -1,0 +1,78 @@
+/* ─────────────────────────────────────────────────────────────
+   pulido.css — visual polish layer on top of the design system
+
+   Approved by Ana on 20 Oct 2026 (proposal "SymptomMap visual polish",
+   references in docs/design/REFERENCES.md):
+     1. Buttons: pill shape, a soft lift on hover, a small press.
+     2. Windows (Modal): rounder corners, a wide soft shadow, a lightly
+        blurred backdrop and a gentle entrance. Suggestions float as
+        their own card.
+   Not approved: floating sidebar, dotted map background, pill diagnosis
+   chips. Icons need another round (Claude Design).
+
+   The copied design system (src/ds) is not edited: this file is loaded
+   after it and only overrides. Delete this file to go back.
+   Motion respects "reduce motion".
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  --sm-radius-button: 999px;            /* was 16px: "rounder, but not a pill" */
+  --pulido-ease: cubic-bezier(.2, .8, .2, 1);
+  --pulido-sombra-ventana:
+    0 0 0 1px rgba(38, 32, 28, .04),
+    0 2px 6px rgba(38, 32, 28, .05),
+    0 34px 70px -28px rgba(38, 32, 28, .34);
+  --pulido-sombra-flotante:
+    0 0 0 1px rgba(38, 32, 28, .05),
+    0 16px 32px -18px rgba(38, 32, 28, .35);
+}
+
+/* ── 1. Buttons ─────────────────────────────────────────────── */
+.sm-btn {
+  transition:
+    transform .18s var(--pulido-ease),
+    box-shadow .18s var(--pulido-ease),
+    background-color .18s var(--pulido-ease);
+}
+.sm-btn:not(:disabled):active { transform: scale(.97); }
+.sm-btn--primary { box-shadow: 0 1px 2px rgba(0, 120, 150, .18); }
+.sm-btn--primary:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px -10px rgba(0, 150, 190, .6);
+}
+.sm-btn--secondary:not(:disabled):hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px -12px rgba(38, 32, 28, .28);
+}
+.sm-btn:disabled { box-shadow: none; }
+/* Keep the design-system focus ring when a button also has a shadow. */
+.sm-btn--primary:focus-visible { box-shadow: var(--sm-focus-inset), 0 10px 20px -10px rgba(0, 150, 190, .6); }
+
+/* ── 2. Windows ─────────────────────────────────────────────── */
+.capa .sm-scrim { background: rgba(38, 32, 28, .14); backdrop-filter: blur(2px); }
+.capa .sm-modal { border-radius: 28px; box-shadow: var(--pulido-sombra-ventana); }
+
+/* Suggestions float as their own card ("Add a diagnosis"). */
+.agregar__lista { border: 0; border-radius: 16px; padding: 6px; box-shadow: var(--pulido-sombra-flotante); }
+.agregar__opcion { border-radius: 11px; }
+.agregar__opcion + .agregar__opcion { border-top: 0; }
+
+/* Colour swatches: smaller, one row for all ten, a ring for the chosen one. */
+.agregar__colores { gap: 8px; }
+.agregar__color { width: 28px; height: 28px; border: 0; box-shadow: inset 0 0 0 1px rgba(38, 32, 28, .08); }
+.agregar__color[data-on="1"] { box-shadow: 0 0 0 2px var(--sm-white), 0 0 0 3.5px var(--dx-base-elegido, rgba(26, 26, 26, .55)); }
+.agregar__color:focus-visible { box-shadow: 0 0 0 2px var(--sm-white), 0 0 0 3.5px var(--sm-cyan-500); }
+
+@media (prefers-reduced-motion: no-preference) {
+  .capa .sm-scrim { animation: pulido-aparecer .24s ease-out both; }
+  .capa .sm-modal { animation: pulido-subir .32s var(--pulido-ease) both; }
+  .agregar__lista { animation: pulido-subir .22s var(--pulido-ease) both; }
+  .agregar__color { transition: transform .16s var(--pulido-ease), box-shadow .16s var(--pulido-ease); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sm-btn { transition: none; }
+  .sm-btn:not(:disabled):active, .sm-btn--primary:not(:disabled):hover, .sm-btn--secondary:not(:disabled):hover { transform: none; }
+}
+
+@keyframes pulido-subir { from { opacity: 0; transform: translateY(14px) scale(.98); } to { opacity: 1; transform: none; } }
+@keyframes pulido-aparecer { from { opacity: 0; } to { opacity: 1; } }
