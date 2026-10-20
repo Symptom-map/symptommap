@@ -91,7 +91,7 @@ Pending: tell the psychologist about this change at the next checkpoint.
 ## 4. Pendientes de decidir
 
 - **Tipo de verificación en dos pasos.** El prototipo muestra un código por correo. Supabase Auth ofrece como segundo paso una app de autenticación (Google Authenticator, 1Password, etc.) o SMS, no un código por correo. Hay que elegir antes de construir "Protect your account".
-- Recuperar la contraseña ("Forgot your password?"): el enlace está en el prototipo, la pantalla no.
+- ~~"Forgot your password?"~~ → built on 20 Oct 2026 with a 6-digit code, like confirming the email (no screens were designed; it reuses the account screens).
 - ~~Dominio final~~ → **www.symptommap.com.au** (12 oct 2026).
 - Catálogo de diagnósticos para el autocompletado ("Add a diagnosis"): la persona siempre puede escribir su diagnóstico con sus palabras; el catálogo solo sugiere nombres (inglés, español, abreviaturas) y elige las preguntas del perfil. Hoy hay 29 (`src/js/data.js`); Ana considera que son pocos. Propuesta: ampliarlo a partir de la CIE-11 (OMS, capítulo de salud mental) con sinónimos del DSM-5-TR, y que la psicóloga lo revise antes del piloto. **Pendiente.**
 - Sugerencias de síntomas: hoy la AI las genera con su conocimiento general a partir de los diagnósticos y el perfil. Falta decidir si la psicóloga revisa ejemplos antes del piloto y si se agrega una lista inicial curada por diagnóstico.

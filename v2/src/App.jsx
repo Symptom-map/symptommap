@@ -24,12 +24,13 @@ import AvisoSintoma from './mapa/AvisoSintoma.jsx'
 import { preguntasPara } from './perfil/preguntas.js'
 import {
   PantallaEntrar, PantallaRegistro, PantallaMenorDeEdad, PantallaElegibilidad,
-  PantallaSinDiagnostico, PantallaVerificar, PantallaConsentimiento, MENSAJES,
+  PantallaSinDiagnostico, PantallaVerificar, PantallaConsentimiento, PantallaOlvide, PantallaNuevaContrasena, MENSAJES,
 } from './cuenta/Pantallas.jsx'
 import { SIN_DIAGNOSTICO } from './cuenta/validar.js'
 import {
   crearCuenta, confirmarCorreo, reenviarCodigo, entrar, salir,
   sesionActual, alCambiarSesion, leerCuenta, aceptarConsentimiento,
+  pedirRestablecer, confirmarRestablecer, cambiarContrasena,
 } from './nube/cuenta.js'
 import { cargarMapa, guardarMapa } from './nube/mapa.js'
 
@@ -141,6 +142,28 @@ export default function App() {
     setAviso('We sent a new code.') // NUEVO: confirmación que el prototipo no mostraba
   })
 
+  // ── Forgot your password? ──
+  const alPedirRestablecer = correo => hacer(async () => {
+    await pedirRestablecer(correo)
+    setCorreoPendiente(correo)
+    irA('restablecerCodigo')
+  })
+
+  const alReenviarRestablecer = () => hacer(async () => {
+    await pedirRestablecer(correoPendiente)
+    setAviso('We sent a new code.')
+  })
+
+  const alConfirmarRestablecer = codigo => hacer(async () => {
+    await confirmarRestablecer({ correo: correoPendiente, codigo })
+    irA('nuevaContrasena')
+  })
+
+  const alGuardarContrasena = contrasena => hacer(async () => {
+    await cambiarContrasena(contrasena)
+    await continuarConSesion(await sesionActual())
+  })
+
   const alAceptar = () => hacer(async () => {
     await aceptarConsentimiento(sesion.user.id)
     setCuenta(c => ({ ...c, consentimientoAceptado: true }))
@@ -158,7 +181,10 @@ export default function App() {
   return (
     <div className="app">
       {pantalla === 'cargando' && <div className="cuenta" aria-busy="true" />}
-      {pantalla === 'entrar' && <PantallaEntrar {...comunes} onEntrar={alEntrar} onIrARegistro={() => irA('registro')} />}
+      {pantalla === 'entrar' && <PantallaEntrar {...comunes} onEntrar={alEntrar} onIrARegistro={() => irA('registro')} onOlvide={correo => { setCorreoPendiente(correo); irA('olvide') }} />}
+      {pantalla === 'olvide' && <PantallaOlvide {...comunes} inicial={correoPendiente} onEnviar={alPedirRestablecer} onVolver={() => irA('entrar')} />}
+      {pantalla === 'restablecerCodigo' && <PantallaVerificar {...comunes} restablecer aviso={aviso} correo={correoPendiente} onVerificar={alConfirmarRestablecer} onReenviar={alReenviarRestablecer} />}
+      {pantalla === 'nuevaContrasena' && <PantallaNuevaContrasena {...comunes} onGuardar={alGuardarContrasena} />}
       {pantalla === 'registro' && <PantallaRegistro inicial={registro} error={errorRegistro} onContinuar={alTerminarPaso1} onIrAEntrar={() => irA('entrar')} />}
       {pantalla === 'menorDeEdad' && <PantallaMenorDeEdad />}
       {pantalla === 'elegibilidad' && <PantallaElegibilidad {...comunes} onContinuar={alElegir} />}
