@@ -11,7 +11,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [ ] Supabase security advisors: only the two expected notices for `uso_ai` / `consumir_cuota_ai()` (see `supabase/README.md`).
 - [ ] Vercel Deployment Protection (Vercel Authentication) is on for previews.
 - [ ] AWS: automatic cost stop — a Budgets action that removes Bedrock permission from `symptommap-vercel` at a set amount.
-- [ ] Personal Anthropic API key deleted at console.anthropic.com (already removed from Vercel).
+- [x] Personal Anthropic API key removed from this project's Vercel. It is **kept** at console.anthropic.com because the backup (symptommaproject) still uses it (Ana, 20 Oct 2026). Keep a low monthly spend limit on it; delete it when the backup no longer needs it.
 - [ ] No screenshots with preview links, emails or test data shared publicly.
 
 ## AI
