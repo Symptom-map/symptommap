@@ -7,16 +7,18 @@
 //   Log in → (Verify email si el correo no estaba confirmado) → mapa
 //
 // Still to do in other tasks: "Protect your account" (optional two-step
-// verification), the welcome walkthrough, password reset, the diagnosis
-// profile and symptoms. See docs/PRE-PILOT-CHECKLIST.md.
+// verification), the welcome walkthrough, password reset and symptoms.
+// See docs/PRE-PILOT-CHECKLIST.md.
 // ─────────────────────────────────────────────────────────────
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { agregarDiagnostico, moverDiagnostico, moverSintoma, ErrorMapa } from '@nucleo/mapa.js'
+import { agregarDiagnostico, guardarPerfil, moverDiagnostico, moverSintoma, ErrorMapa } from '@nucleo/mapa.js'
 import { ds } from './ds/index.js'
 import MapaVista from './mapa/MapaVista.jsx'
 import BarraLateral from './mapa/BarraLateral.jsx'
 import AgregarDiagnostico from './mapa/AgregarDiagnostico.jsx'
+import PerfilDiagnostico from './perfil/PerfilDiagnostico.jsx'
+import { preguntasPara } from './perfil/preguntas.js'
 import {
   PantallaEntrar, PantallaRegistro, PantallaMenorDeEdad, PantallaElegibilidad,
   PantallaSinDiagnostico, PantallaVerificar, PantallaConsentimiento, MENSAJES,
@@ -172,6 +174,8 @@ function MiMapa({ userId, nombre, onSalir }) {
   const [problema, setProblema] = useState('')
   const [agregando, setAgregando] = useState(false) // "Add a diagnosis" window open
   const [errorAgregar, setErrorAgregar] = useState('')
+  // Profile window: a new diagnosis waiting for its profile ({ datos }) or an existing one ({ id }).
+  const [perfilAbierto, setPerfilAbierto] = useState(null)
   const revision = useRef(null)
   const pendiente = useRef(null) // mapa que falta guardar
   const temporizador = useRef(null)
@@ -238,14 +242,15 @@ function MiMapa({ userId, nombre, onSalir }) {
   }
 
   // The core decides everything (colour, place, duplicates, the 10 limit).
-  // A diagnosis that is already on the map is not added twice.
-  // Next task: the prototype then opens the diagnosis profile.
-  function agregar({ etiqueta, claveCanonica, slot }) {
+  // A diagnosis that is already on the map is not added twice. A new one is
+  // only added when its profile is saved (prototype: "Your diagnosis hasn’t
+  // been added yet"), so this step only checks that it can be added.
+  function agregar(datos) {
     try {
-      const r = agregarDiagnostico(mapa, { etiqueta, claveCanonica, slot })
-      if (!r.yaExistia) cambiar(r.mapa)
+      const r = agregarDiagnostico(mapa, datos)
       setAgregando(false)
       setErrorAgregar('')
+      if (!r.yaExistia) setPerfilAbierto({ datos })
     } catch (e) {
       if (!(e instanceof ErrorMapa)) throw e
       setErrorAgregar(e.codigo === 'LIMITE_DIAGNOSTICOS'
@@ -253,6 +258,26 @@ function MiMapa({ userId, nombre, onSalir }) {
         : 'This diagnosis could not be added. Please try again.')
     }
   }
+
+  function guardarPerfilAbierto(perfil) {
+    try {
+      if (perfilAbierto.datos) {
+        // Checked again against the current map (another tab may have changed it).
+        const r = agregarDiagnostico(mapa, perfilAbierto.datos)
+        if (!r.yaExistia) cambiar(guardarPerfil(r.mapa, r.diagnosticoId, perfil))
+      } else {
+        cambiar(guardarPerfil(mapa, perfilAbierto.id, perfil))
+      }
+    } catch (e) {
+      if (!(e instanceof ErrorMapa)) throw e
+    }
+    setPerfilAbierto(null)
+  }
+
+  // What the profile window shows: the person's wording as the title and the
+  // question set chosen by the internal key.
+  const diagnosticoAbierto = perfilAbierto?.id ? mapa?.diagnosticos.find(d => d.id === perfilAbierto.id) : null
+  const datosPerfil = perfilAbierto?.datos || diagnosticoAbierto
 
   function abrirAgregar() {
     setErrorAgregar('')
@@ -276,7 +301,7 @@ function MiMapa({ userId, nombre, onSalir }) {
       <AppHeader context={titulo} actions={<Button variant="ghost" size="sm" onClick={salirGuardando}>Log out</Button>} />
       <main className="app__principal app__principal--mapa">
         <h1 className="sr-only">{titulo}</h1>
-        {mapa && <BarraLateral mapa={mapa} onAgregarDiagnostico={abrirAgregar} />}
+        {mapa && <BarraLateral mapa={mapa} onAgregarDiagnostico={abrirAgregar} onEditarPerfil={id => setPerfilAbierto({ id })} />}
         <div className="lienzo">
           {mapa && mapa.diagnosticos.length === 0 && mapa.sintomas.length === 0 && (
             <div className="lienzo__vacio">
@@ -291,6 +316,18 @@ function MiMapa({ userId, nombre, onSalir }) {
         </div>
         {agregando && mapa && (
           <AgregarDiagnostico mapa={mapa} error={errorAgregar} onAgregar={agregar} onCerrar={() => setAgregando(false)} />
+        )}
+        {perfilAbierto && datosPerfil && (
+          <PerfilDiagnostico
+            key={perfilAbierto.id || 'nuevo'}
+            titulo={datosPerfil.etiqueta}
+            preguntas={preguntasPara(datosPerfil.claveCanonica)}
+            inicial={perfilAbierto.id ? mapa.perfiles[perfilAbierto.id] : null}
+            primeraVez={!!perfilAbierto.datos}
+            onGuardar={guardarPerfilAbierto}
+            onOmitir={() => setPerfilAbierto(null)}
+            onDescartar={() => setPerfilAbierto(null)}
+          />
         )}
       </main>
     </>

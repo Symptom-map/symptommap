@@ -1,15 +1,15 @@
 // ─────────────────────────────────────────────────────────────
 // BarraLateral.jsx — left sidebar of "My map" (approved prototype)
 //
-// "My diagnoses": the person's diagnoses in map order and the button that
-// opens "Add a diagnosis". "Suggest symptoms" and "Add a symptom" come with
+// "My diagnoses": the person's diagnoses in map order, each with "Edit
+// profile", and the button that opens "Add a diagnosis". "Suggest symptoms" and "Add a symptom" come with
 // their own tasks; until then they are not shown (no buttons that do nothing).
 // ─────────────────────────────────────────────────────────────
 
 import { ds } from '../ds/index.js'
 
-export default function BarraLateral({ mapa, onAgregarDiagnostico }) {
-  const { SidebarGroup, DiagnosisChip, Button } = ds()
+export default function BarraLateral({ mapa, onAgregarDiagnostico, onEditarPerfil }) {
+  const { SidebarGroup, DiagnosisChip, Button, IconButton, Icon } = ds()
   const diagnosticos = [...mapa.diagnosticos].sort((a, b) => a.orden - b.orden)
   const vacio = diagnosticos.length === 0
 
@@ -24,7 +24,17 @@ export default function BarraLateral({ mapa, onAgregarDiagnostico }) {
         ) : (
           <div className="barra__lista">
             {diagnosticos.map(d => (
-              <DiagnosisChip key={d.id} label={d.etiqueta} slot={d.slot} compact />
+              <DiagnosisChip
+                key={d.id}
+                label={d.etiqueta}
+                slot={d.slot}
+                compact
+                actions={
+                  <IconButton label={`Edit profile: ${d.etiqueta}`} variant="ghost" size="sm" onClick={() => onEditarPerfil(d.id)}>
+                    <Icon name="edit" size={14} color="var(--sm-ink-meta)" />
+                  </IconButton>
+                }
+              />
             ))}
           </div>
         )}
