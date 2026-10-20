@@ -40,6 +40,9 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [x] Add a diagnosis: empty map, sidebar, Add a diagnosis window (PR #13).
 - [x] Visual polish layer for the app: pill buttons and softer windows (PR #14).
 - [x] Diagnosis profile: first setup after adding, edit later from the sidebar (PR #15).
+- [x] Add a symptom (without analysing) and the symptoms list in the sidebar (PR #16).
+- [ ] Analyse connections and Suggest symptoms (AI, Bedrock), then the end-to-end cost check.
+- [ ] Detail panel (click a diagnosis or symptom): edit, connect, delete.
 - [ ] Psychologist reviews the profile questions and options (`v2/src/perfil/preguntas.js`), together with the diagnosis catalogue.
 - [ ] Fill the map in v2 (empty state, add diagnosis with autocomplete, symptoms).
 - [ ] Forgot password.

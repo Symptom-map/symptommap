@@ -7,17 +7,19 @@
 //   Log in → (Verify email si el correo no estaba confirmado) → mapa
 //
 // Still to do in other tasks: "Protect your account" (optional two-step
-// verification), the welcome walkthrough, password reset and symptoms.
+// verification), the welcome walkthrough, password reset, AI suggestions and
+// the detail panel.
 // See docs/PRE-PILOT-CHECKLIST.md.
 // ─────────────────────────────────────────────────────────────
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { agregarDiagnostico, guardarPerfil, moverDiagnostico, moverSintoma, ErrorMapa } from '@nucleo/mapa.js'
+import { agregarDiagnostico, agregarSintoma, guardarPerfil, moverDiagnostico, moverSintoma, ErrorMapa } from '@nucleo/mapa.js'
 import { ds } from './ds/index.js'
 import MapaVista from './mapa/MapaVista.jsx'
 import BarraLateral from './mapa/BarraLateral.jsx'
 import AgregarDiagnostico from './mapa/AgregarDiagnostico.jsx'
 import PerfilDiagnostico from './perfil/PerfilDiagnostico.jsx'
+import AgregarSintoma from './mapa/AgregarSintoma.jsx'
 import { preguntasPara } from './perfil/preguntas.js'
 import {
   PantallaEntrar, PantallaRegistro, PantallaMenorDeEdad, PantallaElegibilidad,
@@ -176,6 +178,7 @@ function MiMapa({ userId, nombre, onSalir }) {
   const [errorAgregar, setErrorAgregar] = useState('')
   // Profile window: a new diagnosis waiting for its profile ({ datos }) or an existing one ({ id }).
   const [perfilAbierto, setPerfilAbierto] = useState(null)
+  const [agregandoSintoma, setAgregandoSintoma] = useState(false)
   const revision = useRef(null)
   const pendiente = useRef(null) // mapa que falta guardar
   const temporizador = useRef(null)
@@ -279,6 +282,13 @@ function MiMapa({ userId, nombre, onSalir }) {
   const diagnosticoAbierto = perfilAbierto?.id ? mapa?.diagnosticos.find(d => d.id === perfilAbierto.id) : null
   const datosPerfil = perfilAbierto?.datos || diagnosticoAbierto
 
+  // A symptom added without analysing has no connections ("Origin not placed
+  // yet"). Wording that matches an existing symptom merges into it (core).
+  function agregarSintomaSinAnalizar({ texto, cuando }) {
+    cambiar(agregarSintoma(mapa, { texto, cuando, diagnosticoIds: [] }).mapa)
+    setAgregandoSintoma(false)
+  }
+
   function abrirAgregar() {
     setErrorAgregar('')
     setAgregando(true)
@@ -301,7 +311,7 @@ function MiMapa({ userId, nombre, onSalir }) {
       <AppHeader context={titulo} actions={<Button variant="ghost" size="sm" onClick={salirGuardando}>Log out</Button>} />
       <main className="app__principal app__principal--mapa">
         <h1 className="sr-only">{titulo}</h1>
-        {mapa && <BarraLateral mapa={mapa} onAgregarDiagnostico={abrirAgregar} onEditarPerfil={id => setPerfilAbierto({ id })} />}
+        {mapa && <BarraLateral mapa={mapa} onAgregarDiagnostico={abrirAgregar} onAgregarSintoma={() => setAgregandoSintoma(true)} onEditarPerfil={id => setPerfilAbierto({ id })} />}
         <div className="lienzo">
           {mapa && mapa.diagnosticos.length === 0 && mapa.sintomas.length === 0 && (
             <div className="lienzo__vacio">
@@ -316,6 +326,9 @@ function MiMapa({ userId, nombre, onSalir }) {
         </div>
         {agregando && mapa && (
           <AgregarDiagnostico mapa={mapa} error={errorAgregar} onAgregar={agregar} onCerrar={() => setAgregando(false)} />
+        )}
+        {agregandoSintoma && (
+          <AgregarSintoma onAgregar={agregarSintomaSinAnalizar} onCerrar={() => setAgregandoSintoma(false)} />
         )}
         {perfilAbierto && datosPerfil && (
           <PerfilDiagnostico
