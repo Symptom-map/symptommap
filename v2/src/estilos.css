@@ -119,3 +119,78 @@ body { background: var(--sm-surface-canvas); }
 
 /* Mapa con sesión */
 .app__problema { position: absolute; left: 50%; top: 16px; transform: translateX(-50%); max-width: calc(100% - 32px); }
+
+/* ── My map: sidebar + canvas (approved prototype, .pt-sb) ─────────────── */
+.app__principal--mapa { display: flex; }
+.barra {
+  width: 284px; flex: none; box-sizing: border-box; min-height: 0; overflow: auto;
+  background: var(--sm-white); border-right: 1px solid var(--sm-line-hairline);
+  padding: 28px 22px; display: flex; flex-direction: column; gap: 30px;
+}
+.barra .sm-sidebar-group { gap: 10px; }
+.barra .sm-sidebar-group__title { font-size: 13px; font-weight: 600; color: var(--sm-ink-meta); line-height: 1.25; }
+.barra .sm-chip { min-height: 38px; gap: 10px; min-width: 0; padding: 0 10px 0 12px; }
+.barra .sm-chip__dot { width: 11px; height: 11px; flex: none; background: var(--dx-base); border: none; }
+.barra .sm-chip__label {
+  font-family: var(--sm-font-ui); font-size: 14px; font-weight: 500; line-height: 1.3;
+  color: var(--sm-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0;
+}
+.barra__texto {
+  margin: 10px 2px 18px; font-family: var(--sm-font-body); font-size: 13.8px;
+  line-height: 1.56; color: var(--sm-ink-body);
+}
+.barra__texto--corto { margin-bottom: 4px; }
+.barra__lista { display: flex; flex-direction: column; gap: 6px; }
+.barra__acciones { display: flex; flex-direction: column; gap: 10px; }
+
+.lienzo { position: relative; flex: 1; min-width: 0; }
+.lienzo__vacio {
+  position: absolute; inset: 0; padding: 56px 48px; box-sizing: border-box;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 22px; text-align: center;
+}
+.lienzo__titulo { margin: 0; font-size: 27px; line-height: 1.18; max-width: 380px; }
+.lienzo__texto { margin: 0 0 10px; font-size: 15.5px; line-height: 1.58; max-width: 380px; }
+
+@media (max-width: 720px) {
+  .app__principal--mapa { flex-direction: column; }
+  .barra { width: auto; max-height: 40%; border-right: none; border-bottom: 1px solid var(--sm-line-hairline); }
+}
+
+/* ── Windows (design-system Modal) over the page ───────────────────────── */
+.capa { position: fixed; inset: 0; z-index: 20; overflow: auto; }
+.capa .sm-scrim { position: fixed; inset: 0; }
+
+/* "Add a diagnosis" (approved prototype: .pt-ac, .pt-acrow, .pt-sw) */
+.agregar { display: flex; flex-direction: column; gap: 28px; }
+.agregar__campo { position: relative; }
+.agregar__lista {
+  position: absolute; left: 0; right: 0; top: calc(100% + 6px); z-index: 5;
+  background: var(--sm-white); border: 1px solid var(--sm-border-soft);
+  border-radius: 12px; overflow: hidden; box-shadow: var(--sm-elev-1);
+}
+.agregar__opcion {
+  display: flex; align-items: center; gap: 11px; width: 100%; padding: 11px 14px;
+  border: none; background: transparent; text-align: left; cursor: pointer;
+  font-family: var(--sm-font-body); font-size: 15px; color: var(--sm-ink);
+  transition: background .16s ease;
+}
+.agregar__opcion:hover, .agregar__opcion[data-on="1"] { background: var(--sm-cyan-050); }
+.agregar__opcion + .agregar__opcion { border-top: 1px solid var(--sm-line-hairline); }
+.agregar__opcion:focus-visible { outline: none; box-shadow: var(--sm-focus-inset); }
+.agregar__opcion--propia { color: var(--sm-ink-body); font-style: italic; }
+.agregar__punto { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.agregar__nombre { flex: 1; }
+.agregar__nota { margin: 10px 0 0; color: var(--sm-ink-meta); }
+.agregar__nota--color { margin-top: 12px; }
+.agregar__titulo-color { display: block; margin: 0 0 12px; }
+.agregar__colores { display: flex; flex-wrap: wrap; gap: 10px; }
+.agregar__color {
+  width: 34px; height: 34px; border-radius: 50%; padding: 0; cursor: pointer;
+  border: 1.5px solid rgba(38, 32, 28, .12);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform .16s ease, border-color .16s ease;
+}
+.agregar__color:hover { transform: scale(1.06); }
+.agregar__color[data-on="1"] { border-color: rgba(26, 26, 26, .55); }
+.agregar__color:focus-visible { outline: none; box-shadow: var(--sm-focus-inset); }
