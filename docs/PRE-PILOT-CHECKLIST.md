@@ -9,7 +9,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
   - confirm every endpoint (`/api/claude`, Supabase REST and RPC) refuses requests without a valid session.
 - [ ] **External security review** (1–2 hours) by someone who did not build the app — e.g. Dr. Ruwangi Fernando (VU, cybersecurity).
 - [ ] Supabase security advisors: only the two expected notices for `uso_ai` / `consumir_cuota_ai()` (see `supabase/README.md`).
-- [ ] Vercel Deployment Protection (Vercel Authentication) is on for previews.
+- [x] Vercel Deployment Protection (Vercel Authentication, Standard Protection) is on for previews (checked 20 Oct 2026).
 - [ ] AWS: automatic cost stop — a Budgets action that removes Bedrock permission from `symptommap-vercel` at a set amount.
 - [x] Personal Anthropic API key removed from this project's Vercel. It is **kept** at console.anthropic.com because the backup (symptommaproject) still uses it (Ana, 20 Oct 2026). Keep a low monthly spend limit on it; delete it when the backup no longer needs it.
 - [ ] No screenshots with preview links, emails or test data shared publicly.
