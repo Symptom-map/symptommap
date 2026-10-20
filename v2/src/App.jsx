@@ -13,13 +13,14 @@
 // ─────────────────────────────────────────────────────────────
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { agregarDiagnostico, agregarSintoma, guardarPerfil, moverDiagnostico, moverSintoma, ErrorMapa } from '@nucleo/mapa.js'
+import { agregarDiagnostico, agregarSintoma, borrarSintoma, desconectar, diagnosticosDe, guardarPerfil, moverDiagnostico, moverSintoma, normalizar, ErrorMapa } from '@nucleo/mapa.js'
 import { ds } from './ds/index.js'
 import MapaVista from './mapa/MapaVista.jsx'
 import BarraLateral from './mapa/BarraLateral.jsx'
 import AgregarDiagnostico from './mapa/AgregarDiagnostico.jsx'
 import PerfilDiagnostico from './perfil/PerfilDiagnostico.jsx'
 import AgregarSintoma from './mapa/AgregarSintoma.jsx'
+import AvisoSintoma from './mapa/AvisoSintoma.jsx'
 import { preguntasPara } from './perfil/preguntas.js'
 import {
   PantallaEntrar, PantallaRegistro, PantallaMenorDeEdad, PantallaElegibilidad,
@@ -179,6 +180,7 @@ function MiMapa({ userId, nombre, onSalir }) {
   // Profile window: a new diagnosis waiting for its profile ({ datos }) or an existing one ({ id }).
   const [perfilAbierto, setPerfilAbierto] = useState(null)
   const [agregandoSintoma, setAgregandoSintoma] = useState(false)
+  const [avisoSintoma, setAvisoSintoma] = useState(null) // what "Add" connected a symptom to
   const revision = useRef(null)
   const pendiente = useRef(null) // mapa que falta guardar
   const temporizador = useRef(null)
@@ -282,11 +284,32 @@ function MiMapa({ userId, nombre, onSalir }) {
   const diagnosticoAbierto = perfilAbierto?.id ? mapa?.diagnosticos.find(d => d.id === perfilAbierto.id) : null
   const datosPerfil = perfilAbierto?.datos || diagnosticoAbierto
 
-  // A symptom added without analysing has no connections ("Origin not placed
-  // yet"). Wording that matches an existing symptom merges into it (core).
-  function agregarSintomaSinAnalizar({ texto, cuando }) {
-    cambiar(agregarSintoma(mapa, { texto, cuando, diagnosticoIds: [] }).mapa)
+  // A symptom always arrives with at least one connection: chosen by the AI
+  // ("Add") or kept by the person ("Analyse connections" / their own pick).
+  // Wording that matches an existing symptom merges into it (core). After
+  // "Add" a notice shows what it was connected to (Ana, 20 Oct 2026).
+  function agregarSintomaConectado({ texto, cuando, conexiones, revisado }) {
+    try {
+      const vigentes = conexiones.filter(c => mapa.diagnosticos.some(d => d.id === c.diagnosticoId))
+      // Connections it already had, when the wording merges into an existing symptom.
+      const igual = mapa.sintomas.find(s => normalizar(s.texto) === normalizar(texto))
+      const antes = igual ? diagnosticosDe(mapa, igual.id).map(d => d.id) : []
+      const r = agregarSintoma(mapa, { texto, cuando, diagnosticoIds: vigentes.map(c => c.diagnosticoId) })
+      cambiar(r.mapa)
+      setAvisoSintoma(revisado ? null : {
+        sintomaId: r.sintomaId,
+        fusionado: r.fusionado,
+        conexiones: vigentes.filter(c => !antes.includes(c.diagnosticoId)),
+      })
+    } catch (e) {
+      if (!(e instanceof ErrorMapa)) throw e
+    }
     setAgregandoSintoma(false)
+  }
+
+  function abrirAgregarSintoma() {
+    setAvisoSintoma(null)
+    setAgregandoSintoma(true)
   }
 
   function abrirAgregar() {
@@ -311,7 +334,7 @@ function MiMapa({ userId, nombre, onSalir }) {
       <AppHeader context={titulo} actions={<Button variant="ghost" size="sm" onClick={salirGuardando}>Log out</Button>} />
       <main className="app__principal app__principal--mapa">
         <h1 className="sr-only">{titulo}</h1>
-        {mapa && <BarraLateral mapa={mapa} onAgregarDiagnostico={abrirAgregar} onAgregarSintoma={() => setAgregandoSintoma(true)} onEditarPerfil={id => setPerfilAbierto({ id })} />}
+        {mapa && <BarraLateral mapa={mapa} onAgregarDiagnostico={abrirAgregar} onAgregarSintoma={abrirAgregarSintoma} onEditarPerfil={id => setPerfilAbierto({ id })} />}
         <div className="lienzo">
           {mapa && mapa.diagnosticos.length === 0 && mapa.sintomas.length === 0 && (
             <div className="lienzo__vacio">
@@ -322,13 +345,22 @@ function MiMapa({ userId, nombre, onSalir }) {
           )}
           {mapa && (mapa.diagnosticos.length > 0 || mapa.sintomas.length > 0) && <MapaVista mapa={mapa} onMover={mover} />}
           {textoProblema && <div className="app__problema" role="alert"><InlineMessage tone={problema === 'conflicto' ? 'info' : 'error'}>{textoProblema}</InlineMessage></div>}
+          {avisoSintoma && mapa && (
+            <AvisoSintoma
+              mapa={mapa}
+              aviso={avisoSintoma}
+              onQuitar={(sintomaId, diagnosticoId) => cambiar(desconectar(mapa, sintomaId, diagnosticoId))}
+              onDeshacer={sintomaId => { cambiar(borrarSintoma(mapa, sintomaId)); setAvisoSintoma(null) }}
+              onCerrar={() => setAvisoSintoma(null)}
+            />
+          )}
           <p className="app__aviso">Development preview</p>
         </div>
         {agregando && mapa && (
           <AgregarDiagnostico mapa={mapa} error={errorAgregar} onAgregar={agregar} onCerrar={() => setAgregando(false)} />
         )}
         {agregandoSintoma && (
-          <AgregarSintoma onAgregar={agregarSintomaSinAnalizar} onCerrar={() => setAgregandoSintoma(false)} />
+          <AgregarSintoma mapa={mapa} onAgregar={agregarSintomaConectado} onCerrar={() => setAgregandoSintoma(false)} />
         )}
         {perfilAbierto && datosPerfil && (
           <PerfilDiagnostico

@@ -234,3 +234,46 @@ body { background: var(--sm-surface-canvas); }
 .sintoma__texto::placeholder { color: var(--sm-ink-meta); }
 .sintoma__texto:hover { background: var(--sm-cyan-050); border-color: var(--sm-border-hover); }
 .sintoma__texto:focus { outline: none; background: var(--sm-white); border-color: var(--sm-cyan-500); box-shadow: inset 0 0 0 1px var(--sm-cyan-500); }
+
+/* "Add a symptom": help line and "Possible connections" (prototype .pt-airow) */
+.sintoma__ayuda { margin: 0; color: var(--sm-ink-meta); line-height: 1.55; }
+.conexiones { display: flex; flex-direction: column; gap: 20px; }
+.conexiones__palabras { padding: 14px 16px; border-radius: 14px; background: var(--sm-cream); }
+.conexiones__palabras .sm-field-label { margin: 0 0 4px; }
+.conexiones__palabras .sm-body-sm { margin: 0; overflow-wrap: anywhere; }
+.conexiones__grupo { display: flex; flex-direction: column; gap: 9px; }
+.conexiones__grupo > .sm-field-label { margin: 0; }
+.conexiones__lista { display: flex; flex-direction: column; gap: 9px; }
+.conexion {
+  display: flex; gap: 12px; align-items: flex-start; width: 100%; padding: 14px 15px;
+  border-radius: 14px; background: var(--sm-white); border: 1px solid var(--sm-line-hairline);
+  cursor: pointer; text-align: left; font: inherit; color: inherit;
+  transition: background .16s ease, border-color .16s ease;
+}
+.conexion:hover { background: var(--sm-cyan-050); border-color: var(--sm-border-hover); }
+.conexion[data-on="1"] { background: var(--sm-cyan-050); border-color: var(--sm-cyan-050); }
+.conexion:focus-visible { outline: none; box-shadow: var(--sm-focus-inset); }
+.conexion__punto { width: 12px; height: 12px; border-radius: 50%; flex: none; margin-top: 4px; }
+.conexion__texto { flex: 1; min-width: 0; }
+.conexion__nombre { display: block; margin: 0 0 4px; }
+.conexion__razon { display: block; }
+
+/* What "Add" connected a symptom to (NEW, 20 Oct 2026) */
+.aviso-sintoma {
+  position: absolute; left: 50%; bottom: 24px; transform: translateX(-50%); z-index: 10;
+  width: min(420px, calc(100% - 32px)); box-sizing: border-box; padding: 18px 18px 14px;
+  border-radius: 22px; background: var(--sm-white); box-shadow: var(--pulido-sombra-flotante);
+  display: flex; flex-direction: column; gap: 10px; outline: none;
+}
+.aviso-sintoma__cabeza { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.aviso-sintoma__titulo, .aviso-sintoma__palabras, .aviso-sintoma__resumen, .aviso-sintoma__nota { margin: 0; }
+.aviso-sintoma__palabras { color: var(--sm-ink-body); overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.aviso-sintoma__nota { color: var(--sm-ink-meta); }
+.aviso-sintoma__lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; max-height: 40vh; overflow: auto; }
+.aviso-sintoma__fila { display: flex; gap: 10px; align-items: flex-start; }
+.aviso-sintoma__texto { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.aviso-sintoma__acciones { display: flex; justify-content: flex-end; gap: 8px; margin-top: 2px; }
+@media (prefers-reduced-motion: no-preference) {
+  .aviso-sintoma { animation: aviso-subir .32s cubic-bezier(.2, .8, .2, 1) both; }
+}
+@keyframes aviso-subir { from { opacity: 0; transform: translate(-50%, 14px); } to { opacity: 1; transform: translate(-50%, 0); } }

@@ -1,10 +1,10 @@
 // ─────────────────────────────────────────────────────────────
-// ai.js — pedir algo a la AI desde la v2
+// ai.js — ask the AI something from v2
 //
-// Va a /api/claude con el token de la sesión: la función solo responde a
-// personas con sesión iniciada. Enviar SOLO el contexto de salud mínimo y
-// nunca nombre, correo ni ids (AGENTS.md). La respuesta es una sugerencia:
-// nada entra al mapa sin que la persona lo acepte (aceptarSugerencia).
+// Calls /api/claude with the session token: the function only answers people
+// who are logged in. Send ONLY the minimum health context and never a name,
+// email or ids (AGENTS.md). The answer only reaches the map through an action
+// the person takes (docs/FUENTES-Y-DECISIONES.md §3c).
 // ─────────────────────────────────────────────────────────────
 
 import { supabase } from './cliente.js'

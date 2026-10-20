@@ -53,7 +53,7 @@ Diagnoses, symptoms, triggers, notes and anything the person writes are **sensit
 
 - No clinical RAG, no vector database, no clinical ontology. Lightweight terminology aliases are fine.
 - Send only the minimum health context needed.
-- The AI never writes to the map or the database. A suggestion becomes part of the map only when the person accepts it (`aceptarSugerencia` in the core).
+- The AI never writes to the database, and it only touches the map through an action the person takes. **Suggest symptoms:** a suggestion becomes part of the map only when the person accepts it (`aceptarSugerencia` in the core). **Add a symptom (Ana, 20 Oct 2026):** when the person presses Add, the AI connects the symptom to diagnoses already on their map; the person sees what it was connected to and can remove connections or undo. The AI never adds or infers a diagnosis. See `docs/FUENTES-Y-DECISIONES.md` §3c.
 
 ## Working style
 
