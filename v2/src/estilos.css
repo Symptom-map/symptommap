@@ -194,3 +194,20 @@ body { background: var(--sm-surface-canvas); }
 .agregar__color:hover { transform: scale(1.06); }
 .agregar__color[data-on="1"] { border-color: rgba(26, 26, 26, .55); }
 .agregar__color:focus-visible { outline: none; box-shadow: var(--sm-focus-inset); }
+
+/* Windows keep inside the screen: header and footer stay put, the body scrolls. */
+.capa .sm-modal { display: flex; flex-direction: column; max-height: calc(100dvh - 64px); }
+.capa .sm-modal__head, .capa .sm-modal__foot { flex: none; }
+.capa .sm-modal__body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.capa--encima { z-index: 30; }
+
+/* Diagnosis profile */
+.perfil { display: flex; flex-direction: column; gap: 22px; }
+.perfil__ayuda { margin: 0; color: var(--sm-ink-body); }
+
+/* Diagnosis chips with an action (prototype .pt-sb .sm-chip-row) */
+.barra .sm-chip-row { padding-right: 6px; border-radius: 14px; background: var(--dx-tint-selected, var(--dx-tint)); }
+.barra .sm-chip-row:hover { background: var(--dx-tint-hover, var(--dx-tint)); }
+.barra .sm-chip-row .sm-chip { flex: 1; background: transparent; }
+.barra .sm-chip-row .sm-icon-btn { width: 24px; height: 24px; opacity: .72; }
+.barra .sm-chip-row .sm-icon-btn:hover, .barra .sm-chip-row .sm-icon-btn:focus-visible { opacity: 1; }

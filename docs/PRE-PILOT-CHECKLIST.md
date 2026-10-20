@@ -38,7 +38,9 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 
 ## Product
 - [x] Add a diagnosis: empty map, sidebar, Add a diagnosis window (PR #13).
-- [ ] Visual polish layer for the app (motion, button states, spacing) — proposal first, from Ana's 3–5 picked examples.
+- [x] Visual polish layer for the app: pill buttons and softer windows (PR #14).
+- [x] Diagnosis profile: first setup after adding, edit later from the sidebar (PR #15).
+- [ ] Psychologist reviews the profile questions and options (`v2/src/perfil/preguntas.js`), together with the diagnosis catalogue.
 - [ ] Fill the map in v2 (empty state, add diagnosis with autocomplete, symptoms).
 - [ ] Forgot password.
 - [ ] Delete account and data.
