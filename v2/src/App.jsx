@@ -6,15 +6,17 @@
 //   → Verify email (3/3) → Consent → mapa
 //   Log in → (Verify email si el correo no estaba confirmado) → mapa
 //
-// Pendiente en otras tareas: "Protect your account" (verificación en dos pasos,
-// opcional), el walkthrough de bienvenida, recuperar la contraseña y editar el
-// mapa (agregar diagnósticos y síntomas). Ver docs/FUENTES-Y-DECISIONES.md.
+// Still to do in other tasks: "Protect your account" (optional two-step
+// verification), the welcome walkthrough, password reset, the diagnosis
+// profile and symptoms. See docs/PRE-PILOT-CHECKLIST.md.
 // ─────────────────────────────────────────────────────────────
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { moverDiagnostico, moverSintoma } from '@nucleo/mapa.js'
+import { agregarDiagnostico, moverDiagnostico, moverSintoma, ErrorMapa } from '@nucleo/mapa.js'
 import { ds } from './ds/index.js'
 import MapaVista from './mapa/MapaVista.jsx'
+import BarraLateral from './mapa/BarraLateral.jsx'
+import AgregarDiagnostico from './mapa/AgregarDiagnostico.jsx'
 import {
   PantallaEntrar, PantallaRegistro, PantallaMenorDeEdad, PantallaElegibilidad,
   PantallaSinDiagnostico, PantallaVerificar, PantallaConsentimiento, MENSAJES,
@@ -163,11 +165,13 @@ export default function App() {
   )
 }
 
-// ── El mapa de la persona, con guardado automático ────────────
+// ── The person's map, saved automatically ─────────────────────
 function MiMapa({ userId, nombre, onSalir }) {
   const { AppHeader, Button, InlineMessage } = ds()
   const [mapa, setMapa] = useState(null)
   const [problema, setProblema] = useState('')
+  const [agregando, setAgregando] = useState(false) // "Add a diagnosis" window open
+  const [errorAgregar, setErrorAgregar] = useState('')
   const revision = useRef(null)
   const pendiente = useRef(null) // mapa que falta guardar
   const temporizador = useRef(null)
@@ -233,12 +237,34 @@ function MiMapa({ userId, nombre, onSalir }) {
     cambiar(tipo === 'diagnostico' ? moverDiagnostico(mapa, id, posicion) : moverSintoma(mapa, id, posicion))
   }
 
+  // The core decides everything (colour, place, duplicates, the 10 limit).
+  // A diagnosis that is already on the map is not added twice.
+  // Next task: the prototype then opens the diagnosis profile.
+  function agregar({ etiqueta, claveCanonica, slot }) {
+    try {
+      const r = agregarDiagnostico(mapa, { etiqueta, claveCanonica, slot })
+      if (!r.yaExistia) cambiar(r.mapa)
+      setAgregando(false)
+      setErrorAgregar('')
+    } catch (e) {
+      if (!(e instanceof ErrorMapa)) throw e
+      setErrorAgregar(e.codigo === 'LIMITE_DIAGNOSTICOS'
+        ? 'You can add up to 10 diagnoses.'
+        : 'This diagnosis could not be added. Please try again.')
+    }
+  }
+
+  function abrirAgregar() {
+    setErrorAgregar('')
+    setAgregando(true)
+  }
+
   async function salirGuardando() {
     await guardarAhora()
     onSalir()
   }
 
-  // NUEVO: mensajes de guardado que el prototipo no mostraba.
+  // NEW: saving messages the prototype did not show.
   const textoProblema = {
     conflicto: 'Your map changed in another window. We loaded the latest version.',
     demasiado_grande: 'Your map is too large to save. Remove something and try again.',
@@ -248,11 +274,24 @@ function MiMapa({ userId, nombre, onSalir }) {
   return (
     <>
       <AppHeader context={titulo} actions={<Button variant="ghost" size="sm" onClick={salirGuardando}>Log out</Button>} />
-      <main className="app__principal">
+      <main className="app__principal app__principal--mapa">
         <h1 className="sr-only">{titulo}</h1>
-        {mapa && <MapaVista mapa={mapa} onMover={mover} />}
-        {textoProblema && <div className="app__problema" role="alert"><InlineMessage tone={problema === 'conflicto' ? 'info' : 'error'}>{textoProblema}</InlineMessage></div>}
-        <p className="app__aviso">Development preview</p>
+        {mapa && <BarraLateral mapa={mapa} onAgregarDiagnostico={abrirAgregar} />}
+        <div className="lienzo">
+          {mapa && mapa.diagnosticos.length === 0 && mapa.sintomas.length === 0 && (
+            <div className="lienzo__vacio">
+              <h2 className="sm-h2 lienzo__titulo">Your map starts empty, that’s normal</h2>
+              <p className="sm-body lienzo__texto">Add a diagnosis you’ve already received and it becomes the first circle here.</p>
+              <Button variant="primary" size="sm" onClick={abrirAgregar}>Add your first diagnosis</Button>
+            </div>
+          )}
+          {mapa && (mapa.diagnosticos.length > 0 || mapa.sintomas.length > 0) && <MapaVista mapa={mapa} onMover={mover} />}
+          {textoProblema && <div className="app__problema" role="alert"><InlineMessage tone={problema === 'conflicto' ? 'info' : 'error'}>{textoProblema}</InlineMessage></div>}
+          <p className="app__aviso">Development preview</p>
+        </div>
+        {agregando && mapa && (
+          <AgregarDiagnostico mapa={mapa} error={errorAgregar} onAgregar={agregar} onCerrar={() => setAgregando(false)} />
+        )}
       </main>
     </>
   )

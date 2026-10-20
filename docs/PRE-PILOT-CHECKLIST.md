@@ -37,10 +37,16 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [ ] Supabase Auth custom SMTP through SES; logo in the email template.
 
 ## Product
+- [x] Add a diagnosis: empty map, sidebar, Add a diagnosis window (PR #13).
+- [ ] Visual polish layer for the app (motion, button states, spacing) — proposal first, from Ana's 3–5 picked examples.
 - [ ] Fill the map in v2 (empty state, add diagnosis with autocomplete, symptoms).
 - [ ] Forgot password.
 - [ ] Delete account and data.
 - [ ] One Lighthouse performance check on a preview.
+
+## Public site (when it opens)
+- [ ] Breadcrumb on the public pages (e.g. Home › Our story, Home › Why SymptomMap), linking back to Home, with `BreadcrumbList` structured data for SEO. **Not inside the app**: in the map, profile and settings a simple Back is enough and a breadcrumb would add noise (Ana, 20 Oct 2026).
+- [ ] Visual polish pass with Ana's references (see `docs/design/REFERENCES.md`).
 
 ## Housekeeping
 - [ ] Translate the remaining Spanish documents and comments to English (rule in `AGENTS.md`).

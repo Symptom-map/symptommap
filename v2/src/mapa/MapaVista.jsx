@@ -6,7 +6,7 @@
 // componente padre (onMover), que usa moverDiagnostico / moverSintoma.
 // ─────────────────────────────────────────────────────────────
 
-import { useMemo, useRef, useState } from 'react'
+import { useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { construirVista } from '@nucleo/vista.js'
 import { ds } from '../ds/index.js'
 
@@ -26,8 +26,26 @@ export default function MapaVista({ mapa, onMover }) {
   const [desplazamiento, setDesplazamiento] = useState({ x: 0, y: 0 })
   const [arrastre, setArrastre] = useState(null) // { tipo, id, dx, dy }
   const contenedor = useRef(null)
+  const paneado = useRef(false) // once the person pans, the map is no longer re-centred
 
   const { limites } = vista
+
+  // The map world starts centred in the canvas, as in the approved prototype,
+  // and stays centred when the window resizes or the map grows, until the
+  // person pans it themselves.
+  useLayoutEffect(() => {
+    const el = contenedor.current
+    if (!el) return
+    const centrar = () => {
+      if (paneado.current) return
+      const { width, height } = el.getBoundingClientRect()
+      setDesplazamiento({ x: (width - limites.ancho * zoom) / 2, y: (height - limites.alto * zoom) / 2 })
+    }
+    centrar()
+    const observador = new ResizeObserver(centrar)
+    observador.observe(el)
+    return () => observador.disconnect()
+  }, [limites.ancho, limites.alto, zoom])
 
   // Coordenadas del puntero → coordenadas del mapa (descontando zoom y desplazamiento).
   function aMapa(evento) {
@@ -64,8 +82,10 @@ export default function MapaVista({ mapa, onMover }) {
     setPaneo({ x: evento.clientX - desplazamiento.x, y: evento.clientY - desplazamiento.y })
   }
   function moverPaneo(evento) {
-    if (paneo) setDesplazamiento({ x: evento.clientX - paneo.x, y: evento.clientY - paneo.y })
-    else moverArrastre(evento)
+    if (paneo) {
+      paneado.current = true
+      setDesplazamiento({ x: evento.clientX - paneo.x, y: evento.clientY - paneo.y })
+    } else moverArrastre(evento)
   }
   function terminarPaneo() {
     if (paneo) setPaneo(null)
