@@ -17,6 +17,12 @@ test('the prompt lists the diagnoses by number and never sends their ids', () =>
   assert.doesNotMatch(p, /\bd1\b|\bd2\b|\bd3\b/)
 })
 
+test('the reasons are asked for in English, or Spanish only when the words are Spanish', () => {
+  const p = promptConexiones({ texto: 'meltdown', diagnosticos })
+  assert.match(p, /Write in English\. Only if the person's words are clearly written in Spanish/)
+  assert.match(p, /Never use any other language/)
+})
+
 test('the optional context is left out when empty', () => {
   assert.doesNotMatch(promptConexiones({ texto: 'x', diagnosticos }), /<context>[^<]*<\/context>/)
 })

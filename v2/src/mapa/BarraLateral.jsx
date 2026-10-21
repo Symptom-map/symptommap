@@ -28,12 +28,9 @@ export default function BarraLateral({ mapa, onAgregarDiagnostico, onAgregarSint
   return (
     <aside className="barra" aria-label="My diagnoses and symptoms">
       <SidebarGroup title="My diagnoses">
-        {vacio ? (
-          <>
-            <p className="barra__texto">Nothing here yet. Start with one, you can add the rest whenever you want.</p>
-            <Button variant="primary" size="sm" onClick={onAgregarDiagnostico}>Add a diagnosis</Button>
-          </>
-        ) : (
+        {/* Empty map: the canvas says what to do and has the only button, so the
+            sidebar stays quiet instead of repeating it (Ana, 21 Oct 2026). */}
+        {vacio ? null : (
           <div className="barra__lista">
             {diagnosticos.map(d => (
               <DiagnosisChip
@@ -59,9 +56,7 @@ export default function BarraLateral({ mapa, onAgregarDiagnostico, onAgregarSint
       )}
       <SidebarGroup title="Symptoms">
         {mapa.sintomas.length === 0 ? (
-          <p className="barra__texto barra__texto--corto">
-            {vacio ? 'Symptoms appear here once you add a diagnosis to attach them to.' : 'Add something you experience, in your own words.'}
-          </p>
+          vacio ? null : <p className="barra__texto barra__texto--corto">Add something you experience, in your own words.</p>
         ) : (
           <div className="barra__filas">
             {mapa.sintomas.map(s => {
