@@ -23,7 +23,8 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 ## Email
 - [x] Amazon SES (Sydney): identity `symptommap.com.au` created with Easy DKIM (RSA 2048); 3 DKIM CNAMEs and `_dmarc` TXT (`v=DMARC1; p=none;`) added in VentraIP (19 Oct 2026).
 - [x] SES shows the domain as **Verified** (DKIM success, 22 Oct 2026).
-- [ ] Then request production access (SES → Get set up → Request production access). The button stays disabled until the domain is verified. Form: Transactional · https://www.symptommap.com.au · English · use case text below.
+- [x] Request production access — sent 22 Oct 2026 (Transactional · https://www.symptommap.com.au · English). The form no longer asks for a use case; if AWS asks by email, reply with the text below.
+- [ ] AWS approves production access (usually 1–2 business days).
 
 <details><summary>Use case text for the production access request</summary>
 
