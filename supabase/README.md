@@ -39,7 +39,7 @@ En el panel de Supabase → *Authentication*:
 |---|---|---|
 | *URL Configuration* → Site URL | `https://www.symptommap.com.au/app/` | Dirección que usan los correos |
 | *Emails* → *Confirm signup* | Pegar `plantillas/confirmar-registro.html` (usa `{{ .Token }}`) | La app pide un **código**, no un enlace |
-| *Emails* → *Reset Password* | Paste `plantillas/reset-password.html` (uses `{{ .Token }}`), subject "Your SymptomMap code" | "Forgot your password?" asks for a **code**, not a link |
+| *Emails* → *Reset Password* | Paste `plantillas/reset-password.html` (uses `{{ .Token }}`), subject "SymptomMap Reset Password" (different from the sign-up email) | "Forgot your password?" asks for a **code**, not a link |
 | *Sign In / Providers* → Email | "Confirm email" activado · largo del código (Email OTP Length) = **6** · contraseña mínima **8** | Coincide con las pantallas del prototipo |
 | *Attack Protection* | Activar la protección de contraseñas filtradas | Rechaza contraseñas que aparecen en filtraciones conocidas |
 | *Emails* → SMTP | **Antes del piloto:** un servidor de correo propio (con el dominio) | El correo de prueba de Supabase solo envía a los miembros del equipo y tiene un límite bajo por hora |
