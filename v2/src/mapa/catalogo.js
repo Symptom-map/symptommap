@@ -37,10 +37,15 @@ export function buscarDiagnosticos(texto) {
     .map(({ clave, etiqueta }) => ({ clave, etiqueta }))
 }
 
-/** The catalogue entry whose name is exactly what the person typed, or null. */
+/**
+ * The catalogue entry whose full name (English or Spanish) is exactly what the
+ * person typed, or null. Only used to hide "Use “…”" when it would repeat the
+ * suggestion: typing never sets the internal key, only picking from the list
+ * does (FUNCTIONAL-INVENTORY §8, "ambiguous free text is never guessed").
+ */
 export function coincidenciaExacta(texto) {
   const consulta = normalizar(texto)
   if (!consulta) return null
-  const e = ENTRADAS.find(x => x.nombres.includes(consulta))
-  return e ? { clave: e.clave, etiqueta: e.etiqueta } : null
+  const e = DIAGNOSES.find(d => normalizar(d.labelEn) === consulta || normalizar(d.label) === consulta)
+  return e ? { clave: e.id, etiqueta: e.labelEn } : null
 }

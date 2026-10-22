@@ -2,14 +2,26 @@
 // BarraLateral.jsx — left sidebar of "My map" (approved prototype)
 //
 // "My diagnoses": the person's diagnoses in map order, each with "Edit
-// profile", and the button that opens "Add a diagnosis". "Suggest symptoms" and "Add a symptom" come with
-// their own tasks; until then they are not shown (no buttons that do nothing).
+// profile", then "Add diagnosis" and "Add a symptom". "Symptoms": every
+// symptom, with a bar in the colours of the diagnoses it connects to (grey
+// when its origin is not placed yet). "Suggest symptoms" comes with the AI
+// task; until then it is not shown (no buttons that do nothing).
 // ─────────────────────────────────────────────────────────────
 
+import { diagnosticosDe } from '@nucleo/mapa.js'
 import { ds } from '../ds/index.js'
 
-export default function BarraLateral({ mapa, onAgregarDiagnostico, onEditarPerfil }) {
-  const { SidebarGroup, DiagnosisChip, Button, IconButton, Icon } = ds()
+// Bar colour of a symptom row: one colour per connected diagnosis, in equal parts.
+function barra(slots) {
+  if (slots.length === 0) return { '--fila-barra': 'var(--sm-grey)' }
+  if (slots.length === 1) return { '--fila-barra': `var(--sm-dx-${slots[0]}-base)` }
+  const paso = 100 / slots.length
+  const tramos = slots.map((s, i) => `var(--sm-dx-${s}-base) ${(i * paso).toFixed(2)}% ${((i + 1) * paso).toFixed(2)}%`)
+  return { '--fila-barra': `linear-gradient(to bottom, ${tramos.join(', ')})` }
+}
+
+export default function BarraLateral({ mapa, onAgregarDiagnostico, onAgregarSintoma, onEditarPerfil }) {
+  const { SidebarGroup, DiagnosisChip, Button, IconButton, Icon, SymptomRow } = ds()
   const diagnosticos = [...mapa.diagnosticos].sort((a, b) => a.orden - b.orden)
   const vacio = diagnosticos.length === 0
 
@@ -42,13 +54,23 @@ export default function BarraLateral({ mapa, onAgregarDiagnostico, onEditarPerfi
       {!vacio && (
         <div className="barra__acciones">
           <Button variant="primary" size="sm" block onClick={onAgregarDiagnostico}>Add diagnosis</Button>
+          <Button variant="ghost" size="sm" block onClick={onAgregarSintoma}>Add a symptom</Button>
         </div>
       )}
-      {vacio && (
-        <SidebarGroup title="Symptoms">
-          <p className="barra__texto barra__texto--corto">Symptoms appear here once you add a diagnosis to attach them to.</p>
-        </SidebarGroup>
-      )}
+      <SidebarGroup title="Symptoms">
+        {mapa.sintomas.length === 0 ? (
+          <p className="barra__texto barra__texto--corto">
+            {vacio ? 'Symptoms appear here once you add a diagnosis to attach them to.' : 'Add something you experience, in your own words.'}
+          </p>
+        ) : (
+          <div className="barra__filas">
+            {mapa.sintomas.map(s => {
+              const slots = diagnosticosDe(mapa, s.id).map(d => d.slot)
+              return <SymptomRow key={s.id} label={s.texto} slot={slots[0] ?? 1} sources={slots} compact style={barra(slots)} />
+            })}
+          </div>
+        )}
+      </SidebarGroup>
     </aside>
   )
 }

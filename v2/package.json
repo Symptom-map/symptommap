@@ -8,7 +8,7 @@
     "build": "vite build",
     "build:sitio": "node scripts/construir-sitio.mjs",
     "preview": "vite preview",
-    "test": "node --test ../src/core/mapa.test.js src/cuenta/validar.test.js src/mapa/catalogo.test.js src/perfil/preguntas.test.js ../api/_ai/firma.test.js ../api/_ai/bedrock.test.js ../api/_ai/claude.test.js"
+    "test": "node --test ../src/core/mapa.test.js src/cuenta/validar.test.js src/mapa/catalogo.test.js src/mapa/conexiones.test.js src/perfil/preguntas.test.js ../api/_ai/firma.test.js ../api/_ai/bedrock.test.js ../api/_ai/claude.test.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",

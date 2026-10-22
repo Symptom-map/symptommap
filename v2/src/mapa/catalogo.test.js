@@ -21,8 +21,8 @@ test('never shows more than 6 suggestions', () => {
   assert.ok(buscarDiagnosticos('dis').length <= MAXIMO_SUGERENCIAS)
 })
 
-test('exact match recognises a catalogue name, a short form or the Spanish name', () => {
-  assert.equal(coincidenciaExacta('ADHD').clave, 'tda')
+test('exact match only recognises a full catalogue name (English or Spanish)', () => {
+  assert.equal(coincidenciaExacta('ADHD'), null) // a typed acronym is never guessed
   assert.equal(coincidenciaExacta('adhd / add').clave, 'tda')
   assert.equal(coincidenciaExacta('Fibromialgia').clave, 'fibro')
   assert.equal(coincidenciaExacta('my own words'), null)

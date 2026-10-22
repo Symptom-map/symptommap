@@ -87,10 +87,10 @@ export default function AgregarDiagnostico({ mapa, error, onAgregar, onCerrar })
     e?.preventDefault()
     const etiqueta = texto.trim()
     if (!etiqueta || lleno) return
-    // A name picked from the list, or typed exactly like a catalogue name, is
-    // recognised (claveCanonica); the person's own words are kept as written.
-    const reconocido = elegido || exacta
-    onAgregar({ etiqueta, claveCanonica: reconocido ? reconocido.clave : null, slot })
+    // Only a name picked from the list is recognised (claveCanonica). Typed
+    // text, even an acronym like "BPD", is kept as the person's own wording
+    // with no key (FUNCTIONAL-INVENTORY §8).
+    onAgregar({ etiqueta, claveCanonica: elegido ? elegido.clave : null, slot })
   }
 
   const acciones = [

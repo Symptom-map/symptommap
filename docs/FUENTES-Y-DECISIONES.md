@@ -3,7 +3,7 @@
 Leer antes de trabajar en SymptomMap, en cualquier herramienta (Claude, Claude Code, Codex, Claude Design). Las reglas para agentes de código están en `AGENTS.md`.
 Existe para que nunca se mezclen las distintas versiones del proyecto.
 
-Última actualización: 8 de octubre de 2026.
+Última actualización: 20 de octubre de 2026.
 
 ## 1. Qué es cada cosa y para qué se usa
 
@@ -72,6 +72,21 @@ Reglas que vienen con esta arquitectura:
 - Alerta de gasto en AWS y límite de gasto en la cuenta de Anthropic mientras se use.
 
 Descartado por ahora: todo en AWS (Amplify/CloudFront + Lambda) y Cognito. Se puede revisar después del piloto.
+
+## 3c. Adding a symptom (decided by Ana on 20 October 2026)
+
+This replaces FUNCTIONAL-INVENTORY §6 ("Add without analysing") and §9B, and the prototype rule "the AI never writes to the map" for this one action.
+
+| Topic | Decision | Why |
+|---|---|---|
+| "Add without analysing" | **Removed.** A symptom the person adds is never left grey ("Origin not placed yet") | A grey symptom with no connections is confusing later |
+| **Add** | The person decides to add the symptom; **the AI places it**, connecting it to the diagnoses already on their map that it may relate to. A notice then says what it was connected to, with a one-line reason for each, and lets the person remove a connection (while another remains) or undo the whole symptom | Placing the symptom is the core of the tool; if the person has to decide every connection, the tool doesn't lighten anything |
+| **Analyse connections** | Shows the same possibilities first ("Possible connections"), already selected; the person keeps the ones that feel true, can add other diagnoses on the map, and adds or goes Back | For people who want to review before anything is added |
+| Limits on the AI | Only diagnoses already on the map (never a new one, never inferring a diagnosis); hedged wording; no percentages, scores or certainty; minimum context (the symptom wording, the optional "when / how" text and the diagnoses on the map, sent by number, never ids, name or email) | Product principles in `AGENTS.md` |
+| When the AI finds nothing or is unavailable | The person chooses the diagnoses from their map ("Where does this fit?"). The symptom is added only with at least one connection | So a symptom is never grey |
+| Grey symptoms | Only when a diagnosis is deleted and a symptom written by the person loses its last connection (FUNCTIONAL-INVENTORY §7) | Unchanged |
+
+Pending: tell the psychologist about this change at the next checkpoint.
 
 ## 4. Pendientes de decidir
 
