@@ -8,6 +8,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import { supabase } from './cliente.js'
+import { MODO_PRUEBA_DISPONIBLE, enModoPrueba, respuestaDeEjemplo } from '../prueba.js'
 
 export class ErrorAI extends Error {
   constructor(codigo) {
@@ -18,6 +19,8 @@ export class ErrorAI extends Error {
 
 /** Devuelve el texto de la respuesta de Claude. */
 export async function pedirAI(texto, maxTokens = 1000) {
+  // Test mode never calls the AI (prueba.js).
+  if (MODO_PRUEBA_DISPONIBLE && enModoPrueba()) return respuestaDeEjemplo()
   const { data } = await supabase.auth.getSession()
   const token = data.session?.access_token
   if (!token) throw new ErrorAI('sin_sesion')

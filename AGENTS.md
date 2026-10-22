@@ -100,6 +100,8 @@ npm run build:sitio --prefix v2
 
 **The public site is closed ("Coming soon") since 13 Oct 2026.** In Vercel production (www.symptommap.com.au) the build publishes only `proximamente.html`, as `/` and as the 404, and `api/claude.js` answers 503. Vercel preview deployments (protected, team only) still build the full site: that is where the app is tested. To open the site: Vercel → Settings → Environment Variables → `SITIO_ABIERTO = si` (Production) and redeploy. To check the closed build locally: `SITIO_SIMULAR_CERRADO=si npm run build:sitio --prefix v2`.
 
+**Test mode without an account** (`v2/src/prueba.js`): on Vercel previews and in local development the login screen has "Try without an account (test mode)" (or open `/app/#prueba`). The map lives in memory only, nothing goes to Supabase and the AI is never called (example answers). Production builds (`VERCEL_ENV=production`) contain no test-mode code; keep it that way.
+
 Vercel runs `npm ci --prefix v2` and `npm run build:sitio --prefix v2` and publishes `dist/` (see `vercel.json`). `v2/scripts/construir-sitio.mjs` copies only a whitelist of public files from the root, so `docs/`, `AGENTS.md` and `node_modules` are never published. **If the current app needs a new public file, add it to that whitelist.** `api/claude.js` needs the AWS variables in `docs/aws/README.md`; for local dev use `npx vercel dev`.
 
 Tests: `npm test --prefix v2` (map core + account validation; Node 20+). Database: `supabase/README.md` (migrations, account creation trigger, dashboard settings).
