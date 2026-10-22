@@ -283,3 +283,38 @@ body { background: var(--sm-surface-canvas); }
 
 /* Test mode notice (prueba.js): clearly visible so nobody mistakes it for a real map */
 .app__aviso--prueba { color: var(--sm-ink); background: var(--sm-cyan-050); padding: 6px 12px; border-radius: 999px; }
+
+/* Detail panel (approved prototype .pt-sb on the right) */
+.panel {
+  width: 340px; flex: none; box-sizing: border-box; min-height: 0; overflow: auto;
+  background: var(--sm-white); border-left: 1px solid var(--sm-line-hairline);
+  padding: 24px 22px; display: flex; flex-direction: column; gap: 18px;
+}
+.panel__cabeza { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+.panel__titulo { margin: 0; overflow-wrap: anywhere; outline: none; }
+.panel__cuerpo { display: flex; flex-direction: column; gap: 20px; }
+.panel__etiquetas { display: flex; flex-wrap: wrap; gap: 6px; }
+.panel__nota { margin: 0; color: var(--sm-ink-body); }
+.panel__bloque { display: flex; flex-direction: column; gap: 8px; }
+.panel__bloque > .sm-field-label { margin: 0; }
+.panel__conexiones { display: flex; flex-direction: column; gap: 6px; }
+.panel__conexiones .sm-chip[aria-disabled="true"] { cursor: default; }
+.panel__ayuda { margin: 0; color: var(--sm-ink-meta); }
+.panel__confirmar { padding: 14px; border-radius: 14px; background: var(--sm-cream); }
+.panel__confirmar .sm-body-sm { margin: 0; }
+.panel__botones { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.panel__enlaces { display: flex; gap: 16px; flex-wrap: wrap; }
+.panel__tipo { display: inline-flex; align-items: center; gap: 8px; margin: 0; }
+.panel__tipo .conexion__punto { margin-top: 0; }
+.panel__datos { margin: 0; display: flex; flex-direction: column; gap: 12px; }
+.panel__datos dt { margin: 0 0 2px; }
+.panel__datos dd { margin: 0; overflow-wrap: anywhere; }
+.panel .sm-input--textarea { min-height: 84px; resize: vertical; }
+/* Selected symptom on the map: a soft ring, like the selected diagnosis node */
+.mapa__nodo--sintoma[data-elegido="1"] > :first-child { outline: 1.5px solid var(--sm-cyan-400, #3cc6e0); outline-offset: 3px; border-radius: 999px; }
+.mapa__nodo:focus-visible { outline: none; }
+.mapa__nodo:focus-visible > :first-child { box-shadow: var(--sm-focus-inset); border-radius: 999px; }
+@media (prefers-reduced-motion: no-preference) {
+  .panel { animation: panel-entrar .22s cubic-bezier(.2, .8, .2, 1) both; }
+}
+@keyframes panel-entrar { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }

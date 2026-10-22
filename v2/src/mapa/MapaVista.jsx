@@ -19,7 +19,10 @@ const ZOOM_MAX = 2
 // Un síntoma flotante ("Origin not placed yet") usa el gris neutro del design system.
 const ESTILO_FLOTANTE = { '--dx-base': 'var(--sm-grey)', '--dx-halo': 'transparent' }
 
-export default function MapaVista({ mapa, onMover }) {
+// A press without movement (under 4px) selects the node instead of moving it (onElegir).
+const UMBRAL_CLIC = 4
+
+export default function MapaVista({ mapa, onMover, onElegir, seleccion }) {
   const { DiagnosisNode, SymptomNode, Connection, ConnectionLayer, MapControls } = ds()
   const vista = useMemo(() => construirVista(mapa), [mapa])
   const [zoom, setZoom] = useState(1)
@@ -60,18 +63,20 @@ export default function MapaVista({ mapa, onMover }) {
     evento.stopPropagation()
     evento.currentTarget.setPointerCapture(evento.pointerId)
     const p = aMapa(evento)
-    setArrastre({ tipo, id, dx: p.x - x, dy: p.y - y, x, y })
+    setArrastre({ tipo, id, dx: p.x - x, dy: p.y - y, x, y, inicio: { x: evento.clientX, y: evento.clientY }, movio: false })
   }
 
   function moverArrastre(evento) {
     if (!arrastre) return
     const p = aMapa(evento)
-    setArrastre({ ...arrastre, x: p.x - arrastre.dx, y: p.y - arrastre.dy })
+    const movio = arrastre.movio || Math.hypot(evento.clientX - arrastre.inicio.x, evento.clientY - arrastre.inicio.y) >= UMBRAL_CLIC
+    setArrastre({ ...arrastre, movio, x: p.x - arrastre.dx, y: p.y - arrastre.dy })
   }
 
   function terminarArrastre() {
     if (!arrastre) return
-    onMover?.(arrastre.tipo, arrastre.id, { x: arrastre.x, y: arrastre.y })
+    if (arrastre.movio) onMover?.(arrastre.tipo, arrastre.id, { x: arrastre.x, y: arrastre.y })
+    else onElegir?.({ tipo: arrastre.tipo, id: arrastre.id })
     setArrastre(null)
   }
 
@@ -91,6 +96,16 @@ export default function MapaVista({ mapa, onMover }) {
     if (paneo) setPaneo(null)
     else terminarArrastre()
   }
+
+  const elegido = (tipo, id) => seleccion?.tipo === tipo && seleccion?.id === id
+  // NEW: nodes can be reached and opened with the keyboard (Tab, then Enter or Space).
+  const teclado = (tipo, id, etiqueta) => ({
+    role: 'button',
+    tabIndex: 0,
+    'aria-label': etiqueta,
+    'aria-pressed': elegido(tipo, id),
+    onKeyDown: e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onElegir?.({ tipo, id }) } },
+  })
 
   // Mientras se arrastra, se dibuja en la posición provisional (sin tocar el mapa).
   const posicion = (tipo, id, x, y) =>
@@ -144,8 +159,9 @@ export default function MapaVista({ mapa, onMover }) {
               className="mapa__nodo"
               style={{ left: p.x - limites.x, top: p.y - limites.y, transform: 'translate(-50%, -50%)' }}
               onPointerDown={e => empezarArrastre(e, 'diagnostico', d.id, p.x, p.y)}
+              {...teclado('diagnostico', d.id, `Diagnosis: ${d.etiqueta}`)}
             >
-              <DiagnosisNode label={d.etiqueta} slot={d.slot} size={TAM_DIAGNOSTICO} />
+              <DiagnosisNode label={d.etiqueta} slot={d.slot} size={TAM_DIAGNOSTICO} selected={elegido('diagnostico', d.id)} />
             </div>
           )
         })}
@@ -159,6 +175,8 @@ export default function MapaVista({ mapa, onMover }) {
               className="mapa__nodo mapa__nodo--sintoma"
               style={{ left: p.x - limites.x, top: p.y - limites.y - tam / 2 }}
               onPointerDown={e => empezarArrastre(e, 'sintoma', s.id, p.x, p.y)}
+              data-elegido={elegido('sintoma', s.id) ? '1' : '0'}
+              {...teclado('sintoma', s.id, `Symptom: ${s.texto}`)}
             >
               <SymptomNode
                 label={s.texto}

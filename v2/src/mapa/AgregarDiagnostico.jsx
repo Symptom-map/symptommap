@@ -18,7 +18,7 @@ import { ds } from '../ds/index.js'
 import { buscarDiagnosticos, coincidenciaExacta } from './catalogo.js'
 
 // The colour name comes from the design-system tokens (--sm-dx-N-name).
-function nombreColor(slot) {
+export function nombreColor(slot) {
   const valor = getComputedStyle(document.documentElement).getPropertyValue(`--sm-dx-${slot}-name`)
   return valor.replace(/["']/g, '').trim() || `Colour ${slot}`
 }
