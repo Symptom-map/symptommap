@@ -1,6 +1,6 @@
 # Pre-pilot checklist
 
-Everything that must be done before the pilot (week of 23–27 November 2026). Tick items off here as they are finished, in the same PR as the work.
+Everything that must be done before the pilot (week of 23–27 November 2026). Tick items off here as they are finished, in the same PR as the work. Ana's visual version (with the daily progress) is the "Camino al piloto" artifact; keep both in sync.
 
 ## Security
 - [ ] **Self-check on a Vercel preview** (done by an agent, report attached to the PR):
@@ -47,8 +47,14 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [ ] Detail panel (click a diagnosis or symptom): edit, connect, delete.
 - [ ] Psychologist reviews the profile questions and options (`v2/src/perfil/preguntas.js`), together with the diagnosis catalogue.
 - [ ] Fill the map in v2 (empty state, add diagnosis with autocomplete, symptoms).
-- [ ] Forgot password.
+- [x] Forgot password: email → 6-digit code → new password, other devices logged out (PR #17). Needs the "Reset Password" email template in Supabase (`supabase/plantillas/reset-password.html`).
 - [ ] Delete account and data.
+- [ ] Settings: account name, change password (FUNCTIONAL-INVENTORY §11).
+- [ ] Optional two-step verification (FUNCTIONAL-INVENTORY §1).
+- [ ] Welcome tutorial (keep the empty state minimal while it runs).
+- [ ] Export: choose what to include, anonymise, PDF preview (FUNCTIONAL-INVENTORY §10).
+- [ ] Test mode without an account, on previews and local only (nothing saved; example AI answers).
+- [ ] Copy review of every screen, and an accessibility pass.
 - [ ] One Lighthouse performance check on a preview.
 
 ## Public site (when it opens)

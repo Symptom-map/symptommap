@@ -30,6 +30,7 @@ function traducir(error) {
   if (codigo === 'invalid_credentials') return new ErrorCuenta('credenciales')
   if (codigo === 'email_not_confirmed') return new ErrorCuenta('correo_sin_confirmar')
   if (codigo === 'otp_expired' || codigo === 'otp_disabled') return new ErrorCuenta('codigo_invalido')
+  if (codigo === 'same_password') return new ErrorCuenta('contrasena_igual')
   if (codigo === 'weak_password') {
     // 'pwned': aparece en filtraciones conocidas (protección de contraseñas filtradas de Supabase).
     const razones = error?.weak_password?.reasons || error?.reasons || []
@@ -70,6 +71,32 @@ export async function reenviarCodigo(correo) {
 export async function entrar({ correo, contrasena }) {
   const { error } = await supabase.auth.signInWithPassword({ email: correo.trim(), password: contrasena })
   if (error) throw traducir(error)
+}
+
+// ── Forgot your password? (6-digit code, like confirming the email) ──
+// The "Reset Password" email template must show {{ .Token }}
+// (supabase/plantillas/reset-password.html), so no link or redirect is needed.
+
+/**
+ * Sends a reset code. Supabase answers the same whether or not the email has
+ * an account, so the screen never reveals which emails are registered.
+ */
+export async function pedirRestablecer(correo) {
+  const { error } = await supabase.auth.resetPasswordForEmail(correo.trim())
+  if (error) throw traducir(error)
+}
+
+/** Checks the reset code. If it is right, the person has a session to set a new password. */
+export async function confirmarRestablecer({ correo, codigo }) {
+  const { error } = await supabase.auth.verifyOtp({ email: correo.trim(), token: codigo, type: 'recovery' })
+  if (error) throw traducir(error)
+}
+
+/** Saves the new password and logs out every other device (the old password may be known). */
+export async function cambiarContrasena(contrasena) {
+  const { error } = await supabase.auth.updateUser({ password: contrasena })
+  if (error) throw traducir(error)
+  await supabase.auth.signOut({ scope: 'others' })
 }
 
 export async function salir() {

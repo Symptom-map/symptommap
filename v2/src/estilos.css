@@ -277,3 +277,6 @@ body { background: var(--sm-surface-canvas); }
   .aviso-sintoma { animation: aviso-subir .32s cubic-bezier(.2, .8, .2, 1) both; }
 }
 @keyframes aviso-subir { from { opacity: 0; transform: translate(-50%, 14px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+/* "Forgot your password?" under the password field (prototype: right-aligned) */
+.cuenta__olvide { display: flex; justify-content: flex-end; margin: 10px 0 0; }

@@ -23,6 +23,7 @@ export const MENSAJES = {
   sin_conexion: 'We couldn’t connect. Check your internet and try again.',
   contrasena_debil: 'Choose a stronger password.',
   contrasena_filtrada: 'This password has appeared in a data breach, so it isn’t safe to use. Choose a different one.',
+  contrasena_igual: 'Choose a password you haven’t used for SymptomMap before.',
   desconocido: 'Something went wrong. Try again.',
 }
 
@@ -69,7 +70,7 @@ function CampoContrasena({ id, label, placeholder, value, error, onChange }) {
 }
 
 // ── Login ─────────────────────────────────────────────────────
-export function PantallaEntrar({ ocupado, error, onEntrar, onIrARegistro }) {
+export function PantallaEntrar({ ocupado, error, onEntrar, onIrARegistro, onOlvide }) {
   const { TextField, Button } = ds()
   const [correo, setCorreo] = useState('')
   const [contrasena, setContrasena] = useState('')
@@ -95,7 +96,9 @@ export function PantallaEntrar({ ocupado, error, onEntrar, onIrARegistro }) {
         <CampoContrasena id="li-pw" label="Password" placeholder="Your password" value={contrasena}
           onChange={e => setContrasena(e.target.value)}
           error={tocado.contrasena && contrasena === '' ? 'Enter your password.' : ''} />
-        {/* Pendiente: la pantalla para recuperar la contraseña no está diseñada todavía. */}
+        <div className="cuenta__olvide">
+          <a href="#reset" onClick={e => { e.preventDefault(); onOlvide(correo) }}>Forgot your password?</a>
+        </div>
         <MensajeError codigo={error} />
         <div className="cuenta__accion">
           <Button type="submit" variant="primary" block disabled={!listo || ocupado}>Log in</Button>
@@ -219,7 +222,7 @@ export function PantallaElegibilidad({ ocupado, error, onContinuar }) {
       </fieldset>
       <MensajeError codigo={error} />
       <div className="cuenta__accion cuenta__accion--amplia">
-        <Button variant="primary" block disabled={!eleccion || ocupado} onClick={() => onContinuar(eleccion)}>Continue</Button>
+        <Button variant="primary" block disabled={!eleccion || ocupado} onClick={() => onContinuar(eleccion)}>{ocupado ? 'Creating your account…' : 'Continue'}</Button>
       </div>
     </Panel>
   )
@@ -228,7 +231,9 @@ export function PantallaElegibilidad({ ocupado, error, onContinuar }) {
 // ── Verify email · Step 3 of 3 ────────────────────────────────
 // En el prototipo esta pantalla viene después de "Set up two-step log in".
 // Aquí confirma el correo al crear la cuenta (ver docs/FUENTES-Y-DECISIONES.md).
-export function PantallaVerificar({ correo, ocupado, error, aviso, onVerificar, onReenviar }) {
+// Also used for "Forgot your password?" (restablecer): no steps, and the
+// wording never says whether the email has an account.
+export function PantallaVerificar({ correo, ocupado, error, aviso, onVerificar, onReenviar, restablecer = false }) {
   const { CodeInput, Button, InlineMessage } = ds()
   const [codigo, setCodigo] = useState('')
   const [incompleto, setIncompleto] = useState(false)
@@ -259,18 +264,87 @@ export function PantallaVerificar({ correo, ocupado, error, aviso, onVerificar, 
   return (
     <Panel>
       <form onSubmit={enviar} noValidate>
-        <Pasos actual={3} />
+        {!restablecer && <Pasos actual={3} />}
         <h1 className="sm-h2 cuenta__titulo-verificar">Check your email</h1>
-        <p className="sm-body-sm cuenta__enviado">We sent a 6-digit code to</p>
+        <p className="sm-body-sm cuenta__enviado">{restablecer ? 'If there’s an account for this email, we sent a 6-digit code to' : 'We sent a 6-digit code to'}</p>
         <p className="sm-emphasis cuenta__correo">{ocultarCorreo(correo)}</p>
         <div onPaste={pegar} onInput={moverFoco} onKeyDown={moverFoco}>
           <CodeInput length={LARGO_CODIGO} value={codigo} error={mensaje} onChange={v => { setCodigo(v.replace(/\D/g, '')); setIncompleto(false) }} />
         </div>
         <div className="cuenta__accion cuenta__accion--codigo">
-          <Button type="submit" variant="primary" block disabled={ocupado}>Verify and continue</Button>
+          <Button type="submit" variant="primary" block disabled={ocupado}>{restablecer ? 'Continue' : 'Verify and continue'}</Button>
         </div>
         {aviso ? <div className="cuenta__mensaje" role="status"><InlineMessage tone="success">{aviso}</InlineMessage></div> : null}
         <p className="sm-support cuenta__pie cuenta__pie--meta">Didn’t get it? <a href="#resend" onClick={e => { e.preventDefault(); onReenviar() }}>Send a new code</a></p>
+      </form>
+    </Panel>
+  )
+}
+
+// ── Forgot your password? ─────────────────────────────────────
+// NEW: the prototype has the link but no screens (HANDOFF: "Password reset
+// screens are not designed"). Built from the existing account screens:
+// email → 6-digit code (PantallaVerificar) → new password with the same checklist.
+export function PantallaOlvide({ inicial = '', ocupado, error, onEnviar, onVolver }) {
+  const { TextField, Button } = ds()
+  const [correo, setCorreo] = useState(inicial)
+  const [tocado, setTocado] = useState(false)
+  const correoOk = correoValido(correo)
+
+  function enviar(e) {
+    e.preventDefault()
+    if (!correoOk) return setTocado(true)
+    onEnviar(correo.trim())
+  }
+
+  return (
+    <Panel>
+      <form onSubmit={enviar} noValidate>
+        <h1 className="sm-h1 cuenta__titulo">Reset your password</h1>
+        <p className="sm-body cuenta__intro">Enter the email you use for SymptomMap and we’ll send you a 6-digit code.</p>
+        <TextField id="rs-email" label="Email" type="email" placeholder="e.g. ana@example.com" autoComplete="email"
+          value={correo} onChange={e => setCorreo(e.target.value)} onBlur={() => setTocado(true)}
+          error={tocado && correo.trim() !== '' && !correoOk ? 'Enter a valid email address.' : ''} />
+        <MensajeError codigo={error} />
+        <div className="cuenta__accion">
+          <Button type="submit" variant="primary" block disabled={!correoOk || ocupado}>{ocupado ? 'Sending…' : 'Send code'}</Button>
+        </div>
+        <p className="sm-body-sm cuenta__pie"><a href="#login" onClick={e => { e.preventDefault(); onVolver() }}>Back to log in</a></p>
+      </form>
+    </Panel>
+  )
+}
+
+export function PantallaNuevaContrasena({ ocupado, error, onGuardar }) {
+  const { Button } = ds()
+  const [contrasena, setContrasena] = useState('')
+  const [repetir, setRepetir] = useState('')
+  const reglas = reglasContrasena(contrasena)
+  const valido = reglas.every(r => r.ok) && repetir !== '' && repetir === contrasena
+
+  function enviar(e) {
+    e.preventDefault()
+    if (valido) onGuardar(contrasena)
+  }
+
+  return (
+    <Panel>
+      <form onSubmit={enviar} noValidate>
+        <h1 className="sm-h1 cuenta__titulo">Choose a new password</h1>
+        <p className="sm-body cuenta__intro">You’ll use it to log in from now on. Other devices will be logged out.</p>
+        <CampoContrasena id="rs-pw" label="New password" placeholder="At least 8 characters" value={contrasena}
+          onChange={e => setContrasena(e.target.value)} error={error ? MENSAJES[error] || MENSAJES.desconocido : ''} />
+        <ul className="cuenta__reglas">
+          {reglas.map(r => (
+            <li key={r.etiqueta} className={'sm-support' + (r.ok ? ' is-ok' : '')}><span aria-hidden="true" />{r.etiqueta}</li>
+          ))}
+        </ul>
+        <div className="cuenta__espacio" />
+        <CampoContrasena id="rs-pw2" label="Confirm new password" placeholder="Repeat your password" value={repetir}
+          onChange={e => setRepetir(e.target.value)} error={repetir && repetir !== contrasena ? 'The passwords don’t match yet.' : ''} />
+        <div className="cuenta__accion">
+          <Button type="submit" variant="primary" block disabled={!valido || ocupado}>{ocupado ? 'Saving…' : 'Save new password'}</Button>
+        </div>
       </form>
     </Panel>
   )
