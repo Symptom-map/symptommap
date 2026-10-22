@@ -18,34 +18,42 @@ import { normalizar } from '../../../src/core/mapa.js'
 export const MINIMO_CARACTERES = 3
 export const MAXIMO_SUGERENCIAS = 6
 
-// Every name a catalogue entry can be found by: the English label, the
-// Spanish label and each part separated by "/" (e.g. "ADHD", "ADD").
+// Each name is its own suggestion (Ana, 21 Oct 2026: "ADHD / ADD" is two
+// names, never one label). A registry entry like "ADHD / ADD" or "TDA / TDAH"
+// gives four options ("ADHD", "ADD", "TDA", "TDAH") that share one internal
+// key, so the profile questions are the same whichever name the person picks.
 function nombresDe(d) {
-  const partes = [d.labelEn, d.label].flatMap(t => [t, ...String(t).split('/')])
-  return [...new Set(partes.map(normalizar).filter(Boolean))]
+  const partes = [d.labelEn, d.label].flatMap(t => String(t).split('/')).map(t => t.trim()).filter(Boolean)
+  const vistos = new Set()
+  return partes.filter(t => {
+    const n = normalizar(t)
+    if (vistos.has(n)) return false
+    vistos.add(n)
+    return true
+  })
 }
 
-const ENTRADAS = DIAGNOSES.map(d => ({ clave: d.id, etiqueta: d.labelEn, nombres: nombresDe(d) }))
+const OPCIONES = DIAGNOSES.flatMap(d => nombresDe(d).map(etiqueta => ({ clave: d.id, etiqueta, nombre: normalizar(etiqueta) })))
 
-/** Catalogue entries that match what the person typed (empty list under 3 characters). */
+/** Catalogue names that match what the person typed (empty list under 3 characters). */
 export function buscarDiagnosticos(texto) {
   const consulta = normalizar(texto)
   if (consulta.length < MINIMO_CARACTERES) return []
-  return ENTRADAS
-    .filter(e => e.nombres.some(n => n.includes(consulta)))
-    .slice(0, MAXIMO_SUGERENCIAS)
-    .map(({ clave, etiqueta }) => ({ clave, etiqueta }))
+  // Names that start with the text first, then names that contain it.
+  const empieza = OPCIONES.filter(o => o.nombre.startsWith(consulta))
+  const contiene = OPCIONES.filter(o => !o.nombre.startsWith(consulta) && o.nombre.includes(consulta))
+  return [...empieza, ...contiene].slice(0, MAXIMO_SUGERENCIAS).map(({ clave, etiqueta }) => ({ clave, etiqueta }))
 }
 
 /**
- * The catalogue entry whose full name (English or Spanish) is exactly what the
- * person typed, or null. Only used to hide "Use “…”" when it would repeat the
- * suggestion: typing never sets the internal key, only picking from the list
- * does (FUNCTIONAL-INVENTORY §8, "ambiguous free text is never guessed").
+ * The catalogue name that is exactly what the person typed, or null. Only
+ * used to hide "Use “…”" when it would repeat a suggestion: typing never sets
+ * the internal key, only picking from the list does (FUNCTIONAL-INVENTORY §8,
+ * "ambiguous free text is never guessed").
  */
 export function coincidenciaExacta(texto) {
   const consulta = normalizar(texto)
   if (!consulta) return null
-  const e = DIAGNOSES.find(d => normalizar(d.labelEn) === consulta || normalizar(d.label) === consulta)
-  return e ? { clave: e.id, etiqueta: e.labelEn } : null
+  const o = OPCIONES.find(x => x.nombre === consulta)
+  return o ? { clave: o.clave, etiqueta: o.etiqueta } : null
 }

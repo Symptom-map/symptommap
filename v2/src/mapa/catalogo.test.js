@@ -8,7 +8,7 @@ test('nothing is suggested under 3 characters', () => {
 })
 
 test('finds a diagnosis by any part of its English name', () => {
-  assert.ok(buscarDiagnosticos('adh').some(d => d.clave === 'tda' && d.etiqueta === 'ADHD / ADD'))
+  assert.ok(buscarDiagnosticos('adh').some(d => d.clave === 'tda' && d.etiqueta === 'ADHD'))
   assert.ok(buscarDiagnosticos('anxiety').some(d => d.clave === 'anx'))
 })
 
@@ -21,9 +21,21 @@ test('never shows more than 6 suggestions', () => {
   assert.ok(buscarDiagnosticos('dis').length <= MAXIMO_SUGERENCIAS)
 })
 
+test('every name is its own option, never two names joined with "/"', () => {
+  const nombres = buscarDiagnosticos('add').concat(buscarDiagnosticos('adhd'), buscarDiagnosticos('tdah'), buscarDiagnosticos('borderline'))
+  assert.ok(nombres.every(d => !d.etiqueta.includes('/')))
+  assert.ok(buscarDiagnosticos('add').some(d => d.etiqueta === 'ADD' && d.clave === 'tda'))
+  assert.ok(buscarDiagnosticos('tdah').some(d => d.etiqueta === 'TDAH' && d.clave === 'tda'))
+  assert.ok(buscarDiagnosticos('borderline').some(d => d.etiqueta === 'Borderline' && d.clave === 'tlp'))
+})
+
+test('names that start with the text come first', () => {
+  assert.equal(buscarDiagnosticos('ptsd')[0].etiqueta, 'PTSD')
+})
+
 test('exact match only recognises a full catalogue name (English or Spanish)', () => {
-  assert.equal(coincidenciaExacta('ADHD'), null) // a typed acronym is never guessed
-  assert.equal(coincidenciaExacta('adhd / add').clave, 'tda')
+  assert.equal(coincidenciaExacta('adhd / add'), null)
+  assert.equal(coincidenciaExacta('ADHD').clave, 'tda') // only hides "Use …"; the key is set only when picked
   assert.equal(coincidenciaExacta('Fibromialgia').clave, 'fibro')
   assert.equal(coincidenciaExacta('my own words'), null)
   assert.equal(coincidenciaExacta('  '), null)

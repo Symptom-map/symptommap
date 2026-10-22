@@ -8,9 +8,9 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
   - check what every network request returns (DevTools → Network): no health data, no other person's data;
   - confirm every endpoint (`/api/claude`, Supabase REST and RPC) refuses requests without a valid session.
 - [ ] **External security review** (1–2 hours) by someone who did not build the app — e.g. Dr. Ruwangi Fernando (VU, cybersecurity).
-- [ ] Supabase security advisors: only the two expected notices for `uso_ai` / `consumir_cuota_ai()` (see `supabase/README.md`).
+- [x] Supabase security advisors: only the two expected notices for `uso_ai` / `consumir_cuota_ai()` (see `supabase/README.md`). Checked 22 Oct 2026; re-check after every migration.
 - [x] Vercel Deployment Protection (Vercel Authentication, Standard Protection) is on for previews (checked 20 Oct 2026).
-- [ ] AWS: automatic cost stop — a Budgets action that removes Bedrock permission from `symptommap-vercel` at a set amount.
+- [x] AWS: automatic cost stop. The project's **monthly spend limit ($20)** in the AWS account menu pauses the project on its own (checked 22 Oct 2026, $0 spent). The Budgets action `DenyBedrockWhenOverBudget` at $17 is a second brake (status Standby). Budget alert emails to symptommap.project@gmail.com are **inactive**: Ana's Google sign-in role cannot verify email contacts (`notifications-contacts:*`), so check spending in that menu instead.
 - [x] Personal Anthropic API key removed from this project's Vercel. It is **kept** at console.anthropic.com because the backup (symptommaproject) still uses it (Ana, 20 Oct 2026). Keep a low monthly spend limit on it; delete it when the backup no longer needs it.
 - [ ] No screenshots with preview links, emails or test data shared publicly.
 
@@ -22,8 +22,9 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 
 ## Email
 - [x] Amazon SES (Sydney): identity `symptommap.com.au` created with Easy DKIM (RSA 2048); 3 DKIM CNAMEs and `_dmarc` TXT (`v=DMARC1; p=none;`) added in VentraIP (19 Oct 2026).
-- [ ] SES shows the domain as **Verified** (can take up to 72 h).
-- [ ] Then request production access (SES → Get set up → Request production access). The button stays disabled until the domain is verified. Form: Transactional · https://www.symptommap.com.au · English · use case text below.
+- [x] SES shows the domain as **Verified** (DKIM success, 22 Oct 2026).
+- [x] Request production access — sent 22 Oct 2026 (Transactional · https://www.symptommap.com.au · English). The form no longer asks for a use case; if AWS asks by email, reply with the text below.
+- [ ] AWS approves production access (usually 1–2 business days).
 
 <details><summary>Use case text for the production access request</summary>
 
