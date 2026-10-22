@@ -13,7 +13,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { agregarDiagnostico, agregarSintoma, borrarSintoma, desconectar, diagnosticosDe, guardarPerfil, moverDiagnostico, moverSintoma, normalizar, ErrorMapa } from '@nucleo/mapa.js'
+import { agregarDiagnostico, agregarSintoma, borrarSintoma, cambiarColor, conectar, desconectar, diagnosticosDe, editarSintoma, guardarPerfil, moverDiagnostico, moverSintoma, normalizar, quitarDiagnostico, ErrorMapa } from '@nucleo/mapa.js'
 import { ds } from './ds/index.js'
 import MapaVista from './mapa/MapaVista.jsx'
 import BarraLateral from './mapa/BarraLateral.jsx'
@@ -21,6 +21,7 @@ import AgregarDiagnostico from './mapa/AgregarDiagnostico.jsx'
 import PerfilDiagnostico from './perfil/PerfilDiagnostico.jsx'
 import AgregarSintoma from './mapa/AgregarSintoma.jsx'
 import AvisoSintoma from './mapa/AvisoSintoma.jsx'
+import PanelDetalle from './mapa/PanelDetalle.jsx'
 import { preguntasPara } from './perfil/preguntas.js'
 import {
   PantallaEntrar, PantallaRegistro, PantallaMenorDeEdad, PantallaElegibilidad,
@@ -213,6 +214,7 @@ function MiMapa({ userId, nombre, onSalir, prueba = false }) {
   const [perfilAbierto, setPerfilAbierto] = useState(null)
   const [agregandoSintoma, setAgregandoSintoma] = useState(false)
   const [avisoSintoma, setAvisoSintoma] = useState(null) // what "Add" connected a symptom to
+  const [seleccion, setSeleccion] = useState(null) // { tipo: 'diagnostico' | 'sintoma', id } shown in the detail panel
   const revision = useRef(null)
   const pendiente = useRef(null) // mapa que falta guardar
   const temporizador = useRef(null)
@@ -289,7 +291,9 @@ function MiMapa({ userId, nombre, onSalir, prueba = false }) {
       const r = agregarDiagnostico(mapa, datos)
       setAgregando(false)
       setErrorAgregar('')
-      if (!r.yaExistia) setPerfilAbierto({ datos })
+      // Already on the map: select it instead (FUNCTIONAL-INVENTORY §4, duplicate prevention).
+      if (r.yaExistia) setSeleccion({ tipo: 'diagnostico', id: r.diagnosticoId })
+      else setPerfilAbierto({ datos })
     } catch (e) {
       if (!(e instanceof ErrorMapa)) throw e
       setErrorAgregar(e.codigo === 'LIMITE_DIAGNOSTICOS'
@@ -346,6 +350,35 @@ function MiMapa({ userId, nombre, onSalir, prueba = false }) {
     setAgregandoSintoma(true)
   }
 
+  // ── Detail panel: every change goes through the core ──
+  const cerrarPanel = useCallback(() => setSeleccion(null), [])
+  const accionesPanel = {
+    editarSintoma(id, cambios) {
+      try {
+        cambiar(editarSintoma(mapa, id, cambios))
+        return null
+      } catch (e) {
+        if (!(e instanceof ErrorMapa)) throw e
+        return e.codigo === 'SINTOMA_DUPLICADO' ? 'You already have a symptom with this wording.' : 'Write the symptom in a few words.'
+      }
+    },
+    borrarSintoma(id) { cambiar(borrarSintoma(mapa, id)); setSeleccion(null); setAvisoSintoma(null) },
+    conectar(sintomaId, diagnosticoId) { cambiar(conectar(mapa, sintomaId, diagnosticoId)) },
+    desconectar(sintomaId, diagnosticoId) { cambiar(desconectar(mapa, sintomaId, diagnosticoId)) },
+    cambiarColor(id, slot) { try { cambiar(cambiarColor(mapa, id, slot)) } catch (e) { if (!(e instanceof ErrorMapa)) throw e } },
+    editarPerfil(id) { setPerfilAbierto({ id }) },
+    borrarDiagnostico(id) { cambiar(quitarDiagnostico(mapa, id)); setSeleccion(null); setAvisoSintoma(null) },
+  }
+
+  // Escape closes the panel when no window is open on top of it.
+  const ventanaAbierta = agregando || agregandoSintoma || !!perfilAbierto
+  useEffect(() => {
+    if (!seleccion || ventanaAbierta) return
+    const alTeclear = e => { if (e.key === 'Escape' && !e.defaultPrevented) setSeleccion(null) }
+    document.addEventListener('keydown', alTeclear)
+    return () => document.removeEventListener('keydown', alTeclear)
+  }, [seleccion, ventanaAbierta])
+
   function abrirAgregar() {
     setErrorAgregar('')
     setAgregando(true)
@@ -368,7 +401,7 @@ function MiMapa({ userId, nombre, onSalir, prueba = false }) {
       <AppHeader context={titulo} actions={<Button variant="ghost" size="sm" onClick={salirGuardando}>{prueba ? 'Leave test mode' : 'Log out'}</Button>} />
       <main className="app__principal app__principal--mapa">
         <h1 className="sr-only">{titulo}</h1>
-        {mapa && <BarraLateral mapa={mapa} onAgregarDiagnostico={abrirAgregar} onAgregarSintoma={abrirAgregarSintoma} onEditarPerfil={id => setPerfilAbierto({ id })} />}
+        {mapa && <BarraLateral mapa={mapa} seleccion={seleccion} onElegir={setSeleccion} onAgregarDiagnostico={abrirAgregar} onAgregarSintoma={abrirAgregarSintoma} onEditarPerfil={id => setPerfilAbierto({ id })} />}
         <div className="lienzo">
           {mapa && mapa.diagnosticos.length === 0 && mapa.sintomas.length === 0 && (
             <div className="lienzo__vacio">
@@ -377,7 +410,7 @@ function MiMapa({ userId, nombre, onSalir, prueba = false }) {
               <Button variant="primary" size="sm" onClick={abrirAgregar}>Add your first diagnosis</Button>
             </div>
           )}
-          {mapa && (mapa.diagnosticos.length > 0 || mapa.sintomas.length > 0) && <MapaVista mapa={mapa} onMover={mover} />}
+          {mapa && (mapa.diagnosticos.length > 0 || mapa.sintomas.length > 0) && <MapaVista mapa={mapa} onMover={mover} onElegir={setSeleccion} seleccion={seleccion} />}
           {textoProblema && <div className="app__problema" role="alert"><InlineMessage tone={problema === 'conflicto' ? 'info' : 'error'}>{textoProblema}</InlineMessage></div>}
           {avisoSintoma && mapa && (
             <AvisoSintoma
@@ -392,6 +425,7 @@ function MiMapa({ userId, nombre, onSalir, prueba = false }) {
             ? <p className="app__aviso app__aviso--prueba" role="status">Test mode: nothing is saved and AI answers are examples</p>
             : <p className="app__aviso">Development preview</p>}
         </div>
+        {seleccion && mapa && <PanelDetalle mapa={mapa} seleccion={seleccion} onCerrar={cerrarPanel} onElegir={setSeleccion} acciones={accionesPanel} />}
         {agregando && mapa && (
           <AgregarDiagnostico mapa={mapa} error={errorAgregar} onAgregar={agregar} onCerrar={() => setAgregando(false)} />
         )}
