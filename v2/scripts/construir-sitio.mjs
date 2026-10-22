@@ -46,5 +46,9 @@ for (const ruta of PUBLICOS) {
   cpSync(origen, path.join(destino, ruta), { recursive: true })
 }
 
-execSync('npx vite build', { cwd: path.join(raiz, 'v2'), stdio: 'inherit' })
+// Test mode without an account (v2/src/prueba.js): only when this is not a
+// production build (Vercel previews and local builds). The production bundle
+// never contains a way into it.
+const modoPrueba = process.env.VERCEL_ENV === 'production' ? 'no' : 'si'
+execSync('npx vite build', { cwd: path.join(raiz, 'v2'), stdio: 'inherit', env: { ...process.env, VITE_MODO_PRUEBA: modoPrueba } })
 console.log('Sitio listo en dist/ (app actual en /, v2 en /app/)')
