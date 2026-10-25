@@ -36,7 +36,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 
 </details>
 - [x] Supabase Auth custom SMTP through SES (25 Oct 2026; first reset code sent from noreply@symptommap.com.au).
-- [ ] Logo in the email templates.
+- [x] Email templates with the logo (`supabase/plantillas/`, layout like Ana's reference, 25 Oct 2026). The logo is `assets/email-logo.png` on the public site: paste the templates in Supabase once this is deployed to production.
 - [ ] Contact addresses that receive mail (proposed `hello@` and `privacy@symptommap.com.au`, forwarded to the project Gmail; reply as them through SES).
 - [ ] The app says "We couldn't connect" when Supabase answers 500 (e.g. an email that could not be sent): show a server error instead.
 
