@@ -33,6 +33,8 @@ import {
   pedirRestablecer, confirmarRestablecer, cambiarContrasena,
 } from './nube/cuenta.js'
 import { cargarMapa, guardarMapa } from './nube/mapa.js'
+import { crearMapa } from '@nucleo/mapa.js'
+import { MODO_PRUEBA_DISPONIBLE, activarModoPrueba, salirModoPrueba } from './prueba.js'
 
 const ESPERA_GUARDADO_MS = 800
 
@@ -71,6 +73,7 @@ export default function App() {
     sesionActual().then(s => {
       if (!activo) return
       if (s) continuarConSesion(s)
+      else if (MODO_PRUEBA_DISPONIBLE && window.location.hash === '#prueba') { activarModoPrueba(); irA('prueba') }
       else irA(window.location.hash === '#create' ? 'registro' : 'entrar')
     })
     const dejar = alCambiarSesion(s => {
@@ -181,7 +184,8 @@ export default function App() {
   return (
     <div className="app">
       {pantalla === 'cargando' && <div className="cuenta" aria-busy="true" />}
-      {pantalla === 'entrar' && <PantallaEntrar {...comunes} onEntrar={alEntrar} onIrARegistro={() => irA('registro')} onOlvide={correo => { setCorreoPendiente(correo); irA('olvide') }} />}
+      {pantalla === 'entrar' && <PantallaEntrar {...comunes} onEntrar={alEntrar} onIrARegistro={() => irA('registro')} onOlvide={correo => { setCorreoPendiente(correo); irA('olvide') }}
+        onPrueba={MODO_PRUEBA_DISPONIBLE ? () => { activarModoPrueba(); irA('prueba') } : undefined} />}
       {pantalla === 'olvide' && <PantallaOlvide {...comunes} inicial={correoPendiente} onEnviar={alPedirRestablecer} onVolver={() => irA('entrar')} />}
       {pantalla === 'restablecerCodigo' && <PantallaVerificar {...comunes} restablecer aviso={aviso} correo={correoPendiente} onVerificar={alConfirmarRestablecer} onReenviar={alReenviarRestablecer} />}
       {pantalla === 'nuevaContrasena' && <PantallaNuevaContrasena {...comunes} onGuardar={alGuardarContrasena} />}
@@ -192,12 +196,14 @@ export default function App() {
       {pantalla === 'verificar' && <PantallaVerificar {...comunes} aviso={aviso} correo={correoPendiente} onVerificar={alVerificar} onReenviar={alReenviar} />}
       {pantalla === 'consentimiento' && <PantallaConsentimiento {...comunes} onAceptar={alAceptar} />}
       {pantalla === 'mapa' && sesion && <MiMapa userId={sesion.user.id} nombre={cuenta?.nombre} onSalir={alSalir} />}
+      {pantalla === 'prueba' && MODO_PRUEBA_DISPONIBLE && <MiMapa prueba onSalir={() => { salirModoPrueba(); window.history.replaceState(null, '', window.location.pathname); irA('entrar') }} />}
     </div>
   )
 }
 
 // ── The person's map, saved automatically ─────────────────────
-function MiMapa({ userId, nombre, onSalir }) {
+// prueba: test mode (prueba.js) — the map starts empty and lives in memory only.
+function MiMapa({ userId, nombre, onSalir, prueba = false }) {
   const { AppHeader, Button, InlineMessage } = ds()
   const [mapa, setMapa] = useState(null)
   const [problema, setProblema] = useState('')
@@ -213,6 +219,7 @@ function MiMapa({ userId, nombre, onSalir }) {
   const guardando = useRef(false)
 
   const recargar = useCallback(async () => {
+    if (prueba) { setMapa(crearMapa()); return }
     try {
       const datos = await cargarMapa()
       revision.current = datos.revision
@@ -221,7 +228,7 @@ function MiMapa({ userId, nombre, onSalir }) {
     } catch {
       setProblema('sin_conexion')
     }
-  }, [])
+  }, [prueba])
 
   useEffect(() => { recargar() }, [recargar])
 
@@ -256,6 +263,7 @@ function MiMapa({ userId, nombre, onSalir }) {
 
   function cambiar(nuevo) {
     setMapa(nuevo)
+    if (prueba) return // nothing is saved in test mode
     pendiente.current = nuevo
     clearTimeout(temporizador.current)
     temporizador.current = setTimeout(guardarAhora, ESPERA_GUARDADO_MS)
@@ -354,10 +362,10 @@ function MiMapa({ userId, nombre, onSalir }) {
     demasiado_grande: 'Your map is too large to save. Remove something and try again.',
   }[problema] || (problema ? MENSAJES.sin_conexion : '')
 
-  const titulo = nombre ? `${nombre}’s map` : 'My map'
+  const titulo = prueba ? 'Test map' : nombre ? `${nombre}’s map` : 'My map'
   return (
     <>
-      <AppHeader context={titulo} actions={<Button variant="ghost" size="sm" onClick={salirGuardando}>Log out</Button>} />
+      <AppHeader context={titulo} actions={<Button variant="ghost" size="sm" onClick={salirGuardando}>{prueba ? 'Leave test mode' : 'Log out'}</Button>} />
       <main className="app__principal app__principal--mapa">
         <h1 className="sr-only">{titulo}</h1>
         {mapa && <BarraLateral mapa={mapa} onAgregarDiagnostico={abrirAgregar} onAgregarSintoma={abrirAgregarSintoma} onEditarPerfil={id => setPerfilAbierto({ id })} />}
@@ -380,7 +388,9 @@ function MiMapa({ userId, nombre, onSalir }) {
               onCerrar={() => setAvisoSintoma(null)}
             />
           )}
-          <p className="app__aviso">Development preview</p>
+          {prueba
+            ? <p className="app__aviso app__aviso--prueba" role="status">Test mode: nothing is saved and AI answers are examples</p>
+            : <p className="app__aviso">Development preview</p>}
         </div>
         {agregando && mapa && (
           <AgregarDiagnostico mapa={mapa} error={errorAgregar} onAgregar={agregar} onCerrar={() => setAgregando(false)} />

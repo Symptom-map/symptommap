@@ -14,6 +14,7 @@ import { useState } from 'react'
 import { ds } from '../ds/index.js'
 import { correoValido, reglasContrasena, revisarNacimiento, MESES, ELEGIBILIDAD } from './validar.js'
 import { LARGO_CODIGO } from '../nube/cuenta.js'
+import { MODO_PRUEBA_DISPONIBLE } from '../prueba.js'
 
 // NUEVO: mensajes para errores que el prototipo no mostraba.
 export const MENSAJES = {
@@ -70,7 +71,7 @@ function CampoContrasena({ id, label, placeholder, value, error, onChange }) {
 }
 
 // ── Login ─────────────────────────────────────────────────────
-export function PantallaEntrar({ ocupado, error, onEntrar, onIrARegistro, onOlvide }) {
+export function PantallaEntrar({ ocupado, error, onEntrar, onIrARegistro, onOlvide, onPrueba }) {
   const { TextField, Button } = ds()
   const [correo, setCorreo] = useState('')
   const [contrasena, setContrasena] = useState('')
@@ -104,6 +105,12 @@ export function PantallaEntrar({ ocupado, error, onEntrar, onIrARegistro, onOlvi
           <Button type="submit" variant="primary" block disabled={!listo || ocupado}>Log in</Button>
         </div>
         <p className="sm-body-sm cuenta__pie">Don’t have an account? <a href="#create" onClick={e => { e.preventDefault(); onIrARegistro() }}>Create one</a></p>
+        {/* Previews and local only (prueba.js): never shown in production. */}
+        {MODO_PRUEBA_DISPONIBLE && onPrueba && (
+          <p className="sm-support cuenta__pie cuenta__pie--meta">
+            <a href="#prueba" onClick={e => { e.preventDefault(); onPrueba() }}>Try without an account (test mode)</a>
+          </p>
+        )}
       </form>
     </Panel>
   )

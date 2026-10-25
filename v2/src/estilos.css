@@ -280,3 +280,6 @@ body { background: var(--sm-surface-canvas); }
 
 /* "Forgot your password?" under the password field (prototype: right-aligned) */
 .cuenta__olvide { display: flex; justify-content: flex-end; margin: 10px 0 0; }
+
+/* Test mode notice (prueba.js): clearly visible so nobody mistakes it for a real map */
+.app__aviso--prueba { color: var(--sm-ink); background: var(--sm-cyan-050); padding: 6px 12px; border-radius: 999px; }

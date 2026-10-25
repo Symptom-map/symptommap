@@ -57,7 +57,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [ ] Optional two-step verification (FUNCTIONAL-INVENTORY §1).
 - [ ] Welcome tutorial (keep the empty state minimal while it runs).
 - [ ] Export: choose what to include, anonymise, PDF preview (FUNCTIONAL-INVENTORY §10).
-- [ ] Test mode without an account, on previews and local only (nothing saved; example AI answers).
+- [x] Test mode without an account, on previews and local only (nothing saved; example AI answers) (PR #19).
 - [ ] Copy review of every screen, and an accessibility pass.
 - [ ] One Lighthouse performance check on a preview.
 
