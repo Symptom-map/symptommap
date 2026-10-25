@@ -8,7 +8,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
   - check what every network request returns (DevTools → Network): no health data, no other person's data;
   - confirm every endpoint (`/api/claude`, Supabase REST and RPC) refuses requests without a valid session.
 - [ ] **External security review** (1–2 hours) by someone who did not build the app — e.g. Dr. Ruwangi Fernando (VU, cybersecurity).
-- [x] Supabase security advisors: only the two expected notices for `uso_ai` / `consumir_cuota_ai()` (see `supabase/README.md`). Checked 22 Oct 2026; re-check after every migration.
+- [x] Supabase security advisors: only the expected notices — `uso_ai` (RLS, no policies), and `consumir_cuota_ai()` / `borrar_mi_cuenta()` (security definer, callable by signed-in people on purpose; see `supabase/README.md`). Checked 22 Oct 2026; re-check after every migration.
 - [x] Vercel Deployment Protection (Vercel Authentication, Standard Protection) is on for previews (checked 20 Oct 2026).
 - [x] AWS: automatic cost stop. The project's **monthly spend limit ($20)** in the AWS account menu pauses the project on its own (checked 22 Oct 2026, $0 spent). The Budgets action `DenyBedrockWhenOverBudget` at $17 is a second brake (status Standby). Budget alert emails to symptommap.project@gmail.com are **inactive**: Ana's Google sign-in role cannot verify email contacts (`notifications-contacts:*`), so check spending in that menu instead.
 - [x] Personal Anthropic API key removed from this project's Vercel. It is **kept** at console.anthropic.com because the backup (symptommaproject) still uses it (Ana, 20 Oct 2026). Keep a low monthly spend limit on it; delete it when the backup no longer needs it.
@@ -54,7 +54,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [ ] Psychologist reviews the profile questions and options (`v2/src/perfil/preguntas.js`), together with the diagnosis catalogue.
 - [ ] Fill the map in v2 (empty state, add diagnosis with autocomplete, symptoms).
 - [x] Forgot password: email → 6-digit code → new password, other devices logged out (PR #17). Needs the "Reset Password" email template in Supabase (`supabase/plantillas/reset-password.html`).
-- [ ] Delete account and data.
+- [x] Delete account and data: Settings → Privacy & your data, wording approved by Ana (FUENTES §3d); `borrar_mi_cuenta()` created 25 Oct 2026 (Ana ran it in the SQL editor).
 - [ ] Settings: account name, change password (FUNCTIONAL-INVENTORY §11).
 - [ ] Optional two-step verification (FUNCTIONAL-INVENTORY §1).
 - [ ] Welcome tutorial (keep the empty state minimal while it runs).

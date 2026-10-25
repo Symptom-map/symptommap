@@ -22,6 +22,7 @@ import PerfilDiagnostico from './perfil/PerfilDiagnostico.jsx'
 import AgregarSintoma from './mapa/AgregarSintoma.jsx'
 import AvisoSintoma from './mapa/AvisoSintoma.jsx'
 import PanelDetalle from './mapa/PanelDetalle.jsx'
+import Ajustes from './cuenta/Ajustes.jsx'
 import { preguntasPara } from './perfil/preguntas.js'
 import {
   PantallaEntrar, PantallaRegistro, PantallaMenorDeEdad, PantallaElegibilidad,
@@ -31,7 +32,7 @@ import { SIN_DIAGNOSTICO } from './cuenta/validar.js'
 import {
   crearCuenta, confirmarCorreo, reenviarCodigo, entrar, salir,
   sesionActual, alCambiarSesion, leerCuenta, aceptarConsentimiento,
-  pedirRestablecer, confirmarRestablecer, cambiarContrasena,
+  pedirRestablecer, confirmarRestablecer, cambiarContrasena, borrarMiCuenta,
 } from './nube/cuenta.js'
 import { cargarMapa, guardarMapa } from './nube/mapa.js'
 import { crearMapa } from '@nucleo/mapa.js'
@@ -174,6 +175,14 @@ export default function App() {
     irA('mapa')
   })
 
+  // The account is gone: back to the login screen with a clear message.
+  const alBorrarCuenta = () => {
+    setSesion(null)
+    setCuenta(null)
+    irA('entrar')
+    setAviso('Your account and all your data have been deleted.')
+  }
+
   const alSalir = async () => {
     await salir()
     setSesion(null)
@@ -185,7 +194,7 @@ export default function App() {
   return (
     <div className="app">
       {pantalla === 'cargando' && <div className="cuenta" aria-busy="true" />}
-      {pantalla === 'entrar' && <PantallaEntrar {...comunes} onEntrar={alEntrar} onIrARegistro={() => irA('registro')} onOlvide={correo => { setCorreoPendiente(correo); irA('olvide') }}
+      {pantalla === 'entrar' && <PantallaEntrar {...comunes} aviso={aviso} onEntrar={alEntrar} onIrARegistro={() => irA('registro')} onOlvide={correo => { setCorreoPendiente(correo); irA('olvide') }}
         onPrueba={MODO_PRUEBA_DISPONIBLE ? () => { activarModoPrueba(); irA('prueba') } : undefined} />}
       {pantalla === 'olvide' && <PantallaOlvide {...comunes} inicial={correoPendiente} onEnviar={alPedirRestablecer} onVolver={() => irA('entrar')} />}
       {pantalla === 'restablecerCodigo' && <PantallaVerificar {...comunes} restablecer aviso={aviso} correo={correoPendiente} onVerificar={alConfirmarRestablecer} onReenviar={alReenviarRestablecer} />}
@@ -196,7 +205,7 @@ export default function App() {
       {pantalla === 'sinDiagnostico' && <PantallaSinDiagnostico />}
       {pantalla === 'verificar' && <PantallaVerificar {...comunes} aviso={aviso} correo={correoPendiente} onVerificar={alVerificar} onReenviar={alReenviar} />}
       {pantalla === 'consentimiento' && <PantallaConsentimiento {...comunes} onAceptar={alAceptar} />}
-      {pantalla === 'mapa' && sesion && <MiMapa userId={sesion.user.id} nombre={cuenta?.nombre} onSalir={alSalir} />}
+      {pantalla === 'mapa' && sesion && <MiMapa userId={sesion.user.id} nombre={cuenta?.nombre} correo={sesion.user.email} onSalir={alSalir} onCuentaBorrada={alBorrarCuenta} />}
       {pantalla === 'prueba' && MODO_PRUEBA_DISPONIBLE && <MiMapa prueba onSalir={() => { salirModoPrueba(); window.history.replaceState(null, '', window.location.pathname); irA('entrar') }} />}
     </div>
   )
@@ -204,7 +213,7 @@ export default function App() {
 
 // ── The person's map, saved automatically ─────────────────────
 // prueba: test mode (prueba.js) — the map starts empty and lives in memory only.
-function MiMapa({ userId, nombre, onSalir, prueba = false }) {
+function MiMapa({ userId, nombre, correo, onSalir, onCuentaBorrada, prueba = false }) {
   const { AppHeader, Button, InlineMessage } = ds()
   const [mapa, setMapa] = useState(null)
   const [problema, setProblema] = useState('')
@@ -215,6 +224,7 @@ function MiMapa({ userId, nombre, onSalir, prueba = false }) {
   const [agregandoSintoma, setAgregandoSintoma] = useState(false)
   const [avisoSintoma, setAvisoSintoma] = useState(null) // what "Add" connected a symptom to
   const [seleccion, setSeleccion] = useState(null) // { tipo: 'diagnostico' | 'sintoma', id } shown in the detail panel
+  const [enAjustes, setEnAjustes] = useState(false) // Settings is shown instead of the map (the map stays loaded)
   const revision = useRef(null)
   const pendiente = useRef(null) // mapa que falta guardar
   const temporizador = useRef(null)
@@ -391,6 +401,16 @@ function MiMapa({ userId, nombre, onSalir, prueba = false }) {
   // Before logging out: wait for a save that is already running, then save
   // whatever is still pending. If it still can't be saved (no connection),
   // stay logged in so nothing is lost (review of 23 Oct 2026).
+  // Delete account: nothing left to save, so pending saves are dropped first
+  // (they would fail once the account is gone).
+  async function borrarCuentaAhora() {
+    clearTimeout(temporizador.current)
+    pendiente.current = null
+    if (guardando.current) await enCurso.current
+    await borrarMiCuenta()
+    onCuentaBorrada()
+  }
+
   async function salirGuardando() {
     for (let intento = 0; intento < 3 && (guardando.current || pendiente.current); intento++) {
       if (guardando.current) await enCurso.current
@@ -413,8 +433,18 @@ function MiMapa({ userId, nombre, onSalir, prueba = false }) {
   const titulo = prueba ? 'Test map' : nombre ? `${nombre}’s map` : 'My map'
   return (
     <>
-      <AppHeader context={titulo} actions={<Button variant="ghost" size="sm" onClick={salirGuardando}>{prueba ? 'Leave test mode' : 'Log out'}</Button>} />
-      <main className="app__principal app__principal--mapa">
+      <AppHeader context={enAjustes ? 'Settings' : titulo} actions={
+        <>
+          {!prueba && !enAjustes && <Button variant="ghost" size="sm" onClick={() => { setSeleccion(null); setEnAjustes(true) }}>Settings</Button>}
+          <Button variant="ghost" size="sm" onClick={salirGuardando}>{prueba ? 'Leave test mode' : 'Log out'}</Button>
+        </>
+      } />
+      {enAjustes && !prueba && (
+        <main className="app__principal">
+          <Ajustes nombre={nombre} correo={correo} onVolver={() => setEnAjustes(false)} onBorrarCuenta={borrarCuentaAhora} />
+        </main>
+      )}
+      <main className="app__principal app__principal--mapa" hidden={enAjustes}>
         <h1 className="sr-only">{titulo}</h1>
         {mapa && <BarraLateral mapa={mapa} seleccion={seleccion} onElegir={setSeleccion} onAgregarDiagnostico={abrirAgregar} onAgregarSintoma={abrirAgregarSintoma} onEditarPerfil={id => setPerfilAbierto({ id })} />}
         <div className="lienzo">

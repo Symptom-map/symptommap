@@ -103,6 +103,17 @@ export async function cambiarContrasena(contrasena) {
   await supabase.auth.signOut({ scope: 'others' })
 }
 
+/**
+ * Deletes the signed-in person's account and everything in it
+ * (supabase/migrations/20261022000000_borrar_mi_cuenta.sql), then clears the
+ * session in this browser. Cannot be undone.
+ */
+export async function borrarMiCuenta() {
+  const { error } = await supabase.rpc('borrar_mi_cuenta')
+  if (error) throw new ErrorCuenta(error.code === 'PGRST301' || error.code === '28000' ? 'sin_sesion' : 'desconocido')
+  await supabase.auth.signOut({ scope: 'local' })
+}
+
 export async function salir() {
   // 'local': cierra la sesión en este navegador aunque no haya conexión.
   await supabase.auth.signOut({ scope: 'local' })

@@ -318,3 +318,19 @@ body { background: var(--sm-surface-canvas); }
   .panel { animation: panel-entrar .22s cubic-bezier(.2, .8, .2, 1) both; }
 }
 @keyframes panel-entrar { from { opacity: 0; transform: translateX(12px); } to { opacity: 1; transform: none; } }
+
+/* Settings (approved prototype "Settings · B", only what works today) */
+.ajustes { flex: 1; overflow: auto; background: var(--sm-cream); }
+.ajustes__contenido { max-width: 640px; margin: 0 auto; padding: 32px max(16px, 24px) 64px; display: flex; flex-direction: column; gap: 24px; align-items: flex-start; }
+.ajustes__titulo { margin: 0; outline: none; }
+.ajustes__seccion { align-self: stretch; background: var(--sm-white); border-radius: 20px; padding: 22px 24px; display: flex; flex-direction: column; gap: 16px; }
+.ajustes__seccion h2 { margin: 0; }
+.ajustes__datos { margin: 0; display: flex; flex-direction: column; gap: 14px; }
+.ajustes__datos dt { margin: 0 0 2px; }
+.ajustes__datos dd { margin: 0; overflow-wrap: anywhere; }
+.ajustes__ayuda { margin: 0; color: var(--sm-ink-meta); }
+.ajustes__borrar { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.ajustes__subtitulo { margin: 0; }
+.ajustes__confirmar { align-self: stretch; display: flex; flex-direction: column; gap: 10px; padding: 16px; border-radius: 14px; background: var(--sm-cream); }
+.ajustes__confirmar .sm-body-sm { margin: 0; }
+.app__principal[hidden] { display: none; }
