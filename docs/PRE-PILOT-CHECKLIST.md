@@ -24,7 +24,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [x] Amazon SES (Sydney): identity `symptommap.com.au` created with Easy DKIM (RSA 2048); 3 DKIM CNAMEs and `_dmarc` TXT (`v=DMARC1; p=none;`) added in VentraIP (19 Oct 2026).
 - [x] SES shows the domain as **Verified** (DKIM success, 22 Oct 2026).
 - [x] Request production access — sent 22 Oct 2026 (Transactional · https://www.symptommap.com.au · English). The form no longer asks for a use case; if AWS asks by email, reply with the text below.
-- [ ] AWS approves production access (usually 1–2 business days).
+- [x] AWS approves production access (25 Oct 2026).
 
 <details><summary>Use case text for the production access request</summary>
 
@@ -35,7 +35,10 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 > Expected volume: under 500 emails per month. Bounces and complaints: we keep the SES account-level suppression list enabled, monitor the reputation metrics in the SES console, and remove any address that bounces or complains. The domain symptommap.com.au uses Easy DKIM and a DMARC record.
 
 </details>
-- [ ] Supabase Auth custom SMTP through SES; logo in the email template.
+- [x] Supabase Auth custom SMTP through SES (25 Oct 2026; first reset code sent from noreply@symptommap.com.au).
+- [x] Email templates with the logo (`supabase/plantillas/`, layout like Ana's reference, 25 Oct 2026). The logo is `assets/email-logo.png` on the public site: paste the templates in Supabase once this is deployed to production.
+- [ ] Contact addresses that receive mail (proposed `hello@` and `privacy@symptommap.com.au`, forwarded to the project Gmail; reply as them through SES).
+- [ ] The app says "We couldn't connect" when Supabase answers 500 (e.g. an email that could not be sent): show a server error instead.
 
 ## Product
 - [x] Add a diagnosis: empty map, sidebar, Add a diagnosis window (PR #13).

@@ -42,4 +42,4 @@ En el panel de Supabase → *Authentication*:
 | *Emails* → *Reset Password* | Paste `plantillas/reset-password.html` (uses `{{ .Token }}`), subject "SymptomMap Reset Password" (different from the sign-up email) | "Forgot your password?" asks for a **code**, not a link |
 | *Sign In / Providers* → Email | "Confirm email" activado · largo del código (Email OTP Length) = **6** · contraseña mínima **8** | Coincide con las pantallas del prototipo |
 | *Attack Protection* | Activar la protección de contraseñas filtradas | Rechaza contraseñas que aparecen en filtraciones conocidas |
-| *Emails* → SMTP | **Antes del piloto:** un servidor de correo propio (con el dominio) | El correo de prueba de Supabase solo envía a los miembros del equipo y tiene un límite bajo por hora |
+| *Emails* → SMTP Settings | **Custom SMTP on (25 Oct 2026):** sender `noreply@symptommap.com.au`, name `SymptomMap`, host `email-smtp.ap-southeast-2.amazonaws.com`, port `587`, user/password of IAM user `symptommap-ses-smtp` (`docs/aws/README.md` §4). Email rate limit went from 2/h to 30/h | Emails leave from the domain, through Amazon SES in Sydney |
