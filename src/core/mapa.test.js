@@ -8,7 +8,7 @@ import { asignarSlots, slotParaAgregar, separacionMinima } from './color.js'
 import { MUNDO, FILA_Y, DISTANCIA_LIBRE } from './colocacion.js'
 import {
   crearMapa, agregarDiagnostico, cambiarColor, coloresDisponibles, proponerColor, guardarPerfil,
-  quitarDiagnostico, moverDiagnostico, agregarSintoma, aceptarSugerencia, conectar, desconectar,
+  quitarDiagnostico, sintomasQueSeBorran, moverDiagnostico, agregarSintoma, aceptarSugerencia, conectar, desconectar,
   editarSintoma, borrarSintoma, moverSintoma, posicionesDiagnosticos, MAX_DIAGNOSTICOS,
   cajaSintoma, cajaDiagnostico, seCruzan,
 } from './mapa.js'
@@ -184,9 +184,9 @@ test('síntoma: editar, conectar, desconectar y borrar', () => {
   assert.equal(mapa.conexiones.some(c => c.sintomaId === uno), false)
 })
 
-// ── Quitar un diagnóstico (Functional Inventory §7) ───────────
+// ── Removing a diagnosis (Ana, 25 Oct 2026; FUENTES §3d) ───────
 
-test('quitar diagnóstico: aplica la tabla de reglas del inventario', () => {
+test('removing a diagnosis deletes the symptoms connected only to it, whoever wrote them', () => {
   let { mapa, ids } = conDiagnosticos(['ADHD', 'C-PTSD'])
   const [adhd, cptsd] = ids
   mapa = guardarPerfil(mapa, adhd, { edad: 22, detonantes: ['Stress'] })
@@ -195,21 +195,22 @@ test('quitar diagnóstico: aplica la tabla de reglas del inventario', () => {
   mapa = agregarSintoma(mapa, { texto: 'Mío, solo de ADHD', diagnosticoIds: [adhd], notas: 'Mis notas' }).mapa
   mapa = agregarSintoma(mapa, { texto: 'Mío, de C-PTSD', diagnosticoIds: [cptsd] }).mapa
 
+  assert.deepEqual(sintomasQueSeBorran(mapa, adhd).map(s => s.texto).sort(), ['Mío, solo de ADHD', 'Solo de ADHD (sugerido)'])
+
   const despues = quitarDiagnostico(mapa, adhd)
   const textos = despues.sintomas.map(s => s.texto)
 
-  assert.equal(textos.includes('Solo de ADHD (sugerido)'), false, 'el sugerido que solo dependía de él desaparece')
-  assert.ok(textos.includes('Compartido (sugerido)'), 'el compartido se conserva')
-  const mio = despues.sintomas.find(s => s.texto === 'Mío, solo de ADHD')
-  assert.ok(mio, 'el escrito por la persona se conserva')
-  assert.equal(mio.notas, 'Mis notas')
-  assert.ok(textos.includes('Mío, de C-PTSD'), 'lo que no dependía de él no cambia')
+  assert.equal(textos.includes('Solo de ADHD (sugerido)'), false, 'a suggested symptom only on it is deleted')
+  assert.equal(textos.includes('Mío, solo de ADHD'), false, 'a symptom the person wrote, only on it, is deleted too (no grey symptoms)')
+  assert.ok(textos.includes('Compartido (sugerido)'), 'a shared symptom stays')
+  assert.ok(textos.includes('Mío, de C-PTSD'), 'what did not depend on it does not change')
+  assert.equal(despues.conexiones.some(c => c.sintomaId === mapa.sintomas.find(s => s.texto === 'Mío, solo de ADHD').id), false)
 
   assert.equal(despues.conexiones.some(c => c.diagnosticoId === adhd), false)
   assert.equal(despues.perfiles[adhd], undefined, 'su perfil también se borra')
 
   const vista = construirVista(despues)
-  assert.equal(vista.sintomas.find(s => s.texto === 'Mío, solo de ADHD').tipo, 'flotante')
+  assert.equal(vista.sintomas.some(s => s.tipo === 'flotante'), false)
   assert.equal(vista.sintomas.find(s => s.texto === 'Compartido (sugerido)').tipo, 'unico')
 
   // Volver a agregarlo no restaura conexiones antiguas.

@@ -7,19 +7,20 @@
 // Symptom: its connections (SourceTag), "When / how does it show up?",
 // "Your notes", "Edit name" and "Delete symptom" (asked first).
 // Diagnosis: profile facts, connected symptoms, colour on the map,
-// "Edit details" (the profile) and "Delete diagnosis" (asked first).
+// "Edit details" (the profile) and "Delete diagnosis" (asked first, saying
+// how many symptoms go with it: Ana, 25 Oct 2026, FUENTES §3d).
 //
-// NEW (not in the prototype, flagged to Ana): "Connected to" lets the person
-// add or remove a connection by hand. Since 20 Oct 2026 a symptom is only
-// grey when its diagnosis is deleted (docs/FUENTES-Y-DECISIONES.md §3c), so
-// the last connection cannot be removed here: deleting the symptom does that.
+// "Connected to" (approved by Ana, 25 Oct 2026; not in the prototype) lets the
+// person add or remove a connection by hand, e.g. to correct the AI. A symptom
+// is never left without a connection (FUENTES §3c–3d), so the last one cannot
+// be removed here: deleting the symptom does that.
 // "Suggest symptoms" is not shown until that feature exists.
 //
 // Every change goes through the core (src/core/mapa.js) in the parent.
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useId, useRef, useState } from 'react'
-import { coloresDisponibles, diagnosticosDe } from '@nucleo/mapa.js'
+import { coloresDisponibles, diagnosticosDe, sintomasQueSeBorran } from '@nucleo/mapa.js'
 import { ds } from '../ds/index.js'
 import { preguntasPara } from '../perfil/preguntas.js'
 import { nombreColor } from './AgregarDiagnostico.jsx'
@@ -168,6 +169,7 @@ function DetalleDiagnostico({ mapa, diagnostico, acciones, onElegir }) {
 
   const sintomas = mapa.sintomas.filter(s => mapa.conexiones.some(c => c.sintomaId === s.id && c.diagnosticoId === diagnostico.id))
   const colores = [...new Set([diagnostico.slot, ...coloresDisponibles(mapa, diagnostico.id)])].sort((a, b) => a - b)
+  const seBorran = sintomasQueSeBorran(mapa, diagnostico.id)
 
   return (
     <div className="panel__cuerpo">
@@ -220,7 +222,15 @@ function DetalleDiagnostico({ mapa, diagnostico, acciones, onElegir }) {
 
       {borrando ? (
         <div className="panel__bloque panel__confirmar" role="alert">
-          <p className="sm-body-sm">Remove this diagnosis? Its symptoms stay on your map, unplaced.</p>
+          <p className="sm-body-sm"><strong>Remove {diagnostico.etiqueta}?</strong></p>
+          {seBorran.length > 0 && (
+            <p className="sm-body-sm">
+              {seBorran.length === 1
+                ? '1 symptom connected only to it will be removed too, with your notes about it.'
+                : `${seBorran.length} symptoms connected only to it will be removed too, with your notes about them.`}
+              {' '}Symptoms shared with another diagnosis stay.
+            </p>
+          )}
           <div className="panel__botones">
             <Button variant="secondary" size="sm" onClick={() => setBorrando(false)}>Keep it</Button>
             <Button variant="link" onClick={() => acciones.borrarDiagnostico(diagnostico.id)}>Remove</Button>

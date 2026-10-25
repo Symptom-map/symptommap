@@ -3,7 +3,7 @@
 Leer antes de trabajar en SymptomMap, en cualquier herramienta (Claude, Claude Code, Codex, Claude Design). Las reglas para agentes de código están en `AGENTS.md`.
 Existe para que nunca se mezclen las distintas versiones del proyecto.
 
-Última actualización: 20 de octubre de 2026.
+Última actualización: 25 de octubre de 2026.
 
 ## 1. Qué es cada cosa y para qué se usa
 
@@ -84,9 +84,20 @@ This replaces FUNCTIONAL-INVENTORY §6 ("Add without analysing") and §9B, and t
 | **Analyse connections** | Shows the same possibilities first ("Possible connections"), already selected; the person keeps the ones that feel true, can add other diagnoses on the map, and adds or goes Back | For people who want to review before anything is added |
 | Limits on the AI | Only diagnoses already on the map (never a new one, never inferring a diagnosis); hedged wording; no percentages, scores or certainty; minimum context (the symptom wording, the optional "when / how" text and the diagnoses on the map, sent by number, never ids, name or email) | Product principles in `AGENTS.md` |
 | When the AI finds nothing or is unavailable | The person chooses the diagnoses from their map ("Where does this fit?"). The symptom is added only with at least one connection | So a symptom is never grey |
-| Grey symptoms | Only when a diagnosis is deleted and a symptom written by the person loses its last connection (FUNCTIONAL-INVENTORY §7) | Unchanged |
+| Grey symptoms | ~~Only when a diagnosis is deleted~~ → **never** since 25 Oct 2026 (§3d) | — |
 
 Pending: tell the psychologist about this change at the next checkpoint.
+
+## 3d. Deleting things, and connecting by hand (decided by Ana on 25 Oct 2026)
+
+These replace FUNCTIONAL-INVENTORY §7 (what happens to symptoms when a diagnosis is deleted).
+
+| Topic | Decision | Why |
+|---|---|---|
+| Deleting a diagnosis | Every symptom connected **only** to it is deleted too, with its notes, whoever wrote it. A symptom shared with another diagnosis stays, connected to the other one (e.g. meltdown on ADHD and ASD: delete ASD → meltdown stays on ADHD) | Grey, unplaced symptoms confuse people. There are no grey symptoms any more |
+| Confirmation | "Remove ADHD?" — and, when it applies, "3 symptoms connected only to it will be removed too, with your notes about them. Symptoms shared with another diagnosis stay." → Keep it / Remove | The person knows what goes before confirming |
+| "Connected to" in the symptom panel | Kept (not in the prototype): the person can add or remove a connection by hand, e.g. to correct the AI after closing the "Added to your map" notice. The last connection cannot be removed there; deleting the symptom does that | Corrections without new rules |
+| Deleting the account | From Settings → Privacy & your data. "Delete your account and data? This deletes your account and everything in it: your diagnoses, profiles, symptoms and notes. For your security, SymptomMap doesn't keep any of it. If you want to use SymptomMap again, you'll create a new account and start from zero. This can't be undone." → Keep my account / Delete. Immediate and complete (database cascade). No typed "DELETE" for now (two steps already; typing adds friction) — revisit after the pilot | Clear and honest. Supabase backups expire after 7 days; the privacy page says so |
 
 ## 4. Pendientes de decidir
 

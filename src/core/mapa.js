@@ -160,13 +160,25 @@ export function guardarPerfil(mapaOriginal, diagnosticoId, perfil) {
 }
 
 /**
- * Quita un diagnóstico del mapa (Functional Inventory §7):
- * - se borran sus conexiones y su perfil;
- * - un síntoma sugerido que solo dependía de él desaparece;
- * - un síntoma compartido conserva sus otras conexiones;
- * - un síntoma escrito por la persona se conserva aunque quede sin
- *   conexiones ("Origin not placed yet"), con su texto y notas.
- * Volver a agregar el diagnóstico no restaura conexiones antiguas.
+ * Symptoms that would be deleted with this diagnosis: the ones connected
+ * only to it. Used to tell the person how many before they confirm.
+ */
+export function sintomasQueSeBorran(mapa, diagnosticoId) {
+  const conexionesDe = id => mapa.conexiones.filter(c => c.sintomaId === id)
+  return mapa.sintomas.filter(s => {
+    const propias = conexionesDe(s.id)
+    return propias.length > 0 && propias.every(c => c.diagnosticoId === diagnosticoId)
+  })
+}
+
+/**
+ * Removes a diagnosis from the map (Ana, 25 Oct 2026 — replaces
+ * FUNCTIONAL-INVENTORY §7, docs/FUENTES-Y-DECISIONES.md §3d):
+ * - its connections and its profile are deleted;
+ * - every symptom connected only to it is deleted too, with its notes,
+ *   whoever wrote it — no symptom is left grey;
+ * - a shared symptom keeps its other connections.
+ * Adding the diagnosis again does not bring old connections back.
  */
 export function quitarDiagnostico(mapaOriginal, diagnosticoId) {
   const mapa = copiar(mapaOriginal)
@@ -178,9 +190,7 @@ export function quitarDiagnostico(mapaOriginal, diagnosticoId) {
   delete mapa.perfiles[diagnosticoId]
 
   const sinConexion = id => !mapa.conexiones.some(c => c.sintomaId === id)
-  const eliminar = new Set(
-    mapa.sintomas.filter(s => afectados.includes(s.id) && s.origen === 'sugerencia' && sinConexion(s.id)).map(s => s.id)
-  )
+  const eliminar = new Set(mapa.sintomas.filter(s => afectados.includes(s.id) && sinConexion(s.id)).map(s => s.id))
   mapa.sintomas = mapa.sintomas.filter(s => !eliminar.has(s.id))
   return mapa
 }
