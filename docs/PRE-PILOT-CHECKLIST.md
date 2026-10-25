@@ -13,6 +13,11 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [x] AWS: automatic cost stop. The project's **monthly spend limit ($20)** in the AWS account menu pauses the project on its own (checked 22 Oct 2026, $0 spent). The Budgets action `DenyBedrockWhenOverBudget` at $17 is a second brake (status Standby). Budget alert emails to symptommap.project@gmail.com are **inactive**: Ana's Google sign-in role cannot verify email contacts (`notifications-contacts:*`), so check spending in that menu instead.
 - [x] Personal Anthropic API key removed from this project's Vercel. It is **kept** at console.anthropic.com because the backup (symptommaproject) still uses it (Ana, 20 Oct 2026). Keep a low monthly spend limit on it; delete it when the backup no longer needs it.
 - [ ] No screenshots with preview links, emails or test data shared publicly.
+- [ ] **Sessions last up to 6 days** (FUNCTIONAL-INVENTORY §1): Supabase → Authentication → Sessions → *Time-box user sessions* = 144 hours; no inactivity timeout. Supabase plan is Pro (checked 23 Oct 2026). Ana does this in the dashboard.
+- [x] CI on every PR: tests, site build, and a check that the production build has no test mode (`.github/workflows/tests.yml`, review of 23 Oct 2026).
+- [ ] Branch protection on `main`: require the "Tests" check before merging (once the workflow is on `main`).
+- [ ] Content-Security-Policy header in `vercel.json` (review of 23 Oct 2026; HSTS, X-Frame-Options, nosniff, Referrer-Policy and Permissions-Policy are already there).
+- [ ] Check the map's structure when it is loaded, so a damaged map cannot break the screen (review of 23 Oct 2026; not a security issue — RLS already keeps maps apart).
 
 ## AI
 - [x] Claude Sonnet 4.6 on Bedrock, AU profile, quota approved (19 Oct 2026).

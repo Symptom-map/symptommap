@@ -219,6 +219,7 @@ function MiMapa({ userId, nombre, onSalir, prueba = false }) {
   const pendiente = useRef(null) // mapa que falta guardar
   const temporizador = useRef(null)
   const guardando = useRef(false)
+  const enCurso = useRef(null) // resolves when the save running now ends
 
   const recargar = useCallback(async () => {
     if (prueba) { setMapa(crearMapa()); return }
@@ -238,6 +239,8 @@ function MiMapa({ userId, nombre, onSalir, prueba = false }) {
     clearTimeout(temporizador.current)
     if (guardando.current || !pendiente.current) return
     guardando.current = true
+    let terminar
+    enCurso.current = new Promise(r => { terminar = r })
     const aGuardar = pendiente.current
     pendiente.current = null
     // Tras un error solo se vuelve a intentar si la persona cambió algo mientras
@@ -259,6 +262,7 @@ function MiMapa({ userId, nombre, onSalir, prueba = false }) {
       }
     } finally {
       guardando.current = false
+      terminar()
       if (pendiente.current && reintentar) temporizador.current = setTimeout(guardarAhora, ESPERA_GUARDADO_MS)
     }
   }, [userId, recargar])
@@ -384,8 +388,18 @@ function MiMapa({ userId, nombre, onSalir, prueba = false }) {
     setAgregando(true)
   }
 
+  // Before logging out: wait for a save that is already running, then save
+  // whatever is still pending. If it still can't be saved (no connection),
+  // stay logged in so nothing is lost (review of 23 Oct 2026).
   async function salirGuardando() {
-    await guardarAhora()
+    for (let intento = 0; intento < 3 && (guardando.current || pendiente.current); intento++) {
+      if (guardando.current) await enCurso.current
+      await guardarAhora()
+    }
+    if (pendiente.current || guardando.current) {
+      setProblema('sin_guardar_al_salir')
+      return
+    }
     onSalir()
   }
 
@@ -393,6 +407,7 @@ function MiMapa({ userId, nombre, onSalir, prueba = false }) {
   const textoProblema = {
     conflicto: 'Your map changed in another window. We loaded the latest version.',
     demasiado_grande: 'Your map is too large to save. Remove something and try again.',
+    sin_guardar_al_salir: 'Your last changes aren’t saved yet, so you’re still logged in. Check your connection and try Log out again.',
   }[problema] || (problema ? MENSAJES.sin_conexion : '')
 
   const titulo = prueba ? 'Test map' : nombre ? `${nombre}’s map` : 'My map'

@@ -37,7 +37,11 @@ function traducir(error) {
     return new ErrorCuenta(razones.includes('pwned') ? 'contrasena_filtrada' : 'contrasena_debil')
   }
   if (codigo === 'over_email_send_rate_limit' || codigo === 'over_request_rate_limit') return new ErrorCuenta('demasiados_intentos')
-  if (error?.status === 0 || error?.name === 'AuthRetryableFetchError') return new ErrorCuenta('sin_conexion')
+  // A real network failure has status 0. Supabase server errors (500–530) also
+  // arrive as AuthRetryableFetchError, but they are not the person's internet
+  // (e.g. an email that could not be sent): say so instead.
+  if (error?.status === 0) return new ErrorCuenta('sin_conexion')
+  if (error?.status >= 500) return new ErrorCuenta('error_servidor')
   return new ErrorCuenta('desconocido')
 }
 

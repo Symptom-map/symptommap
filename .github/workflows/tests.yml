@@ -1,0 +1,30 @@
+# Runs on every pull request and on main: the tests, the full site build and
+# the check that production has no test mode. A PR should only be merged
+# when this passes (branch protection on main).
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: v2/package-lock.json
+      - run: npm ci --prefix v2
+      - run: npm test --prefix v2
+      - name: Build the site (preview build)
+        run: npm run build:sitio --prefix v2
+      - name: Production build has no test mode
+        run: npm run comprobar:produccion --prefix v2
