@@ -228,6 +228,8 @@ export function agregarSintoma(mapaOriginal, { texto, diagnosticoIds = [], orige
 
   const mapa = copiar(mapaOriginal)
   const ids = [...new Set(diagnosticoIds)]
+  // Every symptom has at least one connection (FUENTES §3c–3d, 25 Oct 2026).
+  if (ids.length === 0) throw new ErrorMapa('SINTOMA_SIN_DIAGNOSTICO')
   ids.forEach(id => buscarDiagnostico(mapa, id))
 
   const existente = mapa.sintomas.find(s => normalizar(s.texto) === normalizar(palabras))
@@ -267,10 +269,22 @@ export function conectar(mapaOriginal, sintomaId, diagnosticoId) {
   return mapa
 }
 
-/** Quita una conexión. El síntoma se conserva aunque quede sin conexiones. */
+/** Whether this connection can be removed (not the symptom's last one). For the UI. */
+export function puedeDesconectar(mapa, sintomaId, diagnosticoId) {
+  const propias = mapa.conexiones.filter(c => c.sintomaId === sintomaId)
+  return propias.some(c => c.diagnosticoId === diagnosticoId) && propias.length > 1
+}
+
+/**
+ * Removes a connection. The last connection of a symptom cannot be removed:
+ * a symptom always has at least one (FUENTES §3d). To remove it, delete
+ * the symptom (borrarSintoma).
+ */
 export function desconectar(mapaOriginal, sintomaId, diagnosticoId) {
   const mapa = copiar(mapaOriginal)
   buscarSintoma(mapa, sintomaId)
+  const propias = mapa.conexiones.filter(c => c.sintomaId === sintomaId)
+  if (propias.length === 1 && propias[0].diagnosticoId === diagnosticoId) throw new ErrorMapa('ULTIMA_CONEXION')
   mapa.conexiones = mapa.conexiones.filter(c => !(c.sintomaId === sintomaId && c.diagnosticoId === diagnosticoId))
   return mapa
 }

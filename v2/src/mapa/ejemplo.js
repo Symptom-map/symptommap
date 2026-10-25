@@ -22,7 +22,6 @@ function construir() {
     ['Sleep falls apart', [adhd, cptsd]],
     ['Starting anything feels impossible', [adhd, bpd, cptsd]],
     ['Shame spirals fast', [bpd, cptsd]],
-    ['Hard to explain to other people', []],
   ]
   for (const [texto, diagnosticoIds] of sintomas) {
     mapa = agregarSintoma(mapa, { texto, diagnosticoIds }).mapa

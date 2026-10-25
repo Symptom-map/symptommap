@@ -12,15 +12,16 @@
 //
 // "Connected to" (approved by Ana, 25 Oct 2026; not in the prototype) lets the
 // person add or remove a connection by hand, e.g. to correct the AI. A symptom
-// is never left without a connection (FUENTES §3c–3d), so the last one cannot
-// be removed here: deleting the symptom does that.
+// is never left without a connection (FUENTES §3c–3d): the core refuses to
+// remove the last one (desconectar / puedeDesconectar); deleting the symptom
+// does that.
 // "Suggest symptoms" is not shown until that feature exists.
 //
 // Every change goes through the core (src/core/mapa.js) in the parent.
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useId, useRef, useState } from 'react'
-import { coloresDisponibles, diagnosticosDe, sintomasQueSeBorran } from '@nucleo/mapa.js'
+import { coloresDisponibles, diagnosticosDe, puedeDesconectar, sintomasQueSeBorran } from '@nucleo/mapa.js'
 import { ds } from '../ds/index.js'
 import { preguntasPara } from '../perfil/preguntas.js'
 import { nombreColor } from './AgregarDiagnostico.jsx'
@@ -75,9 +76,8 @@ function DetalleSintoma({ mapa, sintoma, acciones }) {
   }
 
   function alternar(d) {
-    if (idsConectados.has(d.id)) {
-      if (conectados.length > 1) acciones.desconectar(sintoma.id, d.id)
-    } else acciones.conectar(sintoma.id, d.id)
+    if (!idsConectados.has(d.id)) acciones.conectar(sintoma.id, d.id)
+    else if (puedeDesconectar(mapa, sintoma.id, d.id)) acciones.desconectar(sintoma.id, d.id)
   }
 
   return (
@@ -87,14 +87,15 @@ function DetalleSintoma({ mapa, sintoma, acciones }) {
           {conectados.map(d => <SourceTag key={d.id} label={d.etiqueta} slot={d.slot} />)}
         </div>
       ) : (
-        <p className="sm-body-sm panel__nota">No diagnosis attached yet, it sits on its own until you decide where it belongs. Worth bringing to your next appointment.</p>
+        // Only maps saved before 25 Oct 2026 can have a symptom without connections.
+        <p className="sm-body-sm panel__nota">Not connected to a diagnosis. Connect it below, or delete it.</p>
       )}
 
       <div className="panel__bloque">
         <p className="sm-field-label" id={`${id}-con`}>Connected to</p>
         <div className="panel__conexiones" role="group" aria-labelledby={`${id}-con`}>
           {diagnosticos.map(d => {
-            const unica = idsConectados.has(d.id) && conectados.length === 1
+            const unica = idsConectados.has(d.id) && !puedeDesconectar(mapa, sintoma.id, d.id)
             return (
               <DiagnosisChip
                 key={d.id} label={d.etiqueta} slot={d.slot} compact
