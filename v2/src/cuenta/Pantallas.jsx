@@ -22,6 +22,7 @@ export const MENSAJES = {
   codigo_invalido: 'That code doesn’t look right. Try the newest one we sent.',
   demasiados_intentos: 'Too many attempts. Wait a minute and try again.',
   sin_conexion: 'We couldn’t connect. Check your internet and try again.',
+  error_servidor: 'Something went wrong on our side. Please try again in a few minutes.',
   contrasena_debil: 'Choose a stronger password.',
   contrasena_filtrada: 'This password has appeared in a data breach, so it isn’t safe to use. Choose a different one.',
   contrasena_igual: 'Choose a password you haven’t used for SymptomMap before.',
