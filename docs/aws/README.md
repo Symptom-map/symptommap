@@ -46,5 +46,9 @@ Luego: Security credentials → **Create access key** → "Application running o
 
 Con esas variables, `api/claude.js` usa Bedrock. Es el único proveedor: la clave personal de Anthropic (`ANTHROPIC_API_KEY`) se retiró el 14 oct 2026 y no se vuelve a usar.
 
-## 4. SES (correos desde el dominio) — tarea siguiente
-Verificar `symptommap.com.au` en SES (registros DKIM en el DNS de VentraIP), pedir salida del modo de prueba ("production access") y conectar Supabase Auth con las credenciales SMTP de SES.
+## 4. SES (emails from the domain) — done 25 Oct 2026
+- Identity `symptommap.com.au` in SES Sydney (`ap-southeast-2`), Easy DKIM, verified 22 Oct 2026. DKIM CNAMEs and `_dmarc` TXT live in VentraIP DNS.
+- Out of the sandbox (production access) since 25 Oct 2026.
+- SMTP credentials: IAM user **`symptommap-ses-smtp`**, created from SES → SMTP settings → **IAM SMTP credentials** (not "Mail Manager SMTP", which is for receiving mail and is billed separately). The console wizard did not attach its group policy (Ana's Google sign-in role), so the user has one inline policy instead, **`SymptomMapSesSend`**: `ses:SendRawEmail` only on `arn:aws:ses:ap-southeast-2:287238357784:identity/symptommap.com.au` (it can only send from that domain).
+- The SMTP user name and password were pasted straight from AWS into Supabase; they are not stored anywhere else. To rotate them: create a new access key for that user in IAM, convert it with SES → SMTP settings, update Supabase, then delete the old key.
+- Supabase settings: `supabase/README.md`.
