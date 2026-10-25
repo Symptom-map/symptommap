@@ -49,6 +49,12 @@ function Pasos({ actual, total = 3, etiqueta }) {
   )
 }
 
+// NEW: a success message on the login screen (e.g. after deleting the account).
+function InlineMessageExito({ texto }) {
+  const { InlineMessage } = ds()
+  return <InlineMessage tone="success">{texto}</InlineMessage>
+}
+
 function MensajeError({ codigo }) {
   const { InlineMessage } = ds()
   if (!codigo) return null
@@ -72,7 +78,7 @@ function CampoContrasena({ id, label, placeholder, value, error, onChange }) {
 }
 
 // ── Login ─────────────────────────────────────────────────────
-export function PantallaEntrar({ ocupado, error, onEntrar, onIrARegistro, onOlvide, onPrueba }) {
+export function PantallaEntrar({ ocupado, error, aviso, onEntrar, onIrARegistro, onOlvide, onPrueba }) {
   const { TextField, Button } = ds()
   const [correo, setCorreo] = useState('')
   const [contrasena, setContrasena] = useState('')
@@ -101,6 +107,7 @@ export function PantallaEntrar({ ocupado, error, onEntrar, onIrARegistro, onOlvi
         <div className="cuenta__olvide">
           <a href="#reset" onClick={e => { e.preventDefault(); onOlvide(correo) }}>Forgot your password?</a>
         </div>
+        {aviso ? <div className="cuenta__mensaje" role="status"><InlineMessageExito texto={aviso} /></div> : null}
         <MensajeError codigo={error} />
         <div className="cuenta__accion">
           <Button type="submit" variant="primary" block disabled={!listo || ocupado}>Log in</Button>
@@ -358,7 +365,7 @@ export function PantallaNuevaContrasena({ ocupado, error, onGuardar }) {
   )
 }
 
-function ocultarCorreo(correo = '') {
+export function ocultarCorreo(correo = '') {
   const [usuario, dominio] = correo.trim().split('@')
   if (!dominio) return correo
   return usuario.slice(0, 1) + '••••@' + dominio

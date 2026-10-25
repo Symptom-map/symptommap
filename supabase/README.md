@@ -43,3 +43,11 @@ En el panel de Supabase → *Authentication*:
 | *Sign In / Providers* → Email | "Confirm email" activado · largo del código (Email OTP Length) = **6** · contraseña mínima **8** | Coincide con las pantallas del prototipo |
 | *Attack Protection* | Activar la protección de contraseñas filtradas | Rechaza contraseñas que aparecen en filtraciones conocidas |
 | *Emails* → SMTP Settings | **Custom SMTP on (25 Oct 2026):** sender `noreply@symptommap.com.au`, name `SymptomMap`, host `email-smtp.ap-southeast-2.amazonaws.com`, port `587`, user/password of IAM user `symptommap-ses-smtp` (`docs/aws/README.md` §4). Email rate limit went from 2/h to 30/h | Emails leave from the domain, through Amazon SES in Sydney |
+
+## Expected security advisor notices
+
+Supabase → Advisors → Security shows these on purpose; anything else needs a look:
+- `uso_ai`: RLS enabled, no policies — nobody reads it directly, only `consumir_cuota_ai()`.
+- `consumir_cuota_ai()` and `borrar_mi_cuenta()`: security definer functions callable by signed-in people. Both only act on the caller (`auth.uid()`); anonymous callers cannot run them.
+
+`borrar_mi_cuenta()` (migration `20261022000000_borrar_mi_cuenta.sql`) was run by Ana in the SQL editor on 25 Oct 2026, because the tool's approval prompt did not reach her.
