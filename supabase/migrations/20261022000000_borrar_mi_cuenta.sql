@@ -8,8 +8,8 @@
 --   - public.mapas    (the map: diagnoses, profiles, symptoms, notes)
 --   - public.uso_ai   (AI request counts, no content)
 --   - auth.sessions, auth.refresh_tokens, auth.identities… (Supabase Auth)
--- Nothing is kept or queued. Database backups (kept by Supabase for a few
--- days) age out on their own; the privacy text must say so.
+-- Nothing is kept or queued. Supabase's daily database backups (Pro plan:
+-- kept 7 days) age out on their own; the privacy page says so.
 --
 -- The person can only delete their own account: the function uses
 -- auth.uid() and takes no argument. Anonymous callers cannot run it.
