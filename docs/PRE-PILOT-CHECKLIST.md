@@ -48,7 +48,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [ ] Try "Add a symptom" on a Vercel preview with real Bedrock (first real AI call).
 - [ ] Tell the psychologist about the 20 Oct change to adding symptoms (FUENTES §3c).
 - [ ] Suggest symptoms (AI, Bedrock), then the end-to-end cost check.
-- [ ] Detail panel (click a diagnosis or symptom): edit, connect, delete.
+- [x] Detail panel (click a diagnosis or symptom): edit, connect, delete (PR #20). "Connected to" is new (not in the prototype); the last connection cannot be removed there.
 - [ ] Psychologist reviews the profile questions and options (`v2/src/perfil/preguntas.js`), together with the diagnosis catalogue.
 - [ ] Fill the map in v2 (empty state, add diagnosis with autocomplete, symptoms).
 - [x] Forgot password: email → 6-digit code → new password, other devices logged out (PR #17). Needs the "Reset Password" email template in Supabase (`supabase/plantillas/reset-password.html`).

@@ -8,7 +8,7 @@ import { asignarSlots, slotParaAgregar, separacionMinima } from './color.js'
 import { MUNDO, FILA_Y, DISTANCIA_LIBRE } from './colocacion.js'
 import {
   crearMapa, agregarDiagnostico, cambiarColor, coloresDisponibles, proponerColor, guardarPerfil,
-  quitarDiagnostico, moverDiagnostico, agregarSintoma, aceptarSugerencia, conectar, desconectar,
+  quitarDiagnostico, sintomasQueSeBorran, puedeDesconectar, moverDiagnostico, agregarSintoma, aceptarSugerencia, conectar, desconectar,
   editarSintoma, borrarSintoma, moverSintoma, posicionesDiagnosticos, MAX_DIAGNOSTICOS,
   cajaSintoma, cajaDiagnostico, seCruzan,
 } from './mapa.js'
@@ -35,7 +35,7 @@ function codigo(fn) {
 /**
  * Escenario aprobado: el mapa del hero del prototipo (ADHD, BPD
  * Borderline y C-PTSD en los colores 1, 4 y 8; 5 síntomas únicos y 3
- * compartidos) más un síntoma flotante escrito por la persona.
+ * compartidos). Since 25 Oct 2026 there are no floating symptoms (FUENTES §3d).
  */
 function escenarioAprobado() {
   let { mapa, ids } = conDiagnosticos(['ADHD', 'BPD Borderline', 'C-PTSD'], [1, 4, 8])
@@ -49,7 +49,6 @@ function escenarioAprobado() {
     ['Sleep falls apart', [adhd, cptsd]],
     ['Starting anything feels impossible', [adhd, bpd, cptsd]],
     ['Shame spirals fast', [bpd, cptsd]],
-    ['Hard to explain to other people', []],
   ]
   for (const [texto, diagnosticoIds] of sintomas) {
     mapa = agregarSintoma(mapa, { texto, diagnosticoIds }).mapa
@@ -164,7 +163,7 @@ test('sugerencia aceptada: queda marcada como sugerencia y solo se conecta a dia
 test('síntoma: editar, conectar, desconectar y borrar', () => {
   let { mapa, ids } = conDiagnosticos(['ADHD', 'BPD'])
   mapa = agregarSintoma(mapa, { texto: 'Uno', diagnosticoIds: [ids[0]] }).mapa
-  mapa = agregarSintoma(mapa, { texto: 'Dos' }).mapa
+  mapa = agregarSintoma(mapa, { texto: 'Dos', diagnosticoIds: [ids[1]] }).mapa
   const [uno, dos] = mapa.sintomas.map(s => s.id)
 
   assert.equal(codigo(() => editarSintoma(mapa, dos, { texto: 'uno' })), 'SINTOMA_DUPLICADO')
@@ -175,18 +174,20 @@ test('síntoma: editar, conectar, desconectar y borrar', () => {
   mapa = conectar(mapa, uno, ids[1]) // repetir no duplica
   assert.equal(mapa.conexiones.filter(c => c.sintomaId === uno).length, 2)
 
+  assert.equal(puedeDesconectar(mapa, uno, ids[0]), true)
   mapa = desconectar(mapa, uno, ids[0])
-  mapa = desconectar(mapa, uno, ids[1])
-  assert.ok(mapa.sintomas.find(s => s.id === uno), 'sin conexiones, el síntoma se conserva')
+  assert.equal(puedeDesconectar(mapa, uno, ids[1]), false)
+  assert.equal(codigo(() => desconectar(mapa, uno, ids[1])), 'ULTIMA_CONEXION', 'the last connection cannot be removed')
+  assert.equal(mapa.conexiones.filter(c => c.sintomaId === uno).length, 1)
 
   mapa = borrarSintoma(mapa, uno)
   assert.equal(mapa.sintomas.length, 1)
   assert.equal(mapa.conexiones.some(c => c.sintomaId === uno), false)
 })
 
-// ── Quitar un diagnóstico (Functional Inventory §7) ───────────
+// ── Removing a diagnosis (Ana, 25 Oct 2026; FUENTES §3d) ───────
 
-test('quitar diagnóstico: aplica la tabla de reglas del inventario', () => {
+test('removing a diagnosis deletes the symptoms connected only to it, whoever wrote them', () => {
   let { mapa, ids } = conDiagnosticos(['ADHD', 'C-PTSD'])
   const [adhd, cptsd] = ids
   mapa = guardarPerfil(mapa, adhd, { edad: 22, detonantes: ['Stress'] })
@@ -195,21 +196,22 @@ test('quitar diagnóstico: aplica la tabla de reglas del inventario', () => {
   mapa = agregarSintoma(mapa, { texto: 'Mío, solo de ADHD', diagnosticoIds: [adhd], notas: 'Mis notas' }).mapa
   mapa = agregarSintoma(mapa, { texto: 'Mío, de C-PTSD', diagnosticoIds: [cptsd] }).mapa
 
+  assert.deepEqual(sintomasQueSeBorran(mapa, adhd).map(s => s.texto).sort(), ['Mío, solo de ADHD', 'Solo de ADHD (sugerido)'])
+
   const despues = quitarDiagnostico(mapa, adhd)
   const textos = despues.sintomas.map(s => s.texto)
 
-  assert.equal(textos.includes('Solo de ADHD (sugerido)'), false, 'el sugerido que solo dependía de él desaparece')
-  assert.ok(textos.includes('Compartido (sugerido)'), 'el compartido se conserva')
-  const mio = despues.sintomas.find(s => s.texto === 'Mío, solo de ADHD')
-  assert.ok(mio, 'el escrito por la persona se conserva')
-  assert.equal(mio.notas, 'Mis notas')
-  assert.ok(textos.includes('Mío, de C-PTSD'), 'lo que no dependía de él no cambia')
+  assert.equal(textos.includes('Solo de ADHD (sugerido)'), false, 'a suggested symptom only on it is deleted')
+  assert.equal(textos.includes('Mío, solo de ADHD'), false, 'a symptom the person wrote, only on it, is deleted too (no grey symptoms)')
+  assert.ok(textos.includes('Compartido (sugerido)'), 'a shared symptom stays')
+  assert.ok(textos.includes('Mío, de C-PTSD'), 'what did not depend on it does not change')
+  assert.equal(despues.conexiones.some(c => c.sintomaId === mapa.sintomas.find(s => s.texto === 'Mío, solo de ADHD').id), false)
 
   assert.equal(despues.conexiones.some(c => c.diagnosticoId === adhd), false)
   assert.equal(despues.perfiles[adhd], undefined, 'su perfil también se borra')
 
   const vista = construirVista(despues)
-  assert.equal(vista.sintomas.find(s => s.texto === 'Mío, solo de ADHD').tipo, 'flotante')
+  assert.equal(vista.sintomas.some(s => s.tipo === 'flotante'), false)
   assert.equal(vista.sintomas.find(s => s.texto === 'Compartido (sugerido)').tipo, 'unico')
 
   // Volver a agregarlo no restaura conexiones antiguas.
@@ -262,7 +264,7 @@ test('vista: escenario aprobado — tipos de nodo, arcos iguales y una arista po
   const porTipo = t => v.sintomas.filter(s => s.tipo === t).map(s => s.texto)
   assert.equal(porTipo('unico').length, 5)
   assert.deepEqual(porTipo('compartido'), ['Sleep falls apart', 'Starting anything feels impossible', 'Shame spirals fast'])
-  assert.deepEqual(porTipo('flotante'), ['Hard to explain to other people'])
+  assert.deepEqual(porTipo('flotante'), [])
 
   const seg = t => v.sintomas.find(s => s.texto === t).segmentos
   assert.deepEqual(seg('Sleep falls apart'), [1, 8])
@@ -272,8 +274,6 @@ test('vista: escenario aprobado — tipos de nodo, arcos iguales y una arista po
   assert.ok(v.sintomas.every(s => s.segmentos === null || s.segmentos.every(x => Number.isInteger(x))))
 
   assert.equal(v.aristas.length, 5 + 2 + 3 + 2)
-  const flotante = v.sintomas.find(s => s.tipo === 'flotante')
-  assert.equal(v.aristas.some(a => a.sintomaId === flotante.id), false)
   assert.equal(v.cadena.length, 2)
 })
 
@@ -312,7 +312,7 @@ test('vista: un mapa guardado y vuelto a cargar se ve igual', () => {
 
 test('vista: un mapa grande (5 diagnósticos, 25 síntomas) tampoco encima nodos', () => {
   let { mapa, ids } = conDiagnosticos(['ADHD', 'Autism', 'BPD', 'C-PTSD', 'Generalised anxiety'])
-  const grupos = [[0], [1], [2], [3], [4], [0, 1], [1, 2], [0, 3], [2, 3, 4], []]
+  const grupos = [[0], [1], [2], [3], [4], [0, 1], [1, 2], [0, 3], [2, 3, 4], [4, 0]]
   for (let i = 0; i < 25; i++) {
     const g = grupos[i % grupos.length].map(j => ids[j])
     mapa = agregarSintoma(mapa, { texto: 'Síntoma ' + i, diagnosticoIds: g }).mapa
@@ -352,7 +352,7 @@ test('vista: en el escenario aprobado ninguna etiqueta se cruza con otra', () =>
 
 test('vista: en un mapa grande (5 diagnósticos, 25 síntomas) ninguna etiqueta se cruza', () => {
   let { mapa, ids } = conDiagnosticos(['ADHD', 'Autism', 'BPD', 'C-PTSD', 'Generalised anxiety'])
-  const grupos = [[0], [1], [2], [3], [4], [0, 1], [1, 2], [0, 3], [2, 3, 4], []]
+  const grupos = [[0], [1], [2], [3], [4], [0, 1], [1, 2], [0, 3], [2, 3, 4], [4, 0]]
   for (let i = 0; i < 25; i++) {
     mapa = agregarSintoma(mapa, { texto: 'Síntoma ' + i, diagnosticoIds: grupos[i % grupos.length].map(j => ids[j]) }).mapa
   }
@@ -390,4 +390,20 @@ test('colocación: después de ordenar el mapa, un síntoma nuevo se coloca solo
   const nuevo = agregarSintoma(ordenado, { texto: 'Algo nuevo', diagnosticoIds: [adhd, bpd] }).mapa
   assert.equal(nuevo.sintomas.at(-1).posicion, null, 'el nuevo no queda fijo hasta que la persona lo mueva')
   assert.deepEqual(etiquetasQueSeCruzan(construirVista(nuevo)), [])
+})
+
+test('a symptom always has at least one connection (FUENTES §3d)', () => {
+  const { mapa, ids } = conDiagnosticos(['ADHD'])
+  assert.equal(codigo(() => agregarSintoma(mapa, { texto: 'Nada' })), 'SINTOMA_SIN_DIAGNOSTICO')
+  assert.equal(codigo(() => agregarSintoma(mapa, { texto: 'Nada', diagnosticoIds: [] })), 'SINTOMA_SIN_DIAGNOSTICO')
+  assert.ok(agregarSintoma(mapa, { texto: 'Algo', diagnosticoIds: [ids[0]] }).mapa.sintomas.length === 1)
+})
+
+test('legacy maps: a symptom saved without connections is still drawn, as floating', () => {
+  const { mapa, ids } = conDiagnosticos(['ADHD'])
+  const viejo = structuredClone(agregarSintoma(mapa, { texto: 'Old', diagnosticoIds: [ids[0]] }).mapa)
+  viejo.conexiones = []
+  const v = construirVista(viejo)
+  assert.equal(v.sintomas.find(s => s.texto === 'Old').tipo, 'flotante')
+  assert.equal(v.aristas.length, 0)
 })

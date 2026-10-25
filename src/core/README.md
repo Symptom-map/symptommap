@@ -48,7 +48,7 @@ Los errores se lanzan como `ErrorMapa` con un `codigo` (`LIMITE_DIAGNOSTICOS`, `
 - Color: el sistema propone el más separado; la persona puede elegir otro que no esté en uso, al agregar el diagnóstico y también después. Nada cambia de color solo.
 - Máximo 10 diagnósticos. Un diagnóstico o un síntoma con el mismo texto no se duplica.
 - Las palabras de la persona se guardan tal cual.
-- Quitar un diagnóstico sigue la tabla del Functional Inventory §7 y borra su perfil.
+- Removing a diagnosis deletes its profile and every symptom connected only to it (Ana, 25 Oct 2026, `docs/FUENTES-Y-DECISIONES.md` §3d; replaces FUNCTIONAL-INVENTORY §7). Shared symptoms keep their other connections. `sintomasQueSeBorran()` says which ones before the person confirms.
 - Arrastrar cambia el lugar, nunca las relaciones. Lo que la persona mueve no salta de lugar.
 - Determinista: el mismo mapa siempre se ve igual (sin `Math.random`). Las etiquetas no se cruzan.
 - La AI nunca llama a estas funciones por su cuenta: `aceptarSugerencia` es siempre una acción de la persona.

@@ -12,7 +12,7 @@ import { diagnosticosDe } from '@nucleo/mapa.js'
 import { ds } from '../ds/index.js'
 
 // Bar colour of a symptom row: one colour per connected diagnosis, in equal parts.
-function barra(slots) {
+export function barra(slots) {
   if (slots.length === 0) return { '--fila-barra': 'var(--sm-grey)' }
   if (slots.length === 1) return { '--fila-barra': `var(--sm-dx-${slots[0]}-base)` }
   const paso = 100 / slots.length
@@ -20,7 +20,7 @@ function barra(slots) {
   return { '--fila-barra': `linear-gradient(to bottom, ${tramos.join(', ')})` }
 }
 
-export default function BarraLateral({ mapa, onAgregarDiagnostico, onAgregarSintoma, onEditarPerfil }) {
+export default function BarraLateral({ mapa, seleccion, onElegir, onAgregarDiagnostico, onAgregarSintoma, onEditarPerfil }) {
   const { SidebarGroup, DiagnosisChip, Button, IconButton, Icon, SymptomRow } = ds()
   const diagnosticos = [...mapa.diagnosticos].sort((a, b) => a.orden - b.orden)
   const vacio = diagnosticos.length === 0
@@ -38,6 +38,7 @@ export default function BarraLateral({ mapa, onAgregarDiagnostico, onAgregarSint
                 label={d.etiqueta}
                 slot={d.slot}
                 compact
+                onClick={() => onElegir({ tipo: 'diagnostico', id: d.id })}
                 actions={
                   <IconButton label={`Edit profile: ${d.etiqueta}`} variant="ghost" size="sm" onClick={() => onEditarPerfil(d.id)}>
                     <Icon name="edit" size={14} color="var(--sm-ink-meta)" />
@@ -61,7 +62,8 @@ export default function BarraLateral({ mapa, onAgregarDiagnostico, onAgregarSint
           <div className="barra__filas">
             {mapa.sintomas.map(s => {
               const slots = diagnosticosDe(mapa, s.id).map(d => d.slot)
-              return <SymptomRow key={s.id} label={s.texto} slot={slots[0] ?? 1} sources={slots} compact style={barra(slots)} />
+              return <SymptomRow key={s.id} label={s.texto} slot={slots[0] ?? 1} sources={slots} compact style={barra(slots)}
+                selected={seleccion?.tipo === 'sintoma' && seleccion.id === s.id} onClick={() => onElegir({ tipo: 'sintoma', id: s.id })} />
             })}
           </div>
         )}

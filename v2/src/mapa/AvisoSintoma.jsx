@@ -11,7 +11,7 @@
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useRef } from 'react'
-import { diagnosticosDe } from '@nucleo/mapa.js'
+import { diagnosticosDe, puedeDesconectar } from '@nucleo/mapa.js'
 import { ds } from '../ds/index.js'
 
 // "A", "A and B", "A, B and C".
@@ -59,7 +59,7 @@ export default function AvisoSintoma({ mapa, aviso, onQuitar, onDeshacer, onCerr
                   <span className="sm-emphasis">{f.diagnostico.etiqueta}</span>
                   {f.razon && <span className="sm-quote">{f.razon}</span>}
                 </span>
-                {actuales.length > 1 && (
+                {puedeDesconectar(mapa, sintoma.id, f.diagnosticoId) && (
                   <Button variant="link" size="sm" onClick={() => onQuitar(sintoma.id, f.diagnosticoId)} aria-label={`Remove connection to ${f.diagnostico.etiqueta}`}>
                     Remove
                   </Button>
