@@ -378,7 +378,7 @@ function MiMapa({ userId, nombre, correo, onSalir, onCuentaBorrada, prueba = fal
     },
     borrarSintoma(id) { cambiar(borrarSintoma(mapa, id)); setSeleccion(null); setAvisoSintoma(null) },
     conectar(sintomaId, diagnosticoId) { cambiar(conectar(mapa, sintomaId, diagnosticoId)) },
-    desconectar(sintomaId, diagnosticoId) { cambiar(desconectar(mapa, sintomaId, diagnosticoId)) },
+    desconectar(sintomaId, diagnosticoId) { try { cambiar(desconectar(mapa, sintomaId, diagnosticoId)) } catch (e) { if (!(e instanceof ErrorMapa)) throw e } },
     cambiarColor(id, slot) { try { cambiar(cambiarColor(mapa, id, slot)) } catch (e) { if (!(e instanceof ErrorMapa)) throw e } },
     editarPerfil(id) { setPerfilAbierto({ id }) },
     borrarDiagnostico(id) { cambiar(quitarDiagnostico(mapa, id)); setSeleccion(null); setAvisoSintoma(null) },
@@ -461,7 +461,7 @@ function MiMapa({ userId, nombre, correo, onSalir, onCuentaBorrada, prueba = fal
             <AvisoSintoma
               mapa={mapa}
               aviso={avisoSintoma}
-              onQuitar={(sintomaId, diagnosticoId) => cambiar(desconectar(mapa, sintomaId, diagnosticoId))}
+              onQuitar={(sintomaId, diagnosticoId) => accionesPanel.desconectar(sintomaId, diagnosticoId)}
               onDeshacer={sintomaId => { cambiar(borrarSintoma(mapa, sintomaId)); setAvisoSintoma(null) }}
               onCerrar={() => setAvisoSintoma(null)}
             />
