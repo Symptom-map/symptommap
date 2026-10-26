@@ -104,7 +104,7 @@ These replace FUNCTIONAL-INVENTORY §7 (what happens to symptoms when a diagnosi
 | Topic | Decision | Why |
 |---|---|---|
 | Phone version | **Not part of the pilot.** The pilot is computer-only | The map needs its own phone prototype, thought through properly; there is no time to do it well before the pilot |
-| Narrow screens (under 700 px) | The app shows "SymptomMap works on a computer for now" with the link to open on a computer, and "Continue anyway" for larger tablets (this visit only) | No squeezed, broken map as a first impression |
+| Narrow screens (under 700 px) | The app shows "SymptomMap works on a computer for now" with the link to open on a computer, a "Copy link" button, and "Continue anyway" for larger tablets (this visit only) | No squeezed, broken map as a first impression |
 
 ## 4. Pendientes de decidir
 
