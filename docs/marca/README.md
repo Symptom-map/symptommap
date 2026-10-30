@@ -1,13 +1,13 @@
-# Marca — logos finales de SymptomMap
+# Brand — SymptomMap's final logos
 
-Originales entregados por Ana el 13 oct 2026 ("logos finales listos para usar"). Esta carpeta no se publica en el sitio.
+Originals delivered by Ana on 13 Oct 2026 ("final logos, ready to use"). This folder is not published on the site.
 
-| Archivo | Qué es | Dónde se usa hoy |
+| File | What it is | Where it is used today |
 |---|---|---|
-| `logo-vertical.png` | Símbolo arriba + "SymptomMap" abajo | Página "Coming soon" (`assets/logo-symptommap.png/.webp`, con fondo transparente) |
-| `logo-horizontal.png` | Símbolo a la izquierda + "SymptomMap" | — |
-| `icono-app.png` | Símbolo dentro de un cuadrado redondeado | — (favicon / ícono de app) |
-| `simbolo.png` | Solo el símbolo | — |
-| `logo-vertical-variante-b.png`, `logo-vertical-variante-c.png` | Variantes del vertical | — |
+| `logo-vertical.png` | Symbol on top + "SymptomMap" below | "Coming soon" page (`assets/logo-symptommap.png/.webp`, with a transparent background) |
+| `logo-horizontal.png` | Symbol on the left + "SymptomMap" | — |
+| `icono-app.png` | Symbol inside a rounded square | — (favicon / app icon) |
+| `simbolo.png` | Symbol only | — |
+| `logo-vertical-variante-b.png`, `logo-vertical-variante-c.png` | Variants of the vertical logo | — |
 
-**Pendiente (tarea aparte):** reemplazar el logo anterior en todas partes: app v2 (`Logo` del design system), 404, imagen para redes (`og-image.png`), favicon y plantilla de correo. Toca el design system, así que se registra como decisión en `docs/FUENTES-Y-DECISIONES.md` cuando se haga.
+**Pending (separate task):** replace the previous logo everywhere: v2 app (the design system's `Logo`), 404, social image (`og-image.png`), favicon and email template. It touches the design system, so it is recorded as a decision in `docs/FUENTES-Y-DECISIONES.md` when it is done.
