@@ -7,6 +7,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
   - open the site in a private window without logging in and list everything that loads;
   - check what every network request returns (DevTools → Network): no health data, no other person's data;
   - confirm every endpoint (`/api/claude`, Supabase REST and RPC) refuses requests without a valid session.
+  - [x] **Database part done (30 Oct 2026):** `supabase/pruebas/autochequeo-rls.sql` — 14 of 14 checks passed (no access without a session; a signed-in person cannot see, change, take over or delete another person's map; nothing left behind). Re-run after every migration. The browser/network part above is still to do.
 - [ ] **External security review** (1–2 hours) by someone who did not build the app — e.g. Dr. Ruwangi Fernando (VU, cybersecurity).
 - [x] Supabase security advisors: only the expected notices — `uso_ai` (RLS, no policies), and `consumir_cuota_ai()` / `borrar_mi_cuenta()` (security definer, callable by signed-in people on purpose; see `supabase/README.md`). Checked 22 Oct 2026; re-check after every migration.
 - [x] Vercel Deployment Protection (Vercel Authentication, Standard Protection) is on for previews (checked 20 Oct 2026).
