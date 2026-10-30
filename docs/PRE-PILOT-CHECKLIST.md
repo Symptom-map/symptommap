@@ -14,7 +14,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [x] AWS: automatic cost stop. The project's **monthly spend limit ($20)** in the AWS account menu pauses the project on its own (checked 22 Oct 2026, $0 spent). The Budgets action `DenyBedrockWhenOverBudget` at $17 is a second brake (status Standby). Budget alert emails to symptommap.project@gmail.com are **inactive**: Ana's Google sign-in role cannot verify email contacts (`notifications-contacts:*`), so check spending in that menu instead.
 - [x] Personal Anthropic API key removed from this project's Vercel. It is **kept** at console.anthropic.com because the backup (symptommaproject) still uses it (Ana, 20 Oct 2026). Keep a low monthly spend limit on it; delete it when the backup no longer needs it.
 - [ ] No screenshots with preview links, emails or test data shared publicly.
-- [ ] **Sessions last up to 6 days** (FUNCTIONAL-INVENTORY §1): Supabase → Authentication → Sessions → *Time-box user sessions* = 144 hours; no inactivity timeout. Supabase plan is Pro (checked 23 Oct 2026). Ana does this in the dashboard.
+- [x] **Sessions last up to 6 days** (FUNCTIONAL-INVENTORY §1): Supabase → Authentication → Sessions → *Time-box user sessions* = 144 hours; no inactivity timeout. Supabase plan is Pro (checked 23 Oct 2026). Set by Ana in the dashboard on 25 Oct 2026 (she shared a screenshot showing 144 / 0 that day).
 - [x] CI on every PR: tests, site build, and a check that the production build has no test mode (`.github/workflows/tests.yml`, review of 23 Oct 2026).
 - [ ] Branch protection on `main`: require the "Tests" check before merging (once the workflow is on `main`).
 - [x] Content-Security-Policy on `/app/*` and `/api/*` (`vercel.json`, 26 Oct 2026): scripts only from the site, connections only to the site and Supabase, no framing. Tested with the full flows in a browser: nothing blocked; inline scripts and other sites are refused. Not on the old app at `/` (inline handlers; it will be replaced) nor the "Coming soon" page.
@@ -54,7 +54,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [x] Diagnosis profile: first setup after adding, edit later from the sidebar (PR #15).
 - [x] Add a symptom (the AI connects it on Add; Analyse connections to review first; manual pick when the AI finds nothing) and the symptoms list in the sidebar (PR #16).
 - [ ] Try "Add a symptom" on a Vercel preview with real Bedrock (first real AI call).
-- [ ] Tell the psychologist about the 20 Oct change to adding symptoms (FUENTES §3c).
+- ~~Tell the psychologist about the 20 Oct change to adding symptoms~~ → not needed: Ana's own decision (31 Oct 2026, FUENTES §3c).
 - [ ] Suggest symptoms (AI, Bedrock), then the end-to-end cost check.
 - [x] Detail panel (click a diagnosis or symptom): edit, connect, delete (PR #20). "Connected to" is new (not in the prototype); the last connection cannot be removed there.
 - [ ] Psychologist reviews the profile questions and options (`v2/src/perfil/preguntas.js`), together with the diagnosis catalogue.
@@ -67,7 +67,9 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [ ] Export: choose what to include, anonymise, PDF preview (FUNCTIONAL-INVENTORY §10).
 - [x] Test mode without an account, on previews and local only (nothing saved; example AI answers) (PR #19).
 - [ ] Copy review of every screen, and an accessibility pass.
-- [ ] One Lighthouse performance check on a preview.
+- [x] Lighthouse local baseline, 31 Oct 2026: production build of `/app/` served locally, desktop preset, sign-in screen — Performance 100, Accessibility 100, Best Practices 96 (missing favicon), SEO 50 (on purpose: `/app/` is `noindex`). Google Fonts did not load in that environment, so this does not necessarily represent a real first load.
+- [ ] Run Lighthouse on a real Vercel Preview before the pilot.
+- [ ] Add a favicon (the site has none, so every visit gets a 404 for `/favicon.ico`); `docs/marca/icono-app.png` is the intended icon.
 
 ## Public site (when it opens)
 - [ ] Breadcrumb on the public pages (e.g. Home › Our story, Home › Why SymptomMap), linking back to Home, with `BreadcrumbList` structured data for SEO. **Not inside the app**: in the map, profile and settings a simple Back is enough and a breadcrumb would add noise (Ana, 20 Oct 2026).

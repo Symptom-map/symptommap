@@ -3,7 +3,7 @@
 Read this before working on SymptomMap, in any tool (Claude, Claude Code, Codex, Claude Design). The rules for coding agents are in `AGENTS.md`.
 It exists so the different versions of the project never get mixed up.
 
-Last updated: 25 October 2026.
+Last updated: 31 October 2026.
 
 ## 1. What each thing is and what it is used for
 
@@ -63,13 +63,13 @@ These decisions resolve contradictions between the documents in the zip. They ta
 | Site and server functions | **Vercel (Pro)**, functions in `syd1` (Sydney) | Already works; moving it to AWS would take weeks without improving privacy. Vercel stores no health data: the AI function does not log content |
 | Database and maps | **Supabase, Sydney** | Working since 9 Oct |
 | Accounts | **Supabase Auth**, optional two-step verification | Decided on 11 Oct |
-| AI | **Claude through Amazon Bedrock, Australia inference profile** (Sydney + Melbourne), called from the Vercel function | Health data is processed only in Australia. Today the AI goes straight to Anthropic (US); this is switched before real people come in |
-| Email | **Amazon SES, Sydney**, with a sender on the domain (`symptommap.com.au`) | People's emails don't leave Australia; replaces Supabase's test email |
+| AI | **Claude through Amazon Bedrock, Australia inference profile** (Sydney + Melbourne), called from the Vercel function | Health data is processed only in Australia. (Before this, the AI went straight to Anthropic in the US; switched on 14 Oct 2026, before any real people) |
+| Email | **Amazon SES, Sydney**, with a sender on the domain (`symptommap.com.au`) | People's emails don't leave Australia; replaces Supabase's test email (done 25 Oct 2026) |
 
 Rules that come with this architecture:
 - The AI only answers people who are signed in (the function checks the Supabase token).
-- The AWS keys have the least privilege: invoke that model and send email, nothing else. They live only in Vercel (environment variables), never in the browser or the repo.
-- A spending alert in AWS, and a spending limit on the Anthropic account while it is used.
+- The AWS keys have the least privilege: invoke that model and send email, nothing else. The Bedrock credentials live only in Vercel (environment variables); the SES SMTP credentials live only in Supabase (SMTP settings). Never in the browser or the repo.
+- A spending limit in AWS, and a spending limit on the Anthropic account while it is used (only the backup uses it now).
 
 Ruled out for now: everything on AWS (Amplify/CloudFront + Lambda) and Cognito. Can be revisited after the pilot.
 
@@ -86,7 +86,7 @@ This replaces FUNCTIONAL-INVENTORY §6 ("Add without analysing") and §9B, and t
 | When the AI finds nothing or is unavailable | The person chooses the diagnoses from their map ("Where does this fit?"). The symptom is added only with at least one connection | So a symptom is never grey |
 | Grey symptoms | ~~Only when a diagnosis is deleted~~ → **never** since 25 Oct 2026 (§3d) | — |
 
-Pending: tell the psychologist about this change at the next checkpoint.
+No separate validation needed: this is Ana's own product decision (31 Oct 2026). The psychologist will see it when Ana shows her the prototype.
 
 ## 3d. Deleting things, and connecting by hand (decided by Ana on 25 Oct 2026)
 
