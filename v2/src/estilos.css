@@ -361,9 +361,6 @@ body { background: var(--sm-surface-canvas); }
   font-size: clamp(13px, 4vw, 15px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   user-select: all; -webkit-user-select: all;
 }
-.chica__linea { margin: 32px 0 14px; }
-.chica__apoyo { margin: 0; color: var(--sm-ink-meta); }
-.chica__seguir { padding-left: 8px; padding-right: 8px; }
 @media (max-width: 359px) {
   .chica__panel { padding-left: 18px; padding-right: 18px; }
   .chica__enlace { padding-left: 8px; padding-right: 8px; }

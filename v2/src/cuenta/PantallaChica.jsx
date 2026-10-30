@@ -1,15 +1,16 @@
 // ─────────────────────────────────────────────────────────────
 // PantallaChica.jsx — notice for phones (Ana, 26 Oct 2026)
 //
-// The pilot is computer-only: a phone version needs its own prototype
-// (docs/FUENTES-Y-DECISIONES.md §3e). On narrow screens the app shows this
-// notice instead of a squeezed map. "Continue anyway" lets someone on a
-// larger tablet go on; the choice lasts for this visit only.
+// The pilot is for large screens: a phone version needs its own prototype
+// (docs/FUENTES-Y-DECISIONES.md §3e). Below 700 px wide the app shows this
+// notice instead of a squeezed map. The rule is about screen width, not the
+// kind of device: a large tablet is wider than 700 px and goes straight in.
+// There is no way past the notice (Ana, 31 Oct 2026).
 //
 // Design (design system readme + the 404 page): logo lockup on cream, one
 // white panel, one single-line illustration in charcoal ink (line-head,
 // "mind"), Outfit title, one primary action (copy the link, so the person can
-// send it to themselves) and "Continue anyway" as a secondary link.
+// send it to themselves).
 // ─────────────────────────────────────────────────────────────
 
 import { useEffect, useRef, useState } from 'react'
@@ -31,7 +32,7 @@ export function usePantallaChica() {
   return chica
 }
 
-export default function PantallaChica({ onSeguir }) {
+export default function PantallaChica() {
   const { Card, Button, Logo } = ds()
   const enlace = useRef(null)
   const [copiado, setCopiado] = useState(false)
@@ -72,10 +73,6 @@ export default function PantallaChica({ onSeguir }) {
           </Button>
           <p className="sr-only" aria-live="polite">{copiado ? 'Link copied' : ''}</p>
 
-          <div className="gate__linea chica__linea" />
-          <p className="sm-support chica__apoyo">
-            Using a large tablet? <Button variant="link" className="chica__seguir" onClick={onSeguir}>Continue anyway</Button>
-          </p>
         </Card>
       </main>
     </div>
