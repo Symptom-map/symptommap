@@ -1,54 +1,54 @@
-# Núcleo del mapa (`src/core/`)
+# Map core (`src/core/`)
 
-El corazón de SymptomMap: qué nodos existen, cómo se relacionan, de qué color son y dónde aparecen.
+The heart of SymptomMap: which nodes exist, how they relate, what colour they are and where they appear.
 
-**No toca el DOM, el canvas, React ni el almacenamiento.** Recibe un mapa (un objeto JSON) y devuelve un mapa nuevo. La interfaz (la actual o la v2) solo llama a estas funciones y dibuja lo que devuelve `construirVista()`. Así, cambiar la interfaz o el lugar donde se guardan los datos no puede romper cómo se generan los nodos.
+**It does not touch the DOM, the canvas, React or storage.** It takes a map (a JSON object) and returns a new map. The interface (the current app or v2) only calls these functions and draws what `construirVista()` returns. That way, changing the interface or where the data is stored cannot break how nodes are generated.
 
-| Archivo | Qué hace |
+| File | What it does |
 |---|---|
-| `mapa.js` | Operaciones: agregar o quitar diagnósticos, color, síntomas, conexiones, sugerencias aceptadas, mover nodos |
-| `vista.js` | Convierte el mapa en nodos y aristas listos para dibujar |
-| `colocacion.js` | Dónde aparece cada nodo (reglas del prototipo aprobado) |
-| `color.js` | Copia exacta del algoritmo de color del design system. **No modificar aquí** |
-| `mapa.test.js` | Pruebas, incluido el escenario aprobado |
+| `mapa.js` | Operations: add or remove diagnoses, colour, symptoms, connections, accepted suggestions, moving nodes |
+| `vista.js` | Turns the map into nodes and edges ready to draw |
+| `colocacion.js` | Where each node appears (rules from the approved prototype) |
+| `color.js` | Exact copy of the design system colour algorithm. **Do not edit it here** |
+| `mapa.test.js` | Tests, including the approved scenario |
 
-## Correr las pruebas
+## Running the tests
 
 ```sh
 node --test src/core/mapa.test.js
 ```
 
-No hay que instalar nada (usa el test runner de Node 20+). **Antes de cambiar cualquier cosa del mapa, las pruebas tienen que pasar; después del cambio, también.**
+Nothing to install (it uses the Node 20+ test runner). **Before changing anything about the map, the tests must pass; after the change, too.**
 
-## Uso básico
+## Basic use
 
 ```js
 import { crearMapa, agregarDiagnostico, agregarSintoma } from './src/core/mapa.js'
 import { construirVista } from './src/core/vista.js'
 
 let mapa = crearMapa()
-const r = agregarDiagnostico(mapa, { etiqueta: 'ADHD' })       // color propuesto
+const r = agregarDiagnostico(mapa, { etiqueta: 'ADHD' })       // proposed colour
 mapa = r.mapa
-mapa = agregarSintoma(mapa, { texto: 'Me cuesta empezar', diagnosticoIds: [r.diagnosticoId] }).mapa
+mapa = agregarSintoma(mapa, { texto: 'Hard to get started', diagnosticoIds: [r.diagnosticoId] }).mapa
 
 const vista = construirVista(mapa)
 // vista.diagnosticos → DiagnosisNode   (slot, etiqueta, x, y)
 // vista.sintomas     → SymptomNode     (tipo, slot, segmentos, texto, x, y)
 // vista.aristas      → Connection      (slot, x1, y1, x2, y2, curva)
-// vista.cadena       → Connection neutral entre diagnósticos
-// vista.limites      → para "ver todo" con el zoom
+// vista.cadena       → neutral Connection between diagnoses
+// vista.limites      → for "fit to screen" with the zoom
 ```
 
-Los errores se lanzan como `ErrorMapa` con un `codigo` (`LIMITE_DIAGNOSTICOS`, `COLOR_EN_USO`, `SINTOMA_DUPLICADO`…) para que la interfaz muestre el texto adecuado en cada idioma.
+Errors are thrown as `ErrorMapa` with a `codigo` (`LIMITE_DIAGNOSTICOS`, `COLOR_EN_USO`, `SINTOMA_DUPLICADO`…) so the interface can show the right text in each language.
 
-## Reglas que cubre
+## Rules it covers
 
-- Tipos de nodo: diagnóstico, síntoma único, compartido (un arco por diagnóstico, **siempre en partes iguales**) y flotante.
-- Una arista por cada diagnóstico de un síntoma. **No existen relaciones síntoma → síntoma.**
-- Color: el sistema propone el más separado; la persona puede elegir otro que no esté en uso, al agregar el diagnóstico y también después. Nada cambia de color solo.
-- Máximo 10 diagnósticos. Un diagnóstico o un síntoma con el mismo texto no se duplica.
-- Las palabras de la persona se guardan tal cual.
+- Node types: diagnosis, single-source symptom, shared symptom (one arc per diagnosis, **always equal parts**) and floating (only in maps saved before 25 Oct 2026; new symptoms always have at least one connection).
+- One edge for each diagnosis of a symptom. **There are no symptom → symptom relations.**
+- Colour: the system proposes the most distinct one; the person can choose another that is not in use, when adding the diagnosis and later. Nothing changes colour on its own.
+- At most 10 diagnoses. A diagnosis or symptom with the same text is not duplicated.
+- The person's words are stored exactly as written.
 - Removing a diagnosis deletes its profile and every symptom connected only to it (Ana, 25 Oct 2026, `docs/FUENTES-Y-DECISIONES.md` §3d; replaces FUNCTIONAL-INVENTORY §7). Shared symptoms keep their other connections. `sintomasQueSeBorran()` says which ones before the person confirms.
-- Arrastrar cambia el lugar, nunca las relaciones. Lo que la persona mueve no salta de lugar.
-- Determinista: el mismo mapa siempre se ve igual (sin `Math.random`). Las etiquetas no se cruzan.
-- La AI nunca llama a estas funciones por su cuenta: `aceptarSugerencia` es siempre una acción de la persona.
+- Dragging changes the position, never the relations. Whatever the person moves does not jump back.
+- Deterministic: the same map always looks the same (no `Math.random`). Labels do not cross.
+- The AI never calls these functions on its own: `aceptarSugerencia` is always an action the person takes.

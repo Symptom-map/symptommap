@@ -74,4 +74,5 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [ ] Visual polish pass with Ana's references (see `docs/design/REFERENCES.md`).
 
 ## Housekeeping
-- [ ] Translate the remaining Spanish documents and comments to English (rule in `AGENTS.md`).
+- [x] Translate the remaining Spanish documents to English (31 Oct 2026: `FUENTES-Y-DECISIONES.md`, `src/core/README.md`, `supabase/README.md`, `docs/aws/README.md`, `docs/marca/README.md`). File names stay as they are, so links keep working.
+- [ ] Translate the remaining Spanish code comments to English, file by file when each one is next touched (rule in `AGENTS.md`).

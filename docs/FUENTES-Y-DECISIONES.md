@@ -1,77 +1,77 @@
-# SymptomMap — Fuentes de verdad y decisiones
+# SymptomMap — Sources of truth and decisions
 
-Leer antes de trabajar en SymptomMap, en cualquier herramienta (Claude, Claude Code, Codex, Claude Design). Las reglas para agentes de código están en `AGENTS.md`.
-Existe para que nunca se mezclen las distintas versiones del proyecto.
+Read this before working on SymptomMap, in any tool (Claude, Claude Code, Codex, Claude Design). The rules for coding agents are in `AGENTS.md`.
+It exists so the different versions of the project never get mixed up.
 
-Última actualización: 25 de octubre de 2026.
+Last updated: 31 October 2026 (translated into English; the decisions are unchanged).
 
-## 1. Qué es cada cosa y para qué se usa
+## 1. What each thing is and what it is used for
 
-**Regla fácil:** todo lo que diga `symptommaproject` es el **respaldo**; todo lo que diga `symptommap` (sin "project") es el **activo**.
+**Easy rule:** anything that says `symptommaproject` is the **backup**; anything that says `symptommap` (without "project") is the **active** one.
 
-| | Activo | Respaldo |
+| | Active | Backup |
 |---|---|---|
-| Repo en GitHub | `Symptom-map/symptommap` | `Symptom-map/symptommap-dev` |
-| Proyecto en Vercel | `symptommap` | `symptommaproject` |
-| Sitio | **www.symptommap.com.au** (antes symptommap.vercel.app, que ahora redirige) | symptommaproject.vercel.app |
+| GitHub repo | `Symptom-map/symptommap` | `Symptom-map/symptommap-dev` |
+| Vercel project | `symptommap` | `symptommaproject` |
+| Site | **www.symptommap.com.au** (formerly symptommap.vercel.app, which now redirects) | symptommaproject.vercel.app |
 
-(El repo activo se llamaba `symptommaproject` hasta el 8 oct 2026; se renombró para que esa palabra solo signifique "respaldo".)
+(The active repo was called `symptommaproject` until 8 Oct 2026; it was renamed so that word only means "backup".)
 
-| Fuente | Dónde está | Para qué se usa | Para qué NO |
+| Source | Where it is | What it is used for | What it is NOT used for |
 |---|---|---|---|
-| **Respaldo** | Repo `symptommap-dev` → symptommaproject.vercel.app | Nada. Solo existe por si todo falla | **No se abre, no se copia, no se toca** |
-| **App actual** | Repo `symptommap` → symptommap.vercel.app | Tres piezas que ya funcionan: la lista de 28 diagnósticos bilingüe (`data.js`), los prompts de AI (`ai.js`, adaptándolos a las reglas nuevas) y el proxy (`api/claude.js`) | Nada visual. Nada de cómo se colocan o dibujan los nodos (`graph.js` es el motor viejo) |
-| **Núcleo del mapa** | `src/core/` en el repo `symptommap` | **Cómo se generan los nodos.** Única fuente para eso | — |
-| **Prototipo** | Zip de Claude Design (`SymptomMap - Production Prototype.dc.html`) | Qué ve y qué hace la persona en cada pantalla, textos y flujo | Su código interno: listas de ejemplo, el código `482913`, la lógica de colores o de colocación. Fue hecho para diseñar y probar flujos, no para implementar |
-| **Design system** | `_ds/` en el zip | Cómo se ve: colores, tipografía, componentes | — |
-| **Documentos** | `docs/producto/` en el repo: HANDOFF, FUNCTIONAL-INVENTORY, DATA-MAP (copiados del proyecto de Claude Design el 8 oct 2026) | Reglas de producto y datos | Las decisiones de la sección 2 los reemplazan donde se contradicen |
+| **Backup** | Repo `symptommap-dev` → symptommaproject.vercel.app | Nothing. It only exists in case everything fails | **Not opened, not copied, not touched** |
+| **Current app** | Repo `symptommap` → symptommap.vercel.app | Three pieces that already work: the bilingual list of 28 diagnoses (`data.js`), the AI prompts (`ai.js`, adapted to the new rules) and the proxy (`api/claude.js`) | Nothing visual. Nothing about how nodes are placed or drawn (`graph.js` is the old engine) |
+| **Map core** | `src/core/` in the `symptommap` repo | **How nodes are generated.** The only source for that | — |
+| **Prototype** | Claude Design zip (`SymptomMap - Production Prototype.dc.html`) | What the person sees and does on each screen, copy and flow | Its internal code: sample lists, the `482913` code, the colour or placement logic. It was built to design and test flows, not to implement |
+| **Design system** | `_ds/` in the zip | How it looks: colours, typography, components | — |
+| **Documents** | `docs/producto/` in the repo: HANDOFF, FUNCTIONAL-INVENTORY, DATA-MAP (copied from the Claude Design project on 8 Oct 2026) | Product and data rules | The decisions in section 2 replace them where they contradict |
 
-**Regla de desempate:** este documento > handoff + inventario + Data Map > prototipo > app actual.
+**Tie-break rule:** this document > handoff + inventory + Data Map > prototype > current app.
 
-**Si algo de implementación no está claro en el prototipo, se le pregunta a Ana.** El prototipo no se diseñó pensando en el código.
+**If something about implementation is unclear in the prototype, ask Ana.** The prototype was not designed with the code in mind.
 
-## 2. Decisiones tomadas el 8 de octubre de 2026
+## 2. Decisions made on 8 October 2026
 
-Estas decisiones resuelven contradicciones entre los documentos del zip. Prevalecen sobre lo que digan el handoff, el inventario o el Data Map.
+These decisions resolve contradictions between the documents in the zip. They take precedence over the handoff, the inventory or the Data Map.
 
-| Tema | Decisión | Reemplaza |
+| Topic | Decision | Replaces |
 |---|---|---|
-| Relaciones síntoma → síntoma ("consecuencias") | **Se eliminan.** Todo es síntoma ↔ diagnóstico (según las entrevistas con la psicóloga) | La función "Analizar origen" de la app actual (rombos y líneas punteadas) |
-| Arcos de un síntoma compartido | **Siempre iguales** (50/50, 33/33/33). No se guarda ningún peso | Handoff §8 (70/30) |
-| Color de un diagnóstico | **El sistema propone el más separado y la persona puede elegir otro** que no esté en uso, **al agregarlo y también después** (le da autonomía). Nada cambia de color solo | Handoff §10 ("selector de color rechazado") |
-| Máximo de diagnósticos por mapa | **10** | El límite de 5 del prototipo |
-| Almacenamiento | **En la nube** (no localStorage: los mapas se pierden al borrar caché) | localStorage de la app actual |
-| Datos mínimos | Solo "18+ verificado" (no la fecha de nacimiento); solo que pasó el gate de elegibilidad; borrar un diagnóstico borra su perfil; los exports no se guardan; el zoom no se guarda; la AI nunca escribe directo en la base de datos | Data Map §9–§10 (candidatos abiertos) |
-| Handoff | **No se reemplaza todavía.** Conviven la versión del proyecto (17 sep) y la del zip, que es más nueva | — |
-| Interfaz nueva (v2) | **React + Vite**, en la carpeta `v2/` del mismo repo, usando los componentes del design system tal como vienen. Se publica en `/app/`; la app actual sigue en `/` hasta que la v2 esté lista | La regla "no React" y "no reescritura amplia" del handoff (§16) |
-| Aspecto del síntoma compartido | Se usa el estilo del **respaldo** (symptommaproject.vercel.app): anillo **fino** dividido en arcos iguales con pequeños espacios entre colores, centro blanco amplio y un halo suave. **No** el anillo grueso del componente `SymptomNode` del design system. Se ajusta en la v2 al implementar el mapa (estilo propio en `v2/`, sin editar el design system) | El grosor del anillo de `SymptomNode` en el design system |
-| Agentes de código | Claude Code y Codex comparten **un solo archivo de reglas**, `AGENTS.md` (`CLAUDE.md` lo importa). Nunca editan los mismos archivos al mismo tiempo: uno implementa y el otro revisa | — |
+| Symptom → symptom relations ("consequences") | **Removed.** Everything is symptom ↔ diagnosis (based on the interviews with the psychologist) | The current app's "Analyse origin" feature (diamonds and dashed lines) |
+| Arcs of a shared symptom | **Always equal** (50/50, 33/33/33). No weight is stored | Handoff §8 (70/30) |
+| Colour of a diagnosis | **The system proposes the most distinct one and the person can choose another** that is not in use, **when adding it and later** (it gives autonomy). Nothing changes colour on its own | Handoff §10 ("colour picker rejected") |
+| Maximum diagnoses per map | **10** | The prototype's limit of 5 |
+| Storage | **In the cloud** (not localStorage: maps are lost when the cache is cleared) | The current app's localStorage |
+| Minimum data | Only "18+ verified" (not the date of birth); only that the eligibility gate was passed; deleting a diagnosis deletes its profile; exports are not stored; the zoom is not stored; the AI never writes directly to the database | Data Map §9–§10 (open candidates) |
+| Handoff | **Not replaced yet.** The project version (17 Sep) and the zip version, which is newer, coexist | — |
+| New interface (v2) | **React + Vite**, in the `v2/` folder of the same repo, using the design-system components as they come. Published at `/app/`; the current app stays at `/` until v2 is ready | The handoff's "no React" and "no broad rewrite" rule (§16) |
+| Look of the shared symptom | Uses the **backup's** style (symptommaproject.vercel.app): a **thin** ring split into equal arcs with small gaps between colours, a wide white centre and a soft halo. **Not** the thick ring of the design system's `SymptomNode` component. Adjusted in v2 when implementing the map (own style in `v2/`, without editing the design system) | The ring thickness of `SymptomNode` in the design system |
+| Coding agents | Claude Code and Codex share **a single rules file**, `AGENTS.md` (`CLAUDE.md` imports it). They never edit the same files at the same time: one implements and the other reviews | — |
 
-## 3. Decisiones del 11 de octubre de 2026
+## 3. Decisions of 11 October 2026
 
-| Tema | Decisión |
+| Topic | Decision |
 |---|---|
-| Inicio de sesión | **Supabase Auth** (no Cognito): mismo proyecto en Sydney, las reglas de seguridad de la base de datos lo usan directamente y borrar la cuenta borra todo en cascada. Si más adelante todo pasa a AWS, se migra (las personas tendrían que crear una contraseña nueva) |
-| Verificación en dos pasos | **Opcional.** Se ofrece en "Protect your account" (con "Skip for now") y en Settings |
-| Confirmar el correo al crear la cuenta | Se usa la pantalla **"Check your email"** del prototipo (código de 6 dígitos) como paso 3 de 3. En el prototipo esa pantalla solo aparecía al activar la verificación en dos pasos; sin confirmar el correo, cualquiera podría crear una cuenta con el correo de otra persona. **Confirmado por Ana (13 oct).** La verificación en dos pasos, cuando se construya, usará su propia pantalla ("Protect your account") y una app de autenticación, no el correo |
+| Sign-in | **Supabase Auth** (not Cognito): same project in Sydney, the database security rules use it directly and deleting the account deletes everything in cascade. If everything moves to AWS later, it can be migrated (people would have to create a new password) |
+| Two-step verification | **Optional.** Offered in "Protect your account" (with "Skip for now") and in Settings |
+| Confirming the email when creating the account | Uses the prototype's **"Check your email"** screen (6-digit code) as step 3 of 3. In the prototype that screen only appeared when turning on two-step verification; without confirming the email, anyone could create an account with someone else's email. **Confirmed by Ana (13 Oct).** Two-step verification, when built, will use its own screen ("Protect your account") and an authenticator app, not email |
 
-## 3b. Arquitectura de producción (decidida el 13 de octubre de 2026)
+## 3b. Production architecture (decided on 13 October 2026)
 
-| Pieza | Decisión | Por qué |
+| Piece | Decision | Why |
 |---|---|---|
-| Interfaz | React + Vite (`v2/`) | Decidido el 8 oct |
-| Sitio y funciones de servidor | **Vercel (Pro)**, funciones en `syd1` (Sydney) | Ya funciona; mudarlo a AWS tomaría semanas sin mejorar la privacidad. Vercel no guarda datos de salud: la función de AI no registra contenido |
-| Base de datos y mapas | **Supabase, Sydney** | Funcionando desde el 9 oct |
-| Cuentas | **Supabase Auth**, verificación en dos pasos opcional | Decidido el 11 oct |
-| AI | **Claude a través de Amazon Bedrock, perfil de inferencia Australia** (Sydney + Melbourne), llamado desde la función de Vercel | Los datos de salud se procesan solo en Australia. Hoy la AI va directo a Anthropic (EE. UU.); se cambia antes de que entren personas reales |
-| Correos | **Amazon SES, Sydney**, con remitente del dominio (`symptommap.com.au`) | Los correos de las personas no salen de Australia; reemplaza el correo de prueba de Supabase |
+| Interface | React + Vite (`v2/`) | Decided on 8 Oct |
+| Site and server functions | **Vercel (Pro)**, functions in `syd1` (Sydney) | Already works; moving it to AWS would take weeks without improving privacy. Vercel stores no health data: the AI function does not log content |
+| Database and maps | **Supabase, Sydney** | Working since 9 Oct |
+| Accounts | **Supabase Auth**, optional two-step verification | Decided on 11 Oct |
+| AI | **Claude through Amazon Bedrock, Australia inference profile** (Sydney + Melbourne), called from the Vercel function | Health data is processed only in Australia. (Before this, the AI went straight to Anthropic in the US; switched on 14 Oct 2026, before any real people) |
+| Email | **Amazon SES, Sydney**, with a sender on the domain (`symptommap.com.au`) | People's emails don't leave Australia; replaces Supabase's test email (done 25 Oct 2026) |
 
-Reglas que vienen con esta arquitectura:
-- La AI solo responde a personas con sesión iniciada (la función verifica el token de Supabase).
-- Las claves de AWS tienen el permiso mínimo: invocar ese modelo y enviar correos, nada más. Viven solo en Vercel (variables de entorno), nunca en el navegador ni en el repo.
-- Alerta de gasto en AWS y límite de gasto en la cuenta de Anthropic mientras se use.
+Rules that come with this architecture:
+- The AI only answers people who are signed in (the function checks the Supabase token).
+- The AWS keys have the least privilege: invoke that model and send email, nothing else. They live only in Vercel (environment variables) and, for email, in Supabase — never in the browser or the repo.
+- A spending limit in AWS, and a spending limit on the Anthropic account while it is used (only the backup uses it now).
 
-Descartado por ahora: todo en AWS (Amplify/CloudFront + Lambda) y Cognito. Se puede revisar después del piloto.
+Ruled out for now: everything on AWS (Amplify/CloudFront + Lambda) and Cognito. Can be revisited after the pilot.
 
 ## 3c. Adding a symptom (decided by Ana on 20 October 2026)
 
@@ -106,10 +106,10 @@ These replace FUNCTIONAL-INVENTORY §7 (what happens to symptoms when a diagnosi
 | Phone version | **Not part of the pilot.** The pilot is for large screens; the rule is screen width, not device type (no detecting iPhone, iPad or Android) | The map needs its own phone prototype, thought through properly; there is no time to do it well before the pilot |
 | Narrow screens (under 700 px) | The app shows "SymptomMap works on a computer for now" with the link to open on a computer and a "Copy link" button. There is **no** way past it ("Continue anyway" was removed on 31 Oct 2026). Tablets wider than 700 px go straight in | No squeezed, broken map as a first impression |
 
-## 4. Pendientes de decidir
+## 4. Still to decide
 
-- **Tipo de verificación en dos pasos.** El prototipo muestra un código por correo. Supabase Auth ofrece como segundo paso una app de autenticación (Google Authenticator, 1Password, etc.) o SMS, no un código por correo. Hay que elegir antes de construir "Protect your account".
+- **Type of two-step verification.** The prototype shows a code by email. As a second step, Supabase Auth offers an authenticator app (Google Authenticator, 1Password, etc.) or SMS, not a code by email. This must be chosen before building "Protect your account" (§3 above already leans towards an authenticator app).
 - ~~"Forgot your password?"~~ → built on 20 Oct 2026 with a 6-digit code, like confirming the email (no screens were designed; it reuses the account screens).
-- ~~Dominio final~~ → **www.symptommap.com.au** (12 oct 2026).
-- Catálogo de diagnósticos para el autocompletado ("Add a diagnosis"): la persona siempre puede escribir su diagnóstico con sus palabras; el catálogo solo sugiere nombres (inglés, español, abreviaturas) y elige las preguntas del perfil. Hoy hay 29 (`src/js/data.js`); Ana considera que son pocos. Propuesta: ampliarlo a partir de la CIE-11 (OMS, capítulo de salud mental) con sinónimos del DSM-5-TR, y que la psicóloga lo revise antes del piloto. **Pendiente.**
-- Sugerencias de síntomas: hoy la AI las genera con su conocimiento general a partir de los diagnósticos y el perfil. Falta decidir si la psicóloga revisa ejemplos antes del piloto y si se agrega una lista inicial curada por diagnóstico.
+- ~~Final domain~~ → **www.symptommap.com.au** (12 Oct 2026).
+- Diagnosis catalogue for the autocomplete ("Add a diagnosis"): the person can always write their diagnosis in their own words; the catalogue only suggests names (English, Spanish, abbreviations) and chooses the profile questions. There are 29 today (`src/js/data.js`); Ana considers that too few. Proposal: expand it from ICD-11 (WHO, mental health chapter) with DSM-5-TR synonyms, and have the psychologist review it before the pilot. **Pending.**
+- Symptom suggestions: today the AI generates them from its general knowledge, based on the diagnoses and the profile. Still to decide whether the psychologist reviews examples before the pilot and whether to add an initial curated list per diagnosis.

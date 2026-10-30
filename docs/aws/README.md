@@ -1,21 +1,21 @@
-# AWS — Bedrock (AI) y SES (correos)
+# AWS — Bedrock (AI) and SES (email)
 
-Decisión del 13 oct 2026: ver `docs/FUENTES-Y-DECISIONES.md` §3b. Todo en la región **Asia Pacific (Sydney) `ap-southeast-2`**.
+Decision of 13 Oct 2026: see `docs/FUENTES-Y-DECISIONES.md` §3b. Everything in the **Asia Pacific (Sydney) `ap-southeast-2`** region.
 
-**Nunca** se pegan claves en el repo, en el chat ni en el navegador. Las claves viven solo en Vercel (Settings → Environment Variables).
+Keys are **never** pasted into the repo, the chat or the browser. They live only in Vercel (Settings → Environment Variables) and, for email, in Supabase.
 
-## 1. Cuenta (una vez)
-1. Crear la cuenta en aws.amazon.com y activar **MFA** en el usuario raíz.
-2. Elegir la región **Asia Pacific (Sydney)**.
-3. Billing → **Budgets** → "Monthly cost budget" → **$20** → alerta al correo.
+## 1. Account (once)
+1. Create the account at aws.amazon.com and turn on **MFA** for the root user.
+2. Choose the **Asia Pacific (Sydney)** region.
+3. Cost brake: the project's **monthly spend limit ($20)** in the account menu pauses the project on its own; a Budgets action blocks Bedrock at $17 (see `docs/PRE-PILOT-CHECKLIST.md`).
 
-## 2. Bedrock (Claude en Australia)
-1. Bedrock → **Model catalog** → un modelo **Anthropic Claude Sonnet** → completar el formulario de *use case* (una vez por cuenta).
-2. Bedrock → **Cross-region inference** → filtrar por `au.` → anotar el **ID del perfil** del modelo a usar (por defecto el código usa `au.anthropic.claude-sonnet-4-6`, Claude Sonnet 4.6: el mismo modelo que usaba la app antes. Si el ID que aparece es distinto, ponerlo en `BEDROCK_MODELO`).
-3. Probarlo una vez en **Playground** con ese perfil (así queda habilitado).
+## 2. Bedrock (Claude in Australia)
+1. Bedrock → **Model catalog** → an **Anthropic Claude Sonnet** model → fill in the *use case* form (once per account).
+2. Bedrock → **Cross-region inference** → filter by `au.` → note the model's **profile ID** (by default the code uses `au.anthropic.claude-sonnet-4-6`, Claude Sonnet 4.6, the same model the app used before. If the ID shown is different, put it in `BEDROCK_MODELO`).
+3. Try it once in the **Playground** with that profile (that enables it).
 
-## 3. Usuario para Vercel (permiso mínimo)
-IAM → Users → Create user `symptommap-vercel` (sin acceso a la consola) → Add permissions → **Create inline policy** (JSON), nombre de la política `ClaudeAustraliaOnly`. Todo lo que se nombra dentro de AWS va en inglés:
+## 3. User for Vercel (least privilege)
+IAM → Users → Create user `symptommap-vercel` (no console access) → Add permissions → **Create inline policy** (JSON), policy name `ClaudeAustraliaOnly`. Everything named inside AWS is in English:
 
 ```json
 {
@@ -35,16 +35,18 @@ IAM → Users → Create user `symptommap-vercel` (sin acceso a la consola) → 
 }
 ```
 
-Luego: Security credentials → **Create access key** → "Application running outside AWS". Copiar las dos claves **directo a Vercel**:
+Then: Security credentials → **Create access key** → "Application running outside AWS". Copy both keys **straight into Vercel**, and mark them **Sensitive** (Vercel then never shows them again):
 
-| Variable | Valor | Entornos |
+| Variable | Value | Environments |
 |---|---|---|
-| `AWS_ACCESS_KEY_ID` | la clave de acceso | Production y Preview |
-| `AWS_SECRET_ACCESS_KEY` | la clave secreta | Production y Preview |
-| `AWS_REGION` | `ap-southeast-2` | Production y Preview |
-| `BEDROCK_MODELO` | solo si se usa otro perfil `au.` | Production y Preview |
+| `AWS_ACCESS_KEY_ID` | the access key | Production and Preview |
+| `AWS_SECRET_ACCESS_KEY` | the secret key | Production and Preview |
+| `AWS_REGION` | `ap-southeast-2` | Production and Preview |
+| `BEDROCK_MODELO` | only if another `au.` profile is used | Production and Preview |
 
-Con esas variables, `api/claude.js` usa Bedrock. Es el único proveedor: la clave personal de Anthropic (`ANTHROPIC_API_KEY`) se retiró el 14 oct 2026 y no se vuelve a usar.
+With those variables, `api/claude.js` uses Bedrock. It is the only provider: the personal Anthropic key (`ANTHROPIC_API_KEY`) was retired on 14 Oct 2026 and is not used again.
+
+**To rotate them** (e.g. after a provider incident): create a new access key for `symptommap-vercel`, replace both values in Vercel, redeploy, check one AI request works on a preview, then deactivate and delete the old key.
 
 ## 4. SES (emails from the domain) — done 25 Oct 2026
 - Identity `symptommap.com.au` in SES Sydney (`ap-southeast-2`), Easy DKIM, verified 22 Oct 2026. DKIM CNAMEs and `_dmarc` TXT live in VentraIP DNS.

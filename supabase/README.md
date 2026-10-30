@@ -1,47 +1,49 @@
-# Supabase — base de datos de SymptomMap
+# Supabase — SymptomMap's database
 
-Proyecto `symptommap` en la región **Oceania (Sydney)** (`ap-southeast-2`), organización SymptomMap (Pro).
+Project `symptommap` in the **Oceania (Sydney)** region (`ap-southeast-2`), SymptomMap organisation (Pro).
 
-Las migraciones de `migrations/` son el historial exacto de lo que se aplicó a la base de datos. **No se editan las ya aplicadas**: un cambio nuevo es una migración nueva.
+The migrations in `migrations/` are the exact history of what was applied to the database. **Applied migrations are never edited**: a new change is a new migration.
 
-## Tablas
+## Tables
 
-| Tabla | Qué guarda | Notas |
+| Table | What it stores | Notes |
 |---|---|---|
-| `cuentas` | Nombre, cuándo se verificó 18+, cuándo se aprobó la elegibilidad, versión y fecha del consentimiento | **Sin** fecha de nacimiento ni respuesta de elegibilidad (datos mínimos) |
-| `mapas` | Un documento JSON por persona, con la forma exacta del núcleo (`src/core/mapa.js`) | `revision` sube en cada cambio (para detectar ediciones desde dos pestañas). Máximo ~500 KB |
-| `uso_ai` | **Cuántos** pedidos a la AI hizo cada persona por hora (nunca el texto) | Freno de costo: 15 por hora y 40 en 24 h por persona, 500 en 24 h en total. Solo se usa con `consumir_cuota_ai()` desde `api/claude.js`; las filas se borran a los 2 días |
+| `cuentas` | Name, when 18+ was verified, when eligibility was approved, consent version and date | **No** date of birth and no eligibility answer (minimum data) |
+| `mapas` | One JSON document per person, in the exact shape of the core (`src/core/mapa.js`) | `revision` goes up on every change (to detect edits from two tabs). At most ~500 KB |
+| `uso_ai` | **How many** AI requests each person made per hour (never the text) | Cost brake: 15 per hour and 40 per 24 h per person, 500 per 24 h in total. Only used through `consumir_cuota_ai()` from `api/claude.js`; rows are deleted after 2 days |
 
-## Seguridad
+## Security
 
-- **Row Level Security** en las dos tablas: cada persona solo ve y cambia lo suyo (`auth.uid() = user_id`). Desde la app no se crean filas: las crea la base de datos al registrarse (ver abajo).
-- El rol `anon` (sin sesión) no tiene ningún permiso.
-- No se puede borrar un mapa o una cuenta desde la app: se borran **en cascada** al borrar el usuario de `auth.users` ("Delete account and data"). Eso se hará con una función de servidor; nunca desde el navegador.
-- Las marcas de tiempo, la hora del consentimiento y `revision` las pone la base de datos, no el cliente. Las marcas de 18+ y elegibilidad no se pueden cambiar después.
-- Las reglas del mapa (colores, conexiones, borrado de diagnósticos) viven **solo en el núcleo**; la base de datos guarda, protege y limita el tamaño.
+- **Row Level Security** on every table: each person only sees and changes their own rows (`auth.uid() = user_id`). `uso_ai` has RLS with no policies, so nobody reads it directly. The app never creates rows: the database creates them at sign-up (see below).
+- The `anon` role (no session) has no permissions at all.
+- A map or an account cannot be deleted from the app directly: they are deleted **in cascade** when the user is deleted from `auth.users`, through `borrar_mi_cuenta()` ("Delete your account and data"), which only deletes the caller's own account.
+- Timestamps, the consent time and `revision` are set by the database, not the client. The 18+ and eligibility timestamps cannot be changed later.
+- The map rules (colours, connections, deleting diagnoses) live **only in the core**; the database stores, protects and limits the size.
+- **Self-check:** `pruebas/autochequeo-rls.sql` tries what an attacker would (no session; reading, changing, taking over or deleting another person's map) and rolls everything back. Re-run it after every migration.
 
-Las claves públicas (URL del proyecto y *publishable key*) pueden ir en el código de la v2. **La `service_role` key nunca va al navegador ni al repo.**
+The public keys (project URL and *publishable key*) can be in the v2 code. **The `service_role` key never goes to the browser or the repo.**
 
-## Crear la cuenta (migración `20261011000000_cuentas_al_registrarse.sql`)
+## Creating the account (migration `20261011000000_cuentas_al_registrarse.sql`)
 
-1. La persona pasa los gates de 18+ y elegibilidad en el navegador. La fecha de nacimiento y la respuesta de elegibilidad **nunca se envían**.
-2. La app llama a `signUp` con el correo, la contraseña, el nombre y dos marcas `true`.
-3. Un trigger en `auth.users` crea la fila de `cuentas` (con la hora del servidor) y el mapa vacío, y borra esos datos de la metadata de Auth. Si faltan, **rechaza el registro**.
-4. Supabase envía un código de 6 dígitos; con él se confirma el correo y empieza la sesión.
+1. The person passes the 18+ and eligibility gates in the browser. The date of birth and the eligibility answer are **never sent**.
+2. The app calls `signUp` with the email, password, name and two `true` flags.
+3. A trigger on `auth.users` creates the `cuentas` row (with the server time) and the empty map, and removes that data from the Auth metadata. If it is missing, **the sign-up is rejected**.
+4. Supabase sends a 6-digit code; it confirms the email and starts the session.
 
-Consecuencia: crear personas desde el panel ("Add user") o por invitación **falla a propósito**. Las cuentas de prueba se crean desde la app.
+Consequence: creating people from the dashboard ("Add user") or by invitation **fails on purpose**. Test accounts are created from the app.
 
-## Configuración del panel (no está en las migraciones)
+## Dashboard settings (not in the migrations)
 
-En el panel de Supabase → *Authentication*:
+In the Supabase dashboard → *Authentication*:
 
-| Dónde | Qué | Por qué |
+| Where | What | Why |
 |---|---|---|
-| *URL Configuration* → Site URL | `https://www.symptommap.com.au/app/` | Dirección que usan los correos |
-| *Emails* → *Confirm signup* | Pegar `plantillas/confirmar-registro.html` (usa `{{ .Token }}`) | La app pide un **código**, no un enlace |
+| *URL Configuration* → Site URL | `https://www.symptommap.com.au/app/` | Address used by the emails |
+| *Emails* → *Confirm signup* | Paste `plantillas/confirmar-registro.html` (uses `{{ .Token }}`) | The app asks for a **code**, not a link |
 | *Emails* → *Reset Password* | Paste `plantillas/reset-password.html` (uses `{{ .Token }}`), subject "SymptomMap Reset Password" (different from the sign-up email) | "Forgot your password?" asks for a **code**, not a link |
-| *Sign In / Providers* → Email | "Confirm email" activado · largo del código (Email OTP Length) = **6** · contraseña mínima **8** | Coincide con las pantallas del prototipo |
-| *Attack Protection* | Activar la protección de contraseñas filtradas | Rechaza contraseñas que aparecen en filtraciones conocidas |
+| *Sign In / Providers* → Email | "Confirm email" on · Email OTP Length = **6** · minimum password **8** | Matches the prototype screens |
+| *Attack Protection* | Turn on leaked password protection | Rejects passwords found in known breaches |
+| *Sessions* | Time-box user sessions = **144 hours**; no inactivity timeout | Sessions last up to 6 days (FUNCTIONAL-INVENTORY §1) |
 | *Emails* → SMTP Settings | **Custom SMTP on (25 Oct 2026):** sender `noreply@symptommap.com.au`, name `SymptomMap`, host `email-smtp.ap-southeast-2.amazonaws.com`, port `587`, user/password of IAM user `symptommap-ses-smtp` (`docs/aws/README.md` §4). Email rate limit went from 2/h to 30/h | Emails leave from the domain, through Amazon SES in Sydney |
 
 ## Expected security advisor notices
