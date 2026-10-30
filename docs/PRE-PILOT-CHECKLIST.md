@@ -67,7 +67,8 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [ ] Export: choose what to include, anonymise, PDF preview (FUNCTIONAL-INVENTORY §10).
 - [x] Test mode without an account, on previews and local only (nothing saved; example AI answers) (PR #19).
 - [ ] Copy review of every screen, and an accessibility pass.
-- [ ] One Lighthouse performance check on a preview.
+- [x] One Lighthouse performance check (31 Oct 2026, desktop preset, production build of `/app/` served locally, sign-in screen): **performance 100, accessibility 100, best practices 96, SEO 50**. FCP/LCP 0.5 s, no blocking time, no layout shift, 175 KiB in total. SEO is low on purpose (`/app/` is `noindex`). Best practices lost points only for a missing favicon (404). Google Fonts could not load in the test environment, so real first loads may be slightly slower until the fonts are self-hosted.
+- [ ] Add a favicon (the site has none, so every visit gets a 404 for `/favicon.ico`); `docs/marca/icono-app.png` is the intended icon.
 
 ## Public site (when it opens)
 - [ ] Breadcrumb on the public pages (e.g. Home › Our story, Home › Why SymptomMap), linking back to Home, with `BreadcrumbList` structured data for SEO. **Not inside the app**: in the map, profile and settings a simple Back is enough and a breadcrumb would add noise (Ana, 20 Oct 2026).
