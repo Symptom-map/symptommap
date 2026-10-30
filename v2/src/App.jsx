@@ -23,6 +23,7 @@ import AgregarSintoma from './mapa/AgregarSintoma.jsx'
 import AvisoSintoma from './mapa/AvisoSintoma.jsx'
 import PanelDetalle from './mapa/PanelDetalle.jsx'
 import Ajustes from './cuenta/Ajustes.jsx'
+import PantallaChica, { usePantallaChica } from './cuenta/PantallaChica.jsx'
 import { preguntasPara } from './perfil/preguntas.js'
 import {
   PantallaEntrar, PantallaRegistro, PantallaMenorDeEdad, PantallaElegibilidad,
@@ -42,6 +43,7 @@ const ESPERA_GUARDADO_MS = 800
 
 export default function App() {
   const [pantalla, setPantalla] = useState('cargando')
+  const chica = usePantallaChica()
   const [sesion, setSesion] = useState(null)
   const [cuenta, setCuenta] = useState(null)
   const [registro, setRegistro] = useState(null) // datos del paso 1, solo en memoria
@@ -202,6 +204,9 @@ export default function App() {
   }
 
   const comunes = { ocupado, error }
+  // Phones: the pilot is computer-only (FUENTES §3e).
+  if (chica) return <div className="app"><PantallaChica /></div>
+
   return (
     <div className="app">
       {pantalla === 'cargando' && <div className="cuenta" aria-busy="true" />}

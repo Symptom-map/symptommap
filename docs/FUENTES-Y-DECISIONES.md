@@ -99,6 +99,13 @@ These replace FUNCTIONAL-INVENTORY §7 (what happens to symptoms when a diagnosi
 | "Connected to" in the symptom panel | Kept (not in the prototype): the person can add or remove a connection by hand, e.g. to correct the AI after closing the "Added to your map" notice. The last connection cannot be removed there; deleting the symptom does that | Corrections without new rules |
 | Deleting the account | From Settings → Privacy & your data. "Delete your account and data? This deletes your account and everything in it: your diagnoses, profiles, symptoms and notes. For your security, SymptomMap doesn't keep any of it. If you want to use SymptomMap again, you'll create a new account and start from zero. This can't be undone." → Keep my account / Delete. Immediate and complete (database cascade). No typed "DELETE" for now (two steps already; typing adds friction) — revisit after the pilot | Clear and honest. Supabase backups expire after 7 days; the privacy page says so |
 
+## 3e. Small screens (decided by Ana on 26 Oct 2026, refined on 31 Oct 2026)
+
+| Topic | Decision | Why |
+|---|---|---|
+| Phone version | **Not part of the pilot.** The pilot is for large screens; the rule is screen width, not device type (no detecting iPhone, iPad or Android) | The map needs its own phone prototype, thought through properly; there is no time to do it well before the pilot |
+| Narrow screens (under 700 px) | The app shows "SymptomMap works on a computer for now" with the link to open on a computer and a "Copy link" button. There is **no** way past it ("Continue anyway" was removed on 31 Oct 2026). Tablets wider than 700 px go straight in | No squeezed, broken map as a first impression |
+
 ## 4. Pendientes de decidir
 
 - **Tipo de verificación en dos pasos.** El prototipo muestra un código por correo. Supabase Auth ofrece como segundo paso una app de autenticación (Google Authenticator, 1Password, etc.) o SMS, no un código por correo. Hay que elegir antes de construir "Protect your account".

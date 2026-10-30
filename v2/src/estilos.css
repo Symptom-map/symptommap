@@ -339,3 +339,34 @@ body { background: var(--sm-surface-canvas); }
 .ajustes__intro { margin: -12px 0 0; color: var(--sm-ink-body); }
 .ajustes__form { display: flex; flex-direction: column; gap: 16px; }
 .ajustes__form .cuenta__reglas { margin: -6px 0 0; }
+
+/* Under 700 px: "SymptomMap works on a computer for now" (FUENTES §3e).
+   Same language as the gates and the 404: cream page, logo lockup, one white
+   panel, one line illustration in charcoal ink, one primary action. */
+.chica {
+  min-height: 100%; box-sizing: border-box; flex: 1;
+  display: flex; flex-direction: column;
+  padding: 24px 16px 40px; background: var(--sm-cream);
+}
+.chica__cabeza { padding: 4px 4px 0; }
+.chica__centro { flex: 1; display: flex; align-items: safe center; justify-content: center; padding-top: 32px; }
+.chica__panel { width: 100%; max-width: 440px; box-sizing: border-box; padding: 40px 24px 28px; text-align: center; }
+.chica__ilustracion {
+  display: block; width: 112px; height: 112px; margin: 0 auto 28px;
+  /* The artwork is recoloured to charcoal ink, as the design system asks. */
+  background: var(--sm-ink);
+  -webkit-mask: var(--ilustracion) center / contain no-repeat;
+          mask: var(--ilustracion) center / contain no-repeat;
+}
+.chica__titulo { margin: 0 auto 14px; max-width: 18ch; }
+.chica__texto { margin: 0 auto 28px; max-width: 34ch; color: var(--sm-ink-body); }
+.chica__enlace {
+  margin: 0 0 14px; padding: 13px 16px; border-radius: 14px;
+  background: var(--sm-cream); color: var(--sm-ink);
+  font-size: clamp(13px, 4vw, 15px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  user-select: all; -webkit-user-select: all;
+}
+@media (max-width: 359px) {
+  .chica__panel { padding-left: 18px; padding-right: 18px; }
+  .chica__enlace { padding-left: 8px; padding-right: 8px; }
+}
