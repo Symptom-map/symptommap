@@ -18,6 +18,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [ ] Branch protection on `main`: require the "Tests" check before merging (once the workflow is on `main`).
 - [x] Content-Security-Policy on `/app/*` and `/api/*` (`vercel.json`, 26 Oct 2026): scripts only from the site, connections only to the site and Supabase, no framing. Tested with the full flows in a browser: nothing blocked; inline scripts and other sites are refused. Not on the old app at `/` (inline handlers; it will be replaced) nor the "Coming soon" page.
 - [ ] The design system loads its fonts from Google Fonts (`v2/src/ds/tokens/fonts.css`), so visitors' browsers contact Google (no health data, but their IP). The same fonts are self-hosted in `assets/fonts/`: ask for the design system to use them, then drop Google from the CSP.
+- [ ] Hardening: `cuentas` grants UPDATE on every column of the person's own row (RLS keeps them to their own row). The trigger already keeps the age/eligibility timestamps and sets the consent time, so nothing can be faked today; still, limit the UPDATE grant to `nombre` and `consentimiento_version` (new migration). Found 26 Oct 2026; corrected after Ana's review of 31 Oct 2026.
 - [ ] Check the map's structure when it is loaded, so a damaged map cannot break the screen (review of 23 Oct 2026; not a security issue — RLS already keeps maps apart).
 
 ## AI
@@ -59,7 +60,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [ ] Fill the map in v2 (empty state, add diagnosis with autocomplete, symptoms).
 - [x] Forgot password: email → 6-digit code → new password, other devices logged out (PR #17). Needs the "Reset Password" email template in Supabase (`supabase/plantillas/reset-password.html`).
 - [x] Delete account and data: Settings → Privacy & your data, wording approved by Ana (FUENTES §3d); `borrar_mi_cuenta()` created 25 Oct 2026 (Ana ran it in the SQL editor).
-- [ ] Settings: account name, change password (FUNCTIONAL-INVENTORY §11).
+- [x] Settings: change name, change password (current password checked; other devices logged out; "Forgot your password?" goes to the reset flow) (FUNCTIONAL-INVENTORY §11).
 - [ ] Optional two-step verification (FUNCTIONAL-INVENTORY §1).
 - [ ] Welcome tutorial (keep the empty state minimal while it runs).
 - [ ] Export: choose what to include, anonymise, PDF preview (FUNCTIONAL-INVENTORY §10).
