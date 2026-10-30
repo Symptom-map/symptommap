@@ -54,7 +54,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [x] Diagnosis profile: first setup after adding, edit later from the sidebar (PR #15).
 - [x] Add a symptom (the AI connects it on Add; Analyse connections to review first; manual pick when the AI finds nothing) and the symptoms list in the sidebar (PR #16).
 - [ ] Try "Add a symptom" on a Vercel preview with real Bedrock (first real AI call).
-- [ ] Tell the psychologist about the 20 Oct change to adding symptoms (FUENTES §3c).
+- ~~Tell the psychologist about the 20 Oct change to adding symptoms~~ → not needed: Ana's own decision (31 Oct 2026, FUENTES §3c).
 - [ ] Suggest symptoms (AI, Bedrock), then the end-to-end cost check.
 - [x] Detail panel (click a diagnosis or symptom): edit, connect, delete (PR #20). "Connected to" is new (not in the prototype); the last connection cannot be removed there.
 - [ ] Psychologist reviews the profile questions and options (`v2/src/perfil/preguntas.js`), together with the diagnosis catalogue.

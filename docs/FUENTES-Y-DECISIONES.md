@@ -86,7 +86,7 @@ This replaces FUNCTIONAL-INVENTORY §6 ("Add without analysing") and §9B, and t
 | When the AI finds nothing or is unavailable | The person chooses the diagnoses from their map ("Where does this fit?"). The symptom is added only with at least one connection | So a symptom is never grey |
 | Grey symptoms | ~~Only when a diagnosis is deleted~~ → **never** since 25 Oct 2026 (§3d) | — |
 
-Pending: tell the psychologist about this change at the next checkpoint.
+No separate validation needed: this is Ana's own product decision (31 Oct 2026). The psychologist will see it when Ana shows her the prototype.
 
 ## 3d. Deleting things, and connecting by hand (decided by Ana on 25 Oct 2026)
 
