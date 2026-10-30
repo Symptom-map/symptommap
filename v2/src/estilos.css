@@ -334,3 +334,8 @@ body { background: var(--sm-surface-canvas); }
 .ajustes__confirmar { align-self: stretch; display: flex; flex-direction: column; gap: 10px; padding: 16px; border-radius: 14px; background: var(--sm-cream); }
 .ajustes__confirmar .sm-body-sm { margin: 0; }
 .app__principal[hidden] { display: none; }
+.ajustes__fila { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.ajustes__migas { display: flex; gap: 16px; flex-wrap: wrap; }
+.ajustes__intro { margin: -12px 0 0; color: var(--sm-ink-body); }
+.ajustes__form { display: flex; flex-direction: column; gap: 16px; }
+.ajustes__form .cuenta__reglas { margin: -6px 0 0; }

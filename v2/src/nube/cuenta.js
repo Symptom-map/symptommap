@@ -103,6 +103,22 @@ export async function cambiarContrasena(contrasena) {
   await supabase.auth.signOut({ scope: 'others' })
 }
 
+/** Changes the name shown across the account and map (cuentas.nombre, 1–80 characters). */
+export async function cambiarNombre(userId, nombre) {
+  const { error } = await supabase.from('cuentas').update({ nombre: nombre.trim() }).eq('user_id', userId)
+  if (error) throw traducir(error)
+}
+
+/**
+ * Settings → change password: checks the current password first, then saves
+ * the new one and logs out every other device.
+ */
+export async function cambiarContrasenaConActual({ correo, actual, nueva }) {
+  const { error } = await supabase.auth.signInWithPassword({ email: correo, password: actual })
+  if (error) throw traducir(error).codigo === 'credenciales' ? new ErrorCuenta('contrasena_actual') : traducir(error)
+  await cambiarContrasena(nueva)
+}
+
 /**
  * Deletes the signed-in person's account and everything in it
  * (supabase/migrations/20261022000000_borrar_mi_cuenta.sql), then clears the
