@@ -17,6 +17,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [x] CI on every PR: tests, site build, and a check that the production build has no test mode (`.github/workflows/tests.yml`, review of 23 Oct 2026).
 - [ ] Branch protection on `main`: require the "Tests" check before merging (once the workflow is on `main`).
 - [ ] Content-Security-Policy header in `vercel.json` (review of 23 Oct 2026; HSTS, X-Frame-Options, nosniff, Referrer-Policy and Permissions-Policy are already there).
+- [ ] `cuentas`: signed-in people can UPDATE every column of their own row (RLS keeps them to their own row), including the eligibility/age/consent timestamps. Limit the UPDATE grant to `nombre` and the consent columns (new migration). Found 26 Oct 2026.
 - [ ] Check the map's structure when it is loaded, so a damaged map cannot break the screen (review of 23 Oct 2026; not a security issue — RLS already keeps maps apart).
 
 ## AI
@@ -58,7 +59,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [ ] Fill the map in v2 (empty state, add diagnosis with autocomplete, symptoms).
 - [x] Forgot password: email → 6-digit code → new password, other devices logged out (PR #17). Needs the "Reset Password" email template in Supabase (`supabase/plantillas/reset-password.html`).
 - [x] Delete account and data: Settings → Privacy & your data, wording approved by Ana (FUENTES §3d); `borrar_mi_cuenta()` created 25 Oct 2026 (Ana ran it in the SQL editor).
-- [ ] Settings: account name, change password (FUNCTIONAL-INVENTORY §11).
+- [x] Settings: change name, change password (current password checked; other devices logged out; "Forgot your password?" goes to the reset flow) (FUNCTIONAL-INVENTORY §11).
 - [ ] Optional two-step verification (FUNCTIONAL-INVENTORY §1).
 - [ ] Welcome tutorial (keep the empty state minimal while it runs).
 - [ ] Export: choose what to include, anonymise, PDF preview (FUNCTIONAL-INVENTORY §10).
