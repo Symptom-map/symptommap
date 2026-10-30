@@ -68,7 +68,7 @@ These decisions resolve contradictions between the documents in the zip. They ta
 
 Rules that come with this architecture:
 - The AI only answers people who are signed in (the function checks the Supabase token).
-- The AWS keys have the least privilege: invoke that model and send email, nothing else. They live only in Vercel (environment variables) and, for email, in Supabase — never in the browser or the repo.
+- The AWS keys have the least privilege: invoke that model and send email, nothing else. The Bedrock credentials live only in Vercel (environment variables); the SES SMTP credentials live only in Supabase (SMTP settings). Never in the browser or the repo.
 - A spending limit in AWS, and a spending limit on the Anthropic account while it is used (only the backup uses it now).
 
 Ruled out for now: everything on AWS (Amplify/CloudFront + Lambda) and Cognito. Can be revisited after the pilot.

@@ -2,7 +2,7 @@
 
 Decision of 13 Oct 2026: see `docs/FUENTES-Y-DECISIONES.md` §3b. Everything in the **Asia Pacific (Sydney) `ap-southeast-2`** region.
 
-Keys are **never** pasted into the repo, the chat or the browser. They live only in Vercel (Settings → Environment Variables) and, for email, in Supabase.
+Keys are **never** pasted into the repo, the chat or the browser. The Bedrock credentials live only in Vercel (Settings → Environment Variables); the SES SMTP credentials live only in Supabase (SMTP Settings).
 
 ## 1. Account (once)
 1. Create the account at aws.amazon.com and turn on **MFA** for the root user.
@@ -35,7 +35,7 @@ IAM → Users → Create user `symptommap-vercel` (no console access) → Add pe
 }
 ```
 
-Then: Security credentials → **Create access key** → "Application running outside AWS". Copy both keys **straight into Vercel**, and mark them **Sensitive** (Vercel then never shows them again):
+Then: Security credentials → **Create access key** → "Application running outside AWS". Copy both keys **straight into Vercel** and store `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` as **Secret** environment variables (Vercel's type for keys since 24 Aug 2026; a Secret cannot be read back from the dashboard after saving, only replaced):
 
 | Variable | Value | Environments |
 |---|---|---|
