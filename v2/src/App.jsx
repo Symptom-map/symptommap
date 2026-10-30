@@ -33,7 +33,7 @@ import { SIN_DIAGNOSTICO } from './cuenta/validar.js'
 import {
   crearCuenta, confirmarCorreo, reenviarCodigo, entrar, salir,
   sesionActual, alCambiarSesion, leerCuenta, aceptarConsentimiento,
-  pedirRestablecer, confirmarRestablecer, cambiarContrasena, borrarMiCuenta,
+  pedirRestablecer, confirmarRestablecer, cambiarContrasena, borrarMiCuenta, cambiarNombre, cambiarContrasenaConActual,
 } from './nube/cuenta.js'
 import { cargarMapa, guardarMapa } from './nube/mapa.js'
 import { crearMapa } from '@nucleo/mapa.js'
@@ -192,6 +192,17 @@ export default function App() {
     irA('entrar')
   }
 
+  // Settings → change password → "Forgot your password?": log out here and
+  // open the reset flow with the email already filled in.
+  const alOlvideDesdeAjustes = async () => {
+    const correo = sesion?.user?.email || ''
+    await salir()
+    setSesion(null)
+    setCuenta(null)
+    setCorreoPendiente(correo)
+    irA('olvide')
+  }
+
   const comunes = { ocupado, error }
   // Phones: the pilot is computer-only (FUENTES §3e).
   if (chica) return <div className="app"><PantallaChica /></div>
@@ -210,7 +221,8 @@ export default function App() {
       {pantalla === 'sinDiagnostico' && <PantallaSinDiagnostico />}
       {pantalla === 'verificar' && <PantallaVerificar {...comunes} aviso={aviso} correo={correoPendiente} onVerificar={alVerificar} onReenviar={alReenviar} />}
       {pantalla === 'consentimiento' && <PantallaConsentimiento {...comunes} onAceptar={alAceptar} />}
-      {pantalla === 'mapa' && sesion && <MiMapa userId={sesion.user.id} nombre={cuenta?.nombre} correo={sesion.user.email} onSalir={alSalir} onCuentaBorrada={alBorrarCuenta} />}
+      {pantalla === 'mapa' && sesion && <MiMapa userId={sesion.user.id} nombre={cuenta?.nombre} correo={sesion.user.email} onSalir={alSalir} onCuentaBorrada={alBorrarCuenta}
+        onNombreCambiado={n => setCuenta(c => ({ ...c, nombre: n }))} onOlvide={alOlvideDesdeAjustes} />}
       {pantalla === 'prueba' && MODO_PRUEBA_DISPONIBLE && <MiMapa prueba onSalir={() => { salirModoPrueba(); window.history.replaceState(null, '', window.location.pathname); irA('entrar') }} />}
     </div>
   )
@@ -218,7 +230,7 @@ export default function App() {
 
 // ── The person's map, saved automatically ─────────────────────
 // prueba: test mode (prueba.js) — the map starts empty and lives in memory only.
-function MiMapa({ userId, nombre, correo, onSalir, onCuentaBorrada, prueba = false }) {
+function MiMapa({ userId, nombre, correo, onSalir, onCuentaBorrada, onNombreCambiado, onOlvide, prueba = false }) {
   const { AppHeader, Button, InlineMessage } = ds()
   const [mapa, setMapa] = useState(null)
   const [problema, setProblema] = useState('')
@@ -416,7 +428,7 @@ function MiMapa({ userId, nombre, correo, onSalir, onCuentaBorrada, prueba = fal
     onCuentaBorrada()
   }
 
-  async function salirGuardando() {
+  async function salirGuardando(despues = onSalir) {
     for (let intento = 0; intento < 3 && (guardando.current || pendiente.current); intento++) {
       if (guardando.current) await enCurso.current
       await guardarAhora()
@@ -425,7 +437,7 @@ function MiMapa({ userId, nombre, correo, onSalir, onCuentaBorrada, prueba = fal
       setProblema('sin_guardar_al_salir')
       return
     }
-    onSalir()
+    despues()
   }
 
   // NEW: saving messages the prototype did not show.
@@ -441,12 +453,15 @@ function MiMapa({ userId, nombre, correo, onSalir, onCuentaBorrada, prueba = fal
       <AppHeader context={enAjustes ? 'Settings' : titulo} actions={
         <>
           {!prueba && !enAjustes && <Button variant="ghost" size="sm" onClick={() => { setSeleccion(null); setEnAjustes(true) }}>Settings</Button>}
-          <Button variant="ghost" size="sm" onClick={salirGuardando}>{prueba ? 'Leave test mode' : 'Log out'}</Button>
+          <Button variant="ghost" size="sm" onClick={() => salirGuardando()}>{prueba ? 'Leave test mode' : 'Log out'}</Button>
         </>
       } />
       {enAjustes && !prueba && (
         <main className="app__principal">
-          <Ajustes nombre={nombre} correo={correo} onVolver={() => setEnAjustes(false)} onBorrarCuenta={borrarCuentaAhora} />
+          <Ajustes nombre={nombre} correo={correo} onVolver={() => setEnAjustes(false)} onBorrarCuenta={borrarCuentaAhora}
+            onCambiarNombre={async n => { await cambiarNombre(userId, n); onNombreCambiado(n) }}
+            onCambiarContrasena={({ actual, nueva }) => cambiarContrasenaConActual({ correo, actual, nueva })}
+            onOlvide={() => salirGuardando(onOlvide)} />
         </main>
       )}
       <main className="app__principal app__principal--mapa" hidden={enAjustes}>

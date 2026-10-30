@@ -26,6 +26,7 @@ export const MENSAJES = {
   contrasena_debil: 'Choose a stronger password.',
   contrasena_filtrada: 'This password has appeared in a data breach, so it isn’t safe to use. Choose a different one.',
   contrasena_igual: 'Choose a password you haven’t used for SymptomMap before.',
+  contrasena_actual: 'That isn’t your current password. Try again.',
   desconocido: 'Something went wrong. Try again.',
 }
 
@@ -62,13 +63,13 @@ function MensajeError({ codigo }) {
 }
 
 // Campo de contraseña con el botón de ojo del prototipo (.pt-pw / .pt-pweye).
-function CampoContrasena({ id, label, placeholder, value, error, onChange }) {
+export function CampoContrasena({ id, label, placeholder, value, error, onChange }) {
   const { TextField, Icon } = ds()
   const [visible, setVisible] = useState(false)
   return (
     <div className="campo-contrasena">
       <TextField id={id} label={label} type={visible ? 'text' : 'password'} placeholder={placeholder}
-        value={value} error={error} onChange={onChange} autoComplete={id === 'li-pw' ? 'current-password' : 'new-password'} />
+        value={value} error={error} onChange={onChange} autoComplete={id === 'li-pw' || id.endsWith('-actual') ? 'current-password' : 'new-password'} />
       <button type="button" className="campo-contrasena__ojo" aria-label={visible ? 'Hide password' : 'Show password'}
         aria-pressed={visible} onClick={() => setVisible(v => !v)}>
         <Icon name="eye" size={15} color={visible ? 'var(--sm-ink)' : 'var(--sm-ink-meta)'} />
