@@ -2,12 +2,12 @@
 
 Decision of 13 Oct 2026: see `docs/FUENTES-Y-DECISIONES.md` §3b. Everything in the **Asia Pacific (Sydney) `ap-southeast-2`** region.
 
-Keys are **never** pasted into the repo, the chat or the browser. They live only in Vercel (Settings → Environment Variables) and, for email, in Supabase.
+Keys are **never** pasted into the repo, the chat or the browser. They live only in Vercel (Settings → Environment Variables).
 
 ## 1. Account (once)
 1. Create the account at aws.amazon.com and turn on **MFA** for the root user.
 2. Choose the **Asia Pacific (Sydney)** region.
-3. Cost brake: the project's **monthly spend limit ($20)** in the account menu pauses the project on its own; a Budgets action blocks Bedrock at $17 (see `docs/PRE-PILOT-CHECKLIST.md`).
+3. Billing → **Budgets** → "Monthly cost budget" → **$20** → alert to email.
 
 ## 2. Bedrock (Claude in Australia)
 1. Bedrock → **Model catalog** → an **Anthropic Claude Sonnet** model → fill in the *use case* form (once per account).
@@ -35,7 +35,7 @@ IAM → Users → Create user `symptommap-vercel` (no console access) → Add pe
 }
 ```
 
-Then: Security credentials → **Create access key** → "Application running outside AWS". Copy both keys **straight into Vercel**, and mark them **Sensitive** (Vercel then never shows them again):
+Then: Security credentials → **Create access key** → "Application running outside AWS". Copy both keys **straight into Vercel**:
 
 | Variable | Value | Environments |
 |---|---|---|
@@ -45,8 +45,6 @@ Then: Security credentials → **Create access key** → "Application running ou
 | `BEDROCK_MODELO` | only if another `au.` profile is used | Production and Preview |
 
 With those variables, `api/claude.js` uses Bedrock. It is the only provider: the personal Anthropic key (`ANTHROPIC_API_KEY`) was retired on 14 Oct 2026 and is not used again.
-
-**To rotate them** (e.g. after a provider incident): create a new access key for `symptommap-vercel`, replace both values in Vercel, redeploy, check one AI request works on a preview, then deactivate and delete the old key.
 
 ## 4. SES (emails from the domain) — done 25 Oct 2026
 - Identity `symptommap.com.au` in SES Sydney (`ap-southeast-2`), Easy DKIM, verified 22 Oct 2026. DKIM CNAMEs and `_dmarc` TXT live in VentraIP DNS.

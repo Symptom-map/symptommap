@@ -54,7 +54,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [x] Diagnosis profile: first setup after adding, edit later from the sidebar (PR #15).
 - [x] Add a symptom (the AI connects it on Add; Analyse connections to review first; manual pick when the AI finds nothing) and the symptoms list in the sidebar (PR #16).
 - [ ] Try "Add a symptom" on a Vercel preview with real Bedrock (first real AI call).
-- ~~Tell the psychologist about the 20 Oct change to adding symptoms~~ → not needed: Ana's own decision (31 Oct 2026, FUENTES §3c).
+- [ ] Tell the psychologist about the 20 Oct change to adding symptoms (FUENTES §3c).
 - [ ] Suggest symptoms (AI, Bedrock), then the end-to-end cost check.
 - [x] Detail panel (click a diagnosis or symptom): edit, connect, delete (PR #20). "Connected to" is new (not in the prototype); the last connection cannot be removed there.
 - [ ] Psychologist reviews the profile questions and options (`v2/src/perfil/preguntas.js`), together with the diagnosis catalogue.
@@ -67,8 +67,7 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 - [ ] Export: choose what to include, anonymise, PDF preview (FUNCTIONAL-INVENTORY §10).
 - [x] Test mode without an account, on previews and local only (nothing saved; example AI answers) (PR #19).
 - [ ] Copy review of every screen, and an accessibility pass.
-- [x] One Lighthouse performance check (31 Oct 2026, desktop preset, production build of `/app/` served locally, sign-in screen): **performance 100, accessibility 100, best practices 96, SEO 50**. FCP/LCP 0.5 s, no blocking time, no layout shift, 175 KiB in total. SEO is low on purpose (`/app/` is `noindex`). Best practices lost points only for a missing favicon (404). Google Fonts could not load in the test environment, so real first loads may be slightly slower until the fonts are self-hosted.
-- [ ] Add a favicon (the site has none, so every visit gets a 404 for `/favicon.ico`); `docs/marca/icono-app.png` is the intended icon.
+- [ ] One Lighthouse performance check on a preview.
 
 ## Public site (when it opens)
 - [ ] Breadcrumb on the public pages (e.g. Home › Our story, Home › Why SymptomMap), linking back to Home, with `BreadcrumbList` structured data for SEO. **Not inside the app**: in the map, profile and settings a simple Back is enough and a breadcrumb would add noise (Ana, 20 Oct 2026).
@@ -76,4 +75,4 @@ Everything that must be done before the pilot (week of 23–27 November 2026). T
 
 ## Housekeeping
 - [x] Translate the remaining Spanish documents to English (31 Oct 2026: `FUENTES-Y-DECISIONES.md`, `src/core/README.md`, `supabase/README.md`, `docs/aws/README.md`, `docs/marca/README.md`). File names stay as they are, so links keep working.
-- [ ] Translate the remaining Spanish code comments to English, file by file when each one is next touched (rule in `AGENTS.md`).
+- [ ] Translate the remaining Spanish code comments to English (rule in `AGENTS.md`).

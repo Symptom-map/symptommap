@@ -14,12 +14,11 @@ The migrations in `migrations/` are the exact history of what was applied to the
 
 ## Security
 
-- **Row Level Security** on every table: each person only sees and changes their own rows (`auth.uid() = user_id`). `uso_ai` has RLS with no policies, so nobody reads it directly. The app never creates rows: the database creates them at sign-up (see below).
+- **Row Level Security** on both tables: each person only sees and changes their own (`auth.uid() = user_id`). The app does not create rows: the database creates them at sign-up (see below).
 - The `anon` role (no session) has no permissions at all.
-- A map or an account cannot be deleted from the app directly: they are deleted **in cascade** when the user is deleted from `auth.users`, through `borrar_mi_cuenta()` ("Delete your account and data"), which only deletes the caller's own account.
+- A map or an account cannot be deleted from the app: they are deleted **in cascade** when the user is deleted from `auth.users` ("Delete account and data"). That will be done with a server function; never from the browser.
 - Timestamps, the consent time and `revision` are set by the database, not the client. The 18+ and eligibility timestamps cannot be changed later.
 - The map rules (colours, connections, deleting diagnoses) live **only in the core**; the database stores, protects and limits the size.
-- **Self-check:** `pruebas/autochequeo-rls.sql` tries what an attacker would (no session; reading, changing, taking over or deleting another person's map) and rolls everything back. Re-run it after every migration.
 
 The public keys (project URL and *publishable key*) can be in the v2 code. **The `service_role` key never goes to the browser or the repo.**
 
@@ -43,7 +42,6 @@ In the Supabase dashboard → *Authentication*:
 | *Emails* → *Reset Password* | Paste `plantillas/reset-password.html` (uses `{{ .Token }}`), subject "SymptomMap Reset Password" (different from the sign-up email) | "Forgot your password?" asks for a **code**, not a link |
 | *Sign In / Providers* → Email | "Confirm email" on · Email OTP Length = **6** · minimum password **8** | Matches the prototype screens |
 | *Attack Protection* | Turn on leaked password protection | Rejects passwords found in known breaches |
-| *Sessions* | Time-box user sessions = **144 hours**; no inactivity timeout | Sessions last up to 6 days (FUNCTIONAL-INVENTORY §1) |
 | *Emails* → SMTP Settings | **Custom SMTP on (25 Oct 2026):** sender `noreply@symptommap.com.au`, name `SymptomMap`, host `email-smtp.ap-southeast-2.amazonaws.com`, port `587`, user/password of IAM user `symptommap-ses-smtp` (`docs/aws/README.md` §4). Email rate limit went from 2/h to 30/h | Emails leave from the domain, through Amazon SES in Sydney |
 
 ## Expected security advisor notices

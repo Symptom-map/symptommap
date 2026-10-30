@@ -43,7 +43,7 @@ Errors are thrown as `ErrorMapa` with a `codigo` (`LIMITE_DIAGNOSTICOS`, `COLOR_
 
 ## Rules it covers
 
-- Node types: diagnosis, single-source symptom, shared symptom (one arc per diagnosis, **always equal parts**) and floating (only in maps saved before 25 Oct 2026; new symptoms always have at least one connection).
+- Node types: diagnosis, single-source symptom, shared symptom (one arc per diagnosis, **always equal parts**) and floating.
 - One edge for each diagnosis of a symptom. **There are no symptom → symptom relations.**
 - Colour: the system proposes the most distinct one; the person can choose another that is not in use, when adding the diagnosis and later. Nothing changes colour on its own.
 - At most 10 diagnoses. A diagnosis or symptom with the same text is not duplicated.

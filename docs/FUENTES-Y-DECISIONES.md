@@ -3,7 +3,7 @@
 Read this before working on SymptomMap, in any tool (Claude, Claude Code, Codex, Claude Design). The rules for coding agents are in `AGENTS.md`.
 It exists so the different versions of the project never get mixed up.
 
-Last updated: 31 October 2026 (translated into English; the decisions are unchanged).
+Last updated: 25 October 2026.
 
 ## 1. What each thing is and what it is used for
 
@@ -63,13 +63,13 @@ These decisions resolve contradictions between the documents in the zip. They ta
 | Site and server functions | **Vercel (Pro)**, functions in `syd1` (Sydney) | Already works; moving it to AWS would take weeks without improving privacy. Vercel stores no health data: the AI function does not log content |
 | Database and maps | **Supabase, Sydney** | Working since 9 Oct |
 | Accounts | **Supabase Auth**, optional two-step verification | Decided on 11 Oct |
-| AI | **Claude through Amazon Bedrock, Australia inference profile** (Sydney + Melbourne), called from the Vercel function | Health data is processed only in Australia. (Before this, the AI went straight to Anthropic in the US; switched on 14 Oct 2026, before any real people) |
-| Email | **Amazon SES, Sydney**, with a sender on the domain (`symptommap.com.au`) | People's emails don't leave Australia; replaces Supabase's test email (done 25 Oct 2026) |
+| AI | **Claude through Amazon Bedrock, Australia inference profile** (Sydney + Melbourne), called from the Vercel function | Health data is processed only in Australia. Today the AI goes straight to Anthropic (US); this is switched before real people come in |
+| Email | **Amazon SES, Sydney**, with a sender on the domain (`symptommap.com.au`) | People's emails don't leave Australia; replaces Supabase's test email |
 
 Rules that come with this architecture:
 - The AI only answers people who are signed in (the function checks the Supabase token).
-- The AWS keys have the least privilege: invoke that model and send email, nothing else. They live only in Vercel (environment variables) and, for email, in Supabase — never in the browser or the repo.
-- A spending limit in AWS, and a spending limit on the Anthropic account while it is used (only the backup uses it now).
+- The AWS keys have the least privilege: invoke that model and send email, nothing else. They live only in Vercel (environment variables), never in the browser or the repo.
+- A spending alert in AWS, and a spending limit on the Anthropic account while it is used.
 
 Ruled out for now: everything on AWS (Amplify/CloudFront + Lambda) and Cognito. Can be revisited after the pilot.
 
@@ -86,7 +86,7 @@ This replaces FUNCTIONAL-INVENTORY §6 ("Add without analysing") and §9B, and t
 | When the AI finds nothing or is unavailable | The person chooses the diagnoses from their map ("Where does this fit?"). The symptom is added only with at least one connection | So a symptom is never grey |
 | Grey symptoms | ~~Only when a diagnosis is deleted~~ → **never** since 25 Oct 2026 (§3d) | — |
 
-No separate validation needed: this is Ana's own product decision (31 Oct 2026). The psychologist will see it when Ana shows her the prototype.
+Pending: tell the psychologist about this change at the next checkpoint.
 
 ## 3d. Deleting things, and connecting by hand (decided by Ana on 25 Oct 2026)
 
@@ -108,7 +108,7 @@ These replace FUNCTIONAL-INVENTORY §7 (what happens to symptoms when a diagnosi
 
 ## 4. Still to decide
 
-- **Type of two-step verification.** The prototype shows a code by email. As a second step, Supabase Auth offers an authenticator app (Google Authenticator, 1Password, etc.) or SMS, not a code by email. This must be chosen before building "Protect your account" (§3 above already leans towards an authenticator app).
+- **Type of two-step verification.** The prototype shows a code by email. As a second step, Supabase Auth offers an authenticator app (Google Authenticator, 1Password, etc.) or SMS, not a code by email. This must be chosen before building "Protect your account".
 - ~~"Forgot your password?"~~ → built on 20 Oct 2026 with a 6-digit code, like confirming the email (no screens were designed; it reuses the account screens).
 - ~~Final domain~~ → **www.symptommap.com.au** (12 Oct 2026).
 - Diagnosis catalogue for the autocomplete ("Add a diagnosis"): the person can always write their diagnosis in their own words; the catalogue only suggests names (English, Spanish, abbreviations) and chooses the profile questions. There are 29 today (`src/js/data.js`); Ana considers that too few. Proposal: expand it from ICD-11 (WHO, mental health chapter) with DSM-5-TR synonyms, and have the psychologist review it before the pilot. **Pending.**
